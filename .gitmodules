@@ -1,0 +1,9 @@
+[submodule "Engine/External/bgfx/bgfx"]
+	path = Engine/External/bgfx/bgfx
+	url = https://github.com/bkaradzic/bgfx
+[submodule "Engine/External/bgfx/bx"]
+	path = Engine/External/bgfx/bx
+	url = https://github.com/bkaradzic/bx
+[submodule "Engine/External/bgfx/bimg"]
+	path = Engine/External/bgfx/bimg
+	url = https://github.com/bkaradzic/bimg

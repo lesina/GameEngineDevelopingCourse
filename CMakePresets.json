@@ -1,0 +1,22 @@
+{
+	"version": 3,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 19,
+        "patch": 0
+    },
+	
+	"configurePresets": [
+        {
+            "name":"win_x64",
+            "generator":"Visual Studio 17 2022",
+            "binaryDir":"${sourceDir}/cmake_output/build_win64",
+            "cacheVariables": {
+                "CMAKE_SYSTEM_VERSION": "10.0.19041.0",
+				"WINDOWS": "TRUE"
+            },
+            "toolset":"host=x64,version=14.34",
+            "architecture":"x64"
+        }
+    ]
+}
