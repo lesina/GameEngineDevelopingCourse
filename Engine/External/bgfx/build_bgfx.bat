@@ -1,5 +1,5 @@
 cd bgfx\
-..\bx\tools\bin\windows\genie vs2022
+..\bx\tools\bin\windows\genie --with-windows=10 vs2022
 cd ..
 
 setlocal enabledelayedexpansion
