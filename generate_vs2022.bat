@@ -8,11 +8,6 @@ echo Getting all the submodules
 echo ===========================
 call %~dp0\get_submodules.bat
 
-echo ===========================
-echo Building bgfx
-echo ===========================
-call %~dp0\Engine\External\bgfx\build_bgfx.bat
-
 set ROOT_DIR=%~dp0
 set CMAKE_OUTPUT_DIR="%~dp0\cmake_output\build_win64"
 set PRESET="win_x64"

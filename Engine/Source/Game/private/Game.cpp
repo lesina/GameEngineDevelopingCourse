@@ -1,21 +1,29 @@
 #include <Game.h>
-#include <RenderEngine.h>
 
 namespace GameEngine
 {
-	Game::Game(Core::IWindow* window) :
-		m_window(std::move(window))
+	Game::Game(
+		Core::Window::Ptr window,
+		std::function<bool()> PlatformLoopFunc
+	) :
+		m_window(window),
+		PlatformLoop(PlatformLoopFunc)
 	{
-
+		m_renderEngine = std::make_unique<Render::RenderEngine>(window);
+		m_renderEngine->OnResize();
 	}
 
 	void Game::Run()
 	{
-		std::unique_ptr<Render::RenderEngine> renderEngine = std::make_unique<Render::RenderEngine>();
+		assert(PlatformLoop != nullptr);
 
-		while (true)
+		bool quit = false;
+		while (!quit)
 		{
-			renderEngine->Update();
+			// The most common idea for such a loop is that it returns false when quit is required, or true otherwise
+			quit = !PlatformLoop();
+
+			m_renderEngine->Update();
 		}
 	}
 }

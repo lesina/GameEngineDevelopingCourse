@@ -14,7 +14,10 @@ include(GenerateExportHeader)
 add_library(RenderEngine SHARED)
 generate_export_header(RenderEngine EXPORT_FILE_NAME export.h EXPORT_MACRO_NAME RENDER_ENGINE_API)
 
-target_compile_definitions(RenderEngine PRIVATE RenderEngine_EXPORTS)
+target_compile_definitions(RenderEngine
+	PRIVATE
+		RenderEngine_EXPORTS
+		UNICODE)
 
 # Set Sources
 target_sources(RenderEngine
@@ -30,14 +33,15 @@ target_include_directories(RenderEngine
 
 target_link_libraries(RenderEngine PRIVATE
 	RHI
+	Core
 )
 
 target_precompile_headers(RenderEngine
 	PRIVATE
 		<unordered_map>
 		<vector>
-		<array>
 		<string>
 		<cassert>
 		<format>
+		<functional>
 )

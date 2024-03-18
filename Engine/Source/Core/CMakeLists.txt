@@ -3,10 +3,13 @@ file(GLOB
 	PRIVATE_FILES
 	private/*.cpp
 	private/*.h
+	private/Math/*.h
+	private/Math/*.cpp
 )
 file(GLOB
 	PUBLIC_FILES
 	public/*.h
+	public/Math/*.h
 )
 
 if (WINDOWS)
@@ -26,7 +29,10 @@ include(GenerateExportHeader)
 add_library(Core SHARED)
 generate_export_header(Core EXPORT_FILE_NAME export.h EXPORT_MACRO_NAME CORE_API)
 
-target_compile_definitions(Core PRIVATE Core_EXPORTS)
+target_compile_definitions(Core
+	PRIVATE
+		Core_EXPORTS
+		UNICODE)
 
 # Set Sources
 target_sources(Core
@@ -53,8 +59,8 @@ target_precompile_headers(Core
 	PRIVATE
 		<unordered_map>
 		<vector>
-		<array>
 		<string>
 		<cassert>
 		<format>
+		<functional>
 )

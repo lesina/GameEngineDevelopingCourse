@@ -27,7 +27,10 @@ include(GenerateExportHeader)
 add_library(RHI SHARED)
 generate_export_header(RHI EXPORT_FILE_NAME export.h EXPORT_MACRO_NAME RHI_API)
 
-target_compile_definitions(RHI PRIVATE RHI_EXPORTS)
+target_compile_definitions(RHI
+	PRIVATE
+		RHI_EXPORTS
+		UNICODE)
 
 # Set Sources
 target_sources(RHI
@@ -49,16 +52,20 @@ if (WINDOWS)
 	)
 
 	target_link_libraries(RHI PRIVATE
-		Direct3D12
+		Direct3D12RHI
 	)
 endif()
+
+target_link_libraries(RHI PRIVATE
+	Core
+)
 
 target_precompile_headers(RHI
 	PRIVATE
 		<unordered_map>
 		<vector>
-		<array>
 		<string>
 		<cassert>
 		<format>
+		<functional>
 )

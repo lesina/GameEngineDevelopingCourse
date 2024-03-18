@@ -12,7 +12,7 @@
 #endif
 
 // Include structures and functions for lighting.
-#include "LightingUtil.hlsl"
+#include "Lighting.ihlsl"
 
 Texture2D    gDiffuseMap : register(t0);
 

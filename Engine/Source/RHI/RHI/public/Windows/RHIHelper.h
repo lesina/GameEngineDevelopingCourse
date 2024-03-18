@@ -1,6 +1,6 @@
 #pragma once
 
-#include <RHICommon.h>
+#include <RHIAdapter.h>
 #include <RHI/RHI/export.h>
 
 namespace GameEngine
@@ -10,7 +10,8 @@ namespace GameEngine
 		class RHI_API RHIHelper final
 		{
 		public:
-			static RHI::Ptr CreateRHI(const std::string& RHIName);
+			// RHI - "Vulkan" or "D3D12"
+			static RHIAdapter::Ptr CreateRHI(const std::string& RHIName);
 		};
 	}
 }

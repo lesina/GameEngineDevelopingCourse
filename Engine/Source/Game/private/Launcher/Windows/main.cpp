@@ -3,22 +3,50 @@
 #include <windows.h>
 #include <Window/IWindow.h>
 #include <Game.h>
+#include <array.h>
+#include <iostream>
+
+#if defined(DEBUG) || defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#endif
+
+bool WindowsMessageLoop()
+{
+	MSG msg = { 0 };
+
+	while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+
+		if (msg.message == (WM_QUIT | WM_CLOSE))
+		{
+			return false;
+		}
+	}
+
+	return msg.message != (WM_QUIT | WM_CLOSE);
+}
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-    _In_opt_ HINSTANCE hPrevInstance,
-    _In_ LPWSTR    lpCmdLine,
-    _In_ int       nCmdShow)
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPWSTR    lpCmdLine,
+	_In_ int       nCmdShow)
 {
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
-    GameEngine::Core::IWindow* window = new GameEngine::Core::IWindow();
-    window->SetWindowHandle(hInstance);
+	UNREFERENCED_PARAMETER(hPrevInstance);
+	UNREFERENCED_PARAMETER(lpCmdLine);
 
-    std::unique_ptr<GameEngine::Game> game = std::make_unique<GameEngine::Game>(window);
+	// Enable run-time memory check for debug builds.
+#if defined(DEBUG) || defined(_DEBUG)
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
 
-    game->Run();
+	GameEngine::Core::Window::Ptr window = std::make_shared<GameEngine::Core::Window>(hInstance);
 
-    MSG msg = {};
+	std::unique_ptr<GameEngine::Game> game = std::make_unique<GameEngine::Game>(window, &WindowsMessageLoop);
 
-    return (int)msg.wParam;
+	game->Run();
+
+	return 0;
 }

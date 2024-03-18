@@ -1,22 +1,29 @@
 #pragma once
 
 #include <RenderEngine/export.h>
+#include <RenderObject.h>
+#include <Window/IWindow.h>
 
 namespace GameEngine::Render
 {
 	namespace HAL
 	{
-		class RHI;
+		class RHIAdapter;
 	}
 
 	class RENDER_ENGINE_API RenderEngine final
 	{
 	public:
-		RenderEngine();
+		RenderEngine() = delete;
+		RenderEngine(Core::Window::Ptr window);
 
 		void Update();
+		void SetMainWindow(Core::Window::Ptr window);
+		void OnResize();
 
 	private:
-		std::shared_ptr<HAL::RHI> m_rhi;
+		std::vector<RenderObject::Ptr> m_RenderObjects;
+
+		std::shared_ptr<HAL::RHIAdapter> m_rhi;
 	};
 }

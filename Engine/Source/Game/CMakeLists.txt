@@ -28,6 +28,10 @@ else()
 	add_executable(Game)
 endif()
 
+target_compile_definitions(Game
+	PRIVATE
+		UNICODE)
+
 # Set Sources
 target_sources(Game
 	PRIVATE ${PRIVATE_FILES}
@@ -51,9 +55,8 @@ target_precompile_headers(Game
 	PRIVATE
 		<unordered_map>
 		<vector>
-		<array>
 		<string>
 		<cassert>
 		<format>
-		<format>
+		<functional>
 )
