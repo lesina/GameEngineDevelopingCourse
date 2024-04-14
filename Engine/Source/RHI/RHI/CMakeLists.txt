@@ -3,39 +3,37 @@ file(GLOB
 	PRIVATE_FILES
 	private/*.cpp
 	private/*.h
-	private/Math/*.h
-	private/Math/*.cpp
 )
 file(GLOB
 	PUBLIC_FILES
 	public/*.h
-	public/Math/*.h
 )
 
 if (WINDOWS)
 	file(GLOB
 		PLATFORM_PUBLIC_FILES
-		private/Window/Windows/*.h
+		public/Windows/*.h
 	)
 
 	file(GLOB
 		PLATFORM_PRIVATE_FILES
-		private/Window/Windows/*.cpp
+		private/Windows/*.cpp
+		private/Windows/*.h
 	)
 endif()
 
 # Add library
 include(GenerateExportHeader)
-add_library(Core SHARED)
-generate_export_header(Core EXPORT_FILE_NAME export.h EXPORT_MACRO_NAME CORE_API)
+add_library(RHI SHARED)
+generate_export_header(RHI EXPORT_FILE_NAME export.h EXPORT_MACRO_NAME RHI_API)
 
-target_compile_definitions(Core
+target_compile_definitions(RHI
 	PRIVATE
-		Core_EXPORTS
+		RHI_EXPORTS
 		UNICODE)
 
 # Set Sources
-target_sources(Core
+target_sources(RHI
 	PRIVATE ${PRIVATE_FILES}
 	PRIVATE ${PUBLIC_FILES}
 	PRIVATE ${PLATFORM_PUBLIC_FILES}
@@ -43,19 +41,26 @@ target_sources(Core
 )
 
 # include dir
-target_include_directories(Core 
+target_include_directories(RHI 
 	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/public
 	PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private
 )
 
-# windows-specific
 if (WINDOWS)
-	target_include_directories(Core 
-		PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private/Window/Windows
+	target_include_directories(RHI 
+		PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/public/Windows
+	)
+
+	target_link_libraries(RHI PRIVATE
+		Direct3D12RHI
 	)
 endif()
 
-target_precompile_headers(Core
+target_link_libraries(RHI PRIVATE
+	Core
+)
+
+target_precompile_headers(RHI
 	PRIVATE
 		<unordered_map>
 		<vector>

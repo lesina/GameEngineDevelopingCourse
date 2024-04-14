@@ -1,21 +1,22 @@
 # get all files
 file(GLOB
-	SRC_FILES
+	PRIVATE_FILES
 	private/*.cpp
+	private/*.h
 )
 file(GLOB
-	H_FILES
+	PUBLIC_FILES
 	public/*.h
 )
 
 if (WINDOWS)
 	file(GLOB
-		PLATFORM_H_FILES
+		PLATFORM_PUBLIC_FILES
 		public/Launcher/Windows/*.h
 	)
 
 	file(GLOB
-		PLATFORM_SRC_FILES
+		PLATFORM_PRIVATE_FILES
 		private/Launcher/Windows/*.cpp
 	)
 endif()
@@ -27,25 +28,35 @@ else()
 	add_executable(Game)
 endif()
 
+target_compile_definitions(Game
+	PRIVATE
+		UNICODE)
+
 # Set Sources
 target_sources(Game
-	PRIVATE ${SRC_FILES}
-	PRIVATE ${H_FILES}
-	PRIVATE ${PLATFORM_SRC_FILES}
-	PRIVATE ${PLATFORM_H_FILES}
+	PRIVATE ${PRIVATE_FILES}
+	PRIVATE ${PUBLIC_FILES}
+	PRIVATE ${PLATFORM_PRIVATE_FILES}
+	PRIVATE ${PLATFORM_PUBLIC_FILES}
 )
 
 # include dir
 target_include_directories(Game 
-	PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/public
+	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/public
+	PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private
 )
 
 target_link_libraries(Game PRIVATE
 	Core
+	RenderEngine
 )
 
 target_precompile_headers(Game
 	PRIVATE
 		<unordered_map>
 		<vector>
+		<string>
+		<cassert>
+		<format>
+		<functional>
 )
