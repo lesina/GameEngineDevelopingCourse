@@ -22,7 +22,7 @@ namespace GameEngine
 			static Microsoft::WRL::ComPtr<ID3D12Resource> CreateDefaultBuffer(ID3D12Device* device,
 				ID3D12GraphicsCommandList* cmdList,
 				const void* initData,
-				UINT64 byteSize,
+                uint32_t byteSize,
 				Microsoft::WRL::ComPtr<ID3D12Resource>& uploadBuffer)
 			{
                 Microsoft::WRL::ComPtr<ID3D12Resource> defaultBuffer;

@@ -3,24 +3,25 @@ file(GLOB
 	PRIVATE_FILES
 	private/*.cpp
 	private/*.h
-	private/Math/*.h
-	private/Math/*.cpp
 )
 file(GLOB
 	PUBLIC_FILES
 	public/*.h
-	public/Math/*.h
 )
 
 if (WINDOWS)
 	file(GLOB
 		PLATFORM_PUBLIC_FILES
-		private/Window/Windows/*.h
+		public/Window/*.h
+		public/Debug/*.h
 	)
 
 	file(GLOB
 		PLATFORM_PRIVATE_FILES
 		private/Window/Windows/*.cpp
+		private/Window/Windows/*.h
+		private/Debug/Windows/*.h
+		private/Debug/Windows/*.cpp
 	)
 endif()
 
@@ -52,8 +53,13 @@ target_include_directories(Core
 if (WINDOWS)
 	target_include_directories(Core 
 		PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private/Window/Windows
+		PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private/Debug/Windows
 	)
 endif()
+
+target_link_libraries(Core PRIVATE
+	Math
+)
 
 target_precompile_headers(Core
 	PRIVATE
@@ -63,4 +69,13 @@ target_precompile_headers(Core
 		<cassert>
 		<format>
 		<functional>
+		<thread>
+		<mutex>
+		<condition_variable>
+		<tuple>
+		<utility>
+		<cstdint>
+		<limits>
+		<chrono>
+		<format>
 )

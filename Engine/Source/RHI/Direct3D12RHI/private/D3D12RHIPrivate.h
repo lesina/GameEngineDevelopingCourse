@@ -13,16 +13,20 @@
 #include <d3dx12.h>
 #include <DDSTextureLoader.h>
 
-#include <Math/Vector.h>
+#include <Vector.h>
 #include <Window/IWindow.h>
-#include <Mesh.h>
-#include <Material.h>
+#include <RenderCore.h>
+#include <RHIMesh.h>
+#include <RHIMaterial.h>
 #include <D3D12UploadBuffer.h>
 
 namespace GameEngine
 {
 	namespace Render::HAL
 	{
+		class D3D12Mesh;
+		class D3D12Material;
+
 		class D3D12RHIPrivate
 		{
 		public:
@@ -32,20 +36,29 @@ namespace GameEngine
 			void EnableDebugLayer() const;
 			void Init();
 
-			Mesh::Ptr CreateMesh(
+			D3D12Mesh* CreateMesh(
+				RHIMesh::ID id,
 				void* vertices,
-				uint16_t verticesCount,
-				uint16_t vertexTypeSize,
+				size_t verticesCount,
+				uint32_t vertexTypeSize,
 				void* indices,
-				uint16_t indicesCount,
-				uint16_t indexTypeSize);
+				size_t indicesCount,
+				uint32_t indexTypeSize);
 			
-			Material::Ptr GetMaterial(const std::string& name);
+			D3D12Material* CreateMaterial(RHIMaterial::ID id);
 
-			void Update(Mesh::Ptr mesh, Material::Ptr material);
+			void Draw(
+				RHIMesh::ID meshID,
+				const D3D12Mesh* mesh,
+				RHIMaterial::ID materialID,
+				const D3D12Material* material,
+				const Math::Vector3f& position
+			);
 			void ExecuteCommandLists();
 			void FlushCommandQueue();
 			void OnResize();
+			void BeginFrame();
+			void EndFrame();
 
 		private:
 			Microsoft::WRL::ComPtr<IDXGIFactory4> m_Factory;
@@ -54,23 +67,22 @@ namespace GameEngine
 			Microsoft::WRL::ComPtr<IDXGISwapChain> m_SwapChain;
 
 			Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_CommandQueue;
-			Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_DirectCmdListAlloc;
+			Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_DirectCmdListAlloc[RenderCore::g_FrameBufferCount];
 			Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList;
 
 			Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_RtvHeap;
 			Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_DsvHeap;
 			
-			Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_CbvHeap = nullptr;
-			std::unique_ptr<UploadBuffer<ObjectConstants>> m_ObjectCB = nullptr;
+			std::unique_ptr<UploadBuffer<ObjectConstants>> m_ObjectCB[RenderCore::g_FrameBufferCount];
+			std::unique_ptr<UploadBuffer<MaterialConstants>> m_MaterialCB[RenderCore::g_FrameBufferCount];
 			
 			UINT64 m_CurrentFence = 0;
 			UINT m_RtvDescriptorSize = 0;
 			UINT m_DsvDescriptorSize = 0;
 			UINT m_CbvSrvUavDescriptorSize = 0;
 
-			static const int SwapChainBufferCount = 2;
 			int m_CurrBackBuffer = 0;
-			Microsoft::WRL::ComPtr<ID3D12Resource> m_SwapChainBuffer[SwapChainBufferCount];
+			Microsoft::WRL::ComPtr<ID3D12Resource> m_SwapChainBuffer[RenderCore::g_FrameBufferCount];
 			Microsoft::WRL::ComPtr<ID3D12Resource> m_DepthStencilBuffer;
 
 			bool m_4xMsaaState = false;
@@ -82,6 +94,22 @@ namespace GameEngine
 			D3D12_VIEWPORT m_ScreenViewport;
 			D3D12_RECT m_ScissorRect;
 
+			// Shader Info
+			Microsoft::WRL::ComPtr<ID3DBlob> m_vsByteCode = nullptr;
+			Microsoft::WRL::ComPtr<ID3DBlob> m_psByteCode = nullptr;
+			Microsoft::WRL::ComPtr<ID3D12PipelineState> m_PSO = nullptr;
+			Microsoft::WRL::ComPtr<ID3D12RootSignature> m_RootSignature = nullptr;
+
+			std::vector<D3D12_INPUT_ELEMENT_DESC> m_InputLayout;
+
+			// These functions are temporal
+			// They basically hardcode only one renderpass
+			void BuildRootSignature();
+			void BuildShadersAndInputLayout();
+			void BuildPSO();
+
+			// End shader Info
+
 		private:
 			void CreateFactory();
 			void CreateDevice();
@@ -91,7 +119,6 @@ namespace GameEngine
 			void CreateSwapChain();
 			void CreateRtvAndDsvDescriptorHeaps();
 
-			void BuildDescriptorHeaps();
 			void BuildConstantBuffers();
 
 			ID3D12Resource* CurrentBackBuffer() const;

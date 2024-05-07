@@ -1,34 +1,32 @@
-#include <Math/Matrix.h>
-#include <Math/Constants.h>
-#include <Math/MathHelper.h>
+#include <Matrix.h>
+#include <Constants.h>
+#include <MathHelper.h>
 
-namespace GameEngine::Core
+namespace GameEngine
 {
 	namespace Math
 	{
 		Matrix4x4f ViewMatrixLH(
 			Vector3f pos,
-			Vector3f target,
+			Vector3f viewDir,
 			Vector3f up
 		)
 		{
-			Vector3f eyeDirection = target - pos;
-
-			assert(eyeDirection != Vector3f::Zero());
+			assert(viewDir != Vector3f::Zero());
 			assert(up != Vector3f::Zero());
 
-			eyeDirection = eyeDirection.Normalized();
+			viewDir = viewDir.Normalized();
 			
-			Vector3f side = up.CrossProduct(eyeDirection);
+			Vector3f side = up.CrossProduct(viewDir);
 			side = side.Normalized();
 
-			up = eyeDirection.CrossProduct(side);
+			up = viewDir.CrossProduct(side);
 
 			pos = -pos;
 
 			float d0 = side * pos;
 			float d1 = up * pos;
-			float d2 = eyeDirection * pos;
+			float d2 = viewDir * pos;
 
 			Matrix4x4f result;
 			
@@ -42,9 +40,9 @@ namespace GameEngine::Core
 			result.SetElement(up.z, 2, 1);
 			result.SetElement(d1, 3, 1);
 
-			result.SetElement(eyeDirection.x, 0, 2);
-			result.SetElement(eyeDirection.y, 1, 2);
-			result.SetElement(eyeDirection.z, 2, 2);
+			result.SetElement(viewDir.x, 0, 2);
+			result.SetElement(viewDir.y, 1, 2);
+			result.SetElement(viewDir.z, 2, 2);
 			result.SetElement(d2, 3, 2);
 
 			result.SetElement(0, 0, 3);

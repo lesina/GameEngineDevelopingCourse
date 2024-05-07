@@ -1,6 +1,6 @@
 #pragma once
 
-namespace GameEngine::Core::Math
+namespace GameEngine::Math
 {
 	namespace Constants
 	{

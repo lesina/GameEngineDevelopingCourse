@@ -11,34 +11,31 @@ file(GLOB
 
 # Add library
 include(GenerateExportHeader)
-add_library(RenderEngine SHARED)
-generate_export_header(RenderEngine EXPORT_FILE_NAME export.h EXPORT_MACRO_NAME RENDER_ENGINE_API)
+add_library(Math SHARED)
+generate_export_header(Math EXPORT_FILE_NAME export.h EXPORT_MACRO_NAME MATH_API)
 
-target_compile_definitions(RenderEngine
+target_compile_definitions(Math
 	PRIVATE
-		RenderEngine_EXPORTS
+		Math_EXPORTS
 		UNICODE)
 
 # Set Sources
-target_sources(RenderEngine
+target_sources(Math
 	PRIVATE ${PRIVATE_FILES}
 	PRIVATE ${PUBLIC_FILES}
 )
 
 # include dir
-target_include_directories(RenderEngine 
+target_include_directories(Math 
 	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/public
 	PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private
 )
 
-target_link_libraries(RenderEngine PRIVATE
-	Math
-	RenderCore
-	RHI
-	Core
-)
+# target_link_libraries(Math PRIVATE
+	# Core
+# )
 
-target_precompile_headers(RenderEngine
+target_precompile_headers(Math
 	PRIVATE
 		<unordered_map>
 		<vector>
@@ -46,13 +43,11 @@ target_precompile_headers(RenderEngine
 		<cassert>
 		<format>
 		<functional>
-		<thread>
 		<mutex>
 		<condition_variable>
 		<tuple>
 		<utility>
 		<cstdint>
-		<thread>
 		<limits>
 		<chrono>
 )

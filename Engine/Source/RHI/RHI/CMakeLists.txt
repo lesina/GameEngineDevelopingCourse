@@ -57,6 +57,8 @@ if (WINDOWS)
 endif()
 
 target_link_libraries(RHI PRIVATE
+	Math
+	RenderCore
 	Core
 )
 
@@ -68,4 +70,11 @@ target_precompile_headers(RHI
 		<cassert>
 		<format>
 		<functional>
+		<thread>
+		<mutex>
+		<condition_variable>
+		<tuple>
+		<utility>
+		<cstdint>
+		<limits>
 )

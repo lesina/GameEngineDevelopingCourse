@@ -1,6 +1,9 @@
 #include <RenderEngine.h>
+#include <RenderData.h>
+#include <RenderObject.h>
 #include <RHIHelper.h>
-#include <Mesh.h>
+#include <RHIMaterial.h>
+#include <RHIMesh.h>
 
 namespace GameEngine::Render
 {
@@ -8,27 +11,51 @@ namespace GameEngine::Render
 	{
 		m_rhi = HAL::RHIHelper::CreateRHI("D3D12");
 		m_rhi->Init();
-
-		RenderObject::Ptr box = std::make_shared<RenderObject>();
-		m_RenderObjects.push_back(box);
-		box->m_mesh = m_rhi->CreateBoxMesh();
-		box->m_material = m_rhi->GetMaterial(box->m_mesh->GetName());
 		
 		m_rhi->ExecuteCommandLists();
 		m_rhi->Flush();
 	}
 
-	void RenderEngine::Update()
+	void RenderEngine::Update(size_t frame)
 	{
-		m_rhi->Update(m_RenderObjects[0]->m_mesh, m_RenderObjects[0]->m_material);
+		OnResize();
+
+		m_rhi->BeginFrame();
+
+		for (RenderObject* renderObject : m_RenderObjects)
+		{
+			m_rhi->Draw(renderObject->GetRenderData(), frame);
+		}
+
+		m_rhi->EndFrame();
 
 		m_rhi->Flush();
 	}
 
-	void RenderEngine::OnResize(uint16_t width, uint16_t height)
+	void RenderEngine::OnResize()
 	{
-		m_swapChainWidth = width;
-		m_swapChainHeight = height;
-		m_rhi->OnResize();
+		if (m_swapChainWidth != Core::g_MainWindowsApplication->GetWidth() ||
+			m_swapChainHeight != Core::g_MainWindowsApplication->GetHeight()) [[unlikely]]
+		{
+			m_swapChainWidth = Core::g_MainWindowsApplication->GetWidth();
+			m_swapChainHeight = Core::g_MainWindowsApplication->GetHeight();
+			m_rhi->OnResize();
+		}
+	}
+
+	void RenderEngine::CreateRenderObject(RenderCore::Geometry::Ptr geometry, RenderObject** renderObject)
+	{
+		assert(geometry);
+		assert(renderObject);
+
+		HAL::RHIMesh::ID meshID = HAL::RHIMesh::k_invalidMeshID;
+		HAL::RHIMaterial::ID materialID = HAL::RHIMaterial::k_invalidMaterialID;
+		m_rhi->CreateMesh(geometry, meshID, materialID);
+
+		HAL::RenderData* renderData = new HAL::RenderData(meshID, materialID);
+
+		*renderObject = new RenderObject(renderData);
+
+		m_RenderObjects.push_back(*renderObject);
 	}
 }

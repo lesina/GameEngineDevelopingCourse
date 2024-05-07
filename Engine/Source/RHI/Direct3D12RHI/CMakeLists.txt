@@ -38,6 +38,8 @@ target_include_directories(Direct3D12RHI
 )
 
 target_link_libraries(Direct3D12RHI PRIVATE
+	Math
+	RenderCore
 	Core
 	d3dcompiler.lib
 	D3D12.lib
@@ -52,4 +54,11 @@ target_precompile_headers(Direct3D12RHI
 		<cassert>
 		<format>
 		<functional>
+		<thread>
+		<mutex>
+		<condition_variable>
+		<tuple>
+		<utility>
+		<cstdint>
+		<limits>
 )

@@ -12,8 +12,8 @@
 
 #include <d3dx12.h>
 #include <DDSTextureLoader.h>
-#include <Mesh.h>
-#include <Math/Vector.h>
+#include <RHIMesh.h>
+#include <Vector.h>
 
 namespace GameEngine
 {
@@ -21,23 +21,24 @@ namespace GameEngine
 	{
 		struct Vertex
 		{
-			Core::Math::Vector3f Pos;
-			Core::Math::Vector4f Color;
+			Math::Vector3f Pos;
+			Math::Vector4f Color;
 		};
 
-		class D3D12Mesh final : public Mesh
+		class D3D12Mesh final : public RHIMesh
 		{
 		public:
 			D3D12Mesh() = delete;
 			D3D12Mesh(
 				ID3D12Device* device,
 				ID3D12GraphicsCommandList* cmdList,
+				RHIMesh::ID id,
 				void* vertices,
-				uint16_t verticesCount,
-				uint16_t vertexTypeSize,
+				size_t verticesCount,
+				uint32_t vertexTypeSize,
 				void* indices,
-				uint16_t indicesCount,
-				uint16_t indexTypeSize);
+				size_t indicesCount,
+				uint32_t indexTypeSize);
 
 			D3D12_VERTEX_BUFFER_VIEW VertexBufferView() const
 			{

@@ -42,8 +42,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-	GameEngine::Core::MainWindowsApplication = new GameEngine::Core::Window();
-	GameEngine::Core::MainWindowsApplication->Init(hInstance);
+	GameEngine::Core::g_MainWindowsApplication = new GameEngine::Core::Window();
+	GameEngine::Core::g_MainWindowsApplication->Init(hInstance);
 
 	std::unique_ptr<GameEngine::Game> game = std::make_unique<GameEngine::Game>(&WindowsMessageLoop);
 

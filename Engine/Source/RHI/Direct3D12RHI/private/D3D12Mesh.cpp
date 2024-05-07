@@ -8,12 +8,15 @@ namespace GameEngine
 		D3D12Mesh::D3D12Mesh(
 			ID3D12Device* device,
 			ID3D12GraphicsCommandList* cmdList,
+			RHIMesh::ID id,
 			void* vertices,
-			uint16_t verticesCount,
-			uint16_t vertexTypeSize,
+			size_t verticesCount,
+			uint32_t vertexTypeSize,
 			void* indices,
-			uint16_t indicesCount,
-			uint16_t indexTypeSize)
+			size_t indicesCount,
+			uint32_t indexTypeSize
+		)
+			: RHIMesh(id)
 		{
 			assert(device != nullptr);
 			assert(cmdList != nullptr);

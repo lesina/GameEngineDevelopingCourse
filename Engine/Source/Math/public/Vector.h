@@ -1,11 +1,53 @@
 #pragma once
 
-#include <Core/export.h>
+#include <Math/export.h>
 
-namespace GameEngine::Core
+namespace GameEngine
 {
 	namespace Math
 	{
+		template <typename T> requires std::is_arithmetic_v<T>
+		class Vector2 final
+		{
+		public:
+			T x;
+			T y;
+
+			Vector2() = default;
+
+			Vector2(const Vector2&) = default;
+			Vector2& operator=(const Vector2&) = default;
+
+			Vector2(Vector2&&) = default;
+			Vector2& operator=(Vector2&&) = default;
+
+			static Vector2<T> Zero() { return Vector2<T>((T)0, (T)0); }
+
+			explicit constexpr Vector2(float _x, float _y) noexcept : x(_x), y(_y) {}
+			explicit constexpr Vector2(T vector[2]) : x(vector[0]), y(vector[1]) {}
+
+			inline Vector2<T> operator-(Vector2<T> other)
+			{
+				Vector2<T> result;
+				result.x = x - other.x;
+				result.y = y - other.y;
+				return result;
+			}
+
+			inline Vector2<T> operator-()
+			{
+				Vector2<T> result;
+				result.x = -x;
+				result.y = -y;
+				return result;
+			}
+
+			inline bool operator!=(Vector2<T> other)
+			{
+				return x != other.x || y != other.y;
+			}
+		};
+
 		template <typename T> requires std::is_arithmetic_v<T>
 		class Vector3 final
 		{
@@ -49,6 +91,15 @@ namespace GameEngine::Core
 				return result;
 			}
 
+			inline Vector3<T> operator+(Vector3<T> other)
+			{
+				Vector3<T> result;
+				result.x = x + other.x;
+				result.y = y + other.y;
+				result.z = z + other.z;
+				return result;
+			}
+
 			inline Vector3<T> operator-(Vector3<T> other)
 			{
 				Vector3<T> result;
@@ -70,6 +121,11 @@ namespace GameEngine::Core
 			inline float operator*(Vector3<T> other)
 			{
 				return x * other.x + y * other.y + z * other.z;
+			}
+
+			inline Vector3<T> operator*(float scale)
+			{
+				return Vector3<T>(x * scale, y * scale, z * scale);
 			}
 
 			inline Vector3<T> CrossProduct(Vector3<T> other) const
@@ -123,6 +179,9 @@ namespace GameEngine::Core
 				return x != other.x && y != other.y && z != other.z && w != other.w;
 			}
 		};
+
+		using Vector2f = Vector2<float>;
+		using Vector2i = Vector2<int>;
 
 		using Vector3f = Vector3<float>;
 		using Vector3i = Vector3<int>;

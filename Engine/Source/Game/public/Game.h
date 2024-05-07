@@ -1,10 +1,14 @@
 #pragma once
 
-#include <Window/IWindow.h>
 #include <RenderEngine.h>
+#include <RenderThread.h>
+#include <Timer.h>
+#include <Window/IWindow.h>
 
 namespace GameEngine
 {
+	class GameObject;
+
 	class Game final
 	{
 	public:
@@ -15,14 +19,15 @@ namespace GameEngine
 
 	public:
 		void Run();
-
-		inline void ProcessSystemParams();
+		void Update(float dt);
 
 	private:
 		// The main idea behind having this functor is to abstract the common code from the platfrom-specific code
 		std::function<bool()> PlatformLoop = nullptr;
 
 	private:
-		std::unique_ptr<Render::RenderEngine> m_renderEngine;
+		Core::Timer m_GameTimer;
+		std::unique_ptr<Render::RenderThread> m_renderThread;
+		std::vector<GameObject*> m_Objects;
 	};
 }

@@ -9,51 +9,34 @@ file(GLOB
 	public/*.h
 )
 
-if (WINDOWS)
-	file(GLOB
-		PLATFORM_PUBLIC_FILES
-		public/Launcher/Windows/*.h
-	)
+# Add library
+include(GenerateExportHeader)
+add_library(RenderCore SHARED)
+generate_export_header(RenderCore EXPORT_FILE_NAME export.h EXPORT_MACRO_NAME RENDER_CORE_API)
 
-	file(GLOB
-		PLATFORM_PRIVATE_FILES
-		private/Launcher/Windows/*.cpp
-	)
-endif()
-
-# Add executable
-if (WINDOWS)
-	add_executable(Game WIN32)
-else()
-	add_executable(Game)
-endif()
-
-target_compile_definitions(Game
+target_compile_definitions(RenderCore
 	PRIVATE
+		RenderCore_EXPORTS
 		UNICODE)
 
 # Set Sources
-target_sources(Game
+target_sources(RenderCore
 	PRIVATE ${PRIVATE_FILES}
 	PRIVATE ${PUBLIC_FILES}
-	PRIVATE ${PLATFORM_PRIVATE_FILES}
-	PRIVATE ${PLATFORM_PUBLIC_FILES}
 )
 
 # include dir
-target_include_directories(Game 
+target_include_directories(RenderCore 
 	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/public
 	PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private
 )
 
-target_link_libraries(Game PRIVATE
+target_link_libraries(RenderCore PRIVATE
 	Math
-	RenderCore
 	Core
-	RenderEngine
 )
 
-target_precompile_headers(Game
+target_precompile_headers(RenderCore
 	PRIVATE
 		<unordered_map>
 		<vector>
@@ -67,6 +50,7 @@ target_precompile_headers(Game
 		<tuple>
 		<utility>
 		<cstdint>
+		<thread>
 		<limits>
 		<chrono>
 )

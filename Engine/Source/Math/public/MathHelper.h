@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Math/Constants.h>
+#include <Constants.h>
 
-namespace GameEngine::Core
+namespace GameEngine
 {
 	namespace Math
 	{

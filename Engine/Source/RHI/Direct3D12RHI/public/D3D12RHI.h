@@ -1,8 +1,10 @@
 #pragma once
 
+#include <Geometry.h>
 #include <RHIAdapter.h>
 #include <RHI/Direct3D12RHI/export.h>
-#include <Mesh.h>
+#include <RHIMesh.h>
+#include <RHIMaterial.h>
 
 namespace GameEngine
 {
@@ -13,22 +15,21 @@ namespace GameEngine
 		class DIRECT3D_API D3D12RHI final : public RHIAdapter
 		{
 		public:
-			using Ptr = std::shared_ptr<RHIAdapter>;
-
-		public:
 			D3D12RHI();
+			~D3D12RHI();
 
 		public:
 			virtual void Init() override;
-			virtual void Update(Mesh::Ptr mesh, Material::Ptr material) override;
-			virtual Mesh::Ptr CreateBoxMesh() override;
-			virtual Material::Ptr GetMaterial(const std::string& name) override;
+			virtual void BeginFrame() override;
+			virtual void EndFrame() override;
+			virtual void Draw(RenderData* renderData, size_t frame) override;
+			virtual void CreateMesh(RenderCore::Geometry::Ptr geometry, RHIMesh::ID& meshID, RHIMaterial::ID& materialID) override;
 			virtual void ExecuteCommandLists() override;
 			virtual void Flush() override;
 			virtual void OnResize() override;
 
 		private:
-			std::shared_ptr<D3D12RHIPrivate> m_d3d12Private = nullptr;
+			D3D12RHIPrivate* m_d3d12Private = nullptr;
 		};
 	}
 }

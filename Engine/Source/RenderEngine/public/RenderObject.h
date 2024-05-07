@@ -1,25 +1,34 @@
 #pragma once
 
+#include <Vector.h>
 #include <RenderEngine/export.h>
+#include <RenderThread.h>
 
 namespace GameEngine::Render
 {
+	class Mesh;
+	class Material;
+	class Geometry;
+
 	namespace HAL
 	{
-		class Mesh;
-		class Material;
+		class RenderData;
 	}
 
 	class RENDER_ENGINE_API RenderObject final
 	{
 	public:
-		using Ptr = std::shared_ptr<RenderObject>;
+		RenderObject() = delete;
+		RenderObject(HAL::RenderData* renderData);
+		~RenderObject();
 
 	public:
-		RenderObject();
+		HAL::RenderData* GetRenderData() const { return m_RenderData; }
 
-	public:
-		std::shared_ptr<HAL::Mesh> m_mesh;
-		std::shared_ptr<HAL::Material> m_material;
+		const Math::Vector3f& GetPosition(size_t frame) const;
+		void SetPosition(Math::Vector3f position, size_t frame);
+
+	protected:
+		HAL::RenderData* m_RenderData;
 	};
 }

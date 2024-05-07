@@ -1,18 +1,18 @@
 #pragma once
 
-#include <Core/export.h>
-#include <Math/Vector.h>
+#include <Math/export.h>
+#include <Vector.h>
 
-namespace GameEngine::Core
+namespace GameEngine
 {
 	namespace Math
 	{
-		using IndexType = uint8_t;
+		using DimensionType = uint8_t;
 
-		template<typename T, IndexType width>
+		template<typename T, DimensionType width>
 		class Vector;
 
-		template <typename T, IndexType width, IndexType height> requires std::is_arithmetic_v<T>
+		template <typename T, DimensionType width, DimensionType height> requires std::is_arithmetic_v<T>
 		class Matrix final
 		{
 		public:
@@ -45,9 +45,9 @@ namespace GameEngine::Core
 			{
 				Matrix<T, height, width> matrix;
 
-				for (IndexType row = 0; row < height; ++row)
+				for (DimensionType row = 0; row < height; ++row)
 				{
-					for (IndexType column = 0; column < width; ++column)
+					for (DimensionType column = 0; column < width; ++column)
 					{
 						matrix.SetElement(GetElement(row, column), column, row);
 					}
@@ -56,18 +56,18 @@ namespace GameEngine::Core
 				return matrix;
 			}
 
-			template<IndexType newWidth>
+			template<DimensionType newWidth>
 			inline Matrix<T, newWidth, height> operator*(Matrix<T, newWidth, width> other)
 			{
 				Matrix<T, newWidth, height> matrix;
 
-				for (IndexType row = 0; row < height; ++row)
+				for (DimensionType row = 0; row < height; ++row)
 				{
-					for (IndexType column = 0; column < newWidth; ++column)
+					for (DimensionType column = 0; column < newWidth; ++column)
 					{
 						T resultValue = 0;
 
-						for (IndexType index = 0; index < width; ++index)
+						for (DimensionType index = 0; index < width; ++index)
 						{
 							resultValue += GetElement(row, index) * other.GetElement(index, column);
 						}
@@ -79,12 +79,24 @@ namespace GameEngine::Core
 				return matrix;
 			}
 
-			inline T GetElement(IndexType row, IndexType column)
+			inline Vector3<T> operator*(Vector3<T> other)
+			{
+				static_assert(width == 3, "Matrix and vector have different dimensions");
+				Vector3<T> result;
+
+				result.x = GetElement(0, 0) * other.x + GetElement(0, 1) * other.y + GetElement(0, 2) * other.z;
+				result.y = GetElement(1, 0) * other.x + GetElement(1, 1) * other.y + GetElement(1, 2) * other.z;
+				result.z = GetElement(2, 0) * other.x + GetElement(2, 1) * other.y + GetElement(2, 2) * other.z;
+
+				return result;
+			}
+
+			inline T GetElement(DimensionType row, DimensionType column)
 			{
 				return m_data[GetIndex(row, column)];
 			}
 
-			inline void SetElement(T value, IndexType row, IndexType column)
+			inline void SetElement(T value, DimensionType row, DimensionType column)
 			{
 				assert(row < height);
 				assert(column < width);
@@ -92,7 +104,7 @@ namespace GameEngine::Core
 			}
 
 		protected:
-			inline IndexType GetIndex(IndexType row, IndexType column)
+			inline DimensionType GetIndex(DimensionType row, DimensionType column)
 			{
 				assert(row < height);
 				assert(column < width);
@@ -101,14 +113,15 @@ namespace GameEngine::Core
 		};
 
 		using Matrix4x4f = Matrix<float, 4, 4>;
+		using Matrix3x3f = Matrix<float, 3, 3>;
 
-		CORE_API Matrix4x4f ViewMatrixLH(
+		MATH_API Matrix4x4f ViewMatrixLH(
 			Vector3f pos,
-			Vector3f target,
+			Vector3f viewDir,
 			Vector3f up
 		);
 
-		CORE_API Matrix4x4f ProjectionMatrixLH(
+		MATH_API Matrix4x4f ProjectionMatrixLH(
 			float FovAngleY,
 			float AspectRatio,
 			float NearZ,

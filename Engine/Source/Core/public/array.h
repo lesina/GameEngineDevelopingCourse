@@ -18,6 +18,6 @@ namespace GameEngine::Core
 		const T* begin() const { return data; }
 		const T* end() const { return data + N; }
 
-		consteval size_t size() const { return N; }
+		constexpr size_t size() const { return N; }
 	};
 }

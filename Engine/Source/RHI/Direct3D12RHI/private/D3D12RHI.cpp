@@ -1,9 +1,10 @@
 #include <array.h>
+#include <Geometry.h>
 #include <D3D12Mesh.h>
 #include <D3D12RHI.h>
 #include <D3D12RHIPrivate.h>
 #include <D3D12Material.h>
-#include <Math/Vector.h>
+#include <Vector.h>
 
 namespace GameEngine
 {
@@ -12,9 +13,14 @@ namespace GameEngine
 		using namespace Core;
 
 		D3D12RHI::D3D12RHI() :
-			m_d3d12Private(std::make_shared<D3D12RHIPrivate>())
+			m_d3d12Private(new D3D12RHIPrivate())
 		{
 			m_d3d12Private->EnableDebugLayer();
+		}
+
+		D3D12RHI::~D3D12RHI()
+		{
+			delete m_d3d12Private;
 		}
 
 		void D3D12RHI::Init()
@@ -22,58 +28,47 @@ namespace GameEngine
 			m_d3d12Private->Init();
 		}
 
-		void D3D12RHI::Update(Mesh::Ptr mesh, Material::Ptr material)
+		void D3D12RHI::BeginFrame()
 		{
-			m_d3d12Private->Update(mesh, material);
+			m_d3d12Private->BeginFrame();
 		}
 
-		Mesh::Ptr D3D12RHI::CreateBoxMesh()
+		void D3D12RHI::EndFrame()
 		{
-			array<Vertex, 8> vertices =
-			{
-				Vertex({ Math::Vector3f(-1.0f, -1.0f, -1.0f), Math::Vector4f((float*)&DirectX::Colors::White) }),
-				Vertex({ Math::Vector3f(-1.0f, +1.0f, -1.0f), Math::Vector4f((float*)&DirectX::Colors::Black) }),
-				Vertex({ Math::Vector3f(+1.0f, +1.0f, -1.0f), Math::Vector4f((float*)&DirectX::Colors::Red) }),
-				Vertex({ Math::Vector3f(+1.0f, -1.0f, -1.0f), Math::Vector4f((float*)&DirectX::Colors::Green) }),
-				Vertex({ Math::Vector3f(-1.0f, -1.0f, +1.0f), Math::Vector4f((float*)&DirectX::Colors::Blue) }),
-				Vertex({ Math::Vector3f(-1.0f, +1.0f, +1.0f), Math::Vector4f((float*)&DirectX::Colors::Yellow) }),
-				Vertex({ Math::Vector3f(+1.0f, +1.0f, +1.0f), Math::Vector4f((float*)&DirectX::Colors::Cyan) }),
-				Vertex({ Math::Vector3f(+1.0f, -1.0f, +1.0f), Math::Vector4f((float*)&DirectX::Colors::Magenta) })
-			};
-
-			array<uint16_t, 36> indices =
-			{
-				// front face
-				0, 1, 2,
-				0, 2, 3,
-
-				// back face
-				4, 6, 5,
-				4, 7, 6,
-
-				// left face
-				4, 5, 1,
-				4, 1, 0,
-
-				// right face
-				3, 2, 6,
-				3, 6, 7,
-
-				// top face
-				1, 5, 6,
-				1, 6, 2,
-
-				// bottom face
-				4, 0, 3,
-				4, 3, 7
-			};
-
-			return m_d3d12Private->CreateMesh(vertices.begin(), vertices.size(), sizeof(Vertex), indices.begin(), indices.size(), sizeof(uint16_t));
+			m_d3d12Private->EndFrame();
 		}
 
-		Material::Ptr D3D12RHI::GetMaterial(const std::string& name)
+		void D3D12RHI::Draw(RenderData* renderData, size_t frame)
 		{
-			return m_d3d12Private->GetMaterial(name);
+			RHIMesh::ID meshID = renderData->GetMesh()->GetID();
+			RHIMaterial::ID materialID = renderData->GetMaterial()->GetID();
+
+			assert(meshID != RHIMesh::k_invalidMeshID);
+			assert(meshID < m_Meshes.size());
+			assert(materialID != RHIMaterial::k_invalidMaterialID);
+			assert(materialID < m_Materials.size());
+
+			m_d3d12Private->Draw(
+				meshID,
+				reinterpret_cast<D3D12Mesh*>(m_Meshes[meshID]),
+				materialID,
+				reinterpret_cast<D3D12Material*>(m_Materials[materialID]),
+				renderData->GetPosition(frame)
+			);
+		}
+
+		void D3D12RHI::CreateMesh(RenderCore::Geometry::Ptr geometry, RHIMesh::ID& meshID, RHIMaterial::ID& materialID)
+		{
+			meshID = m_Meshes.size();
+			materialID = m_Materials.size();
+
+			m_Meshes.push_back(m_d3d12Private->CreateMesh(
+				meshID,
+				geometry->GetVertices(), geometry->GetVertexCount(), sizeof(RenderCore::Geometry::VertexType),
+				geometry->GetIndices(), geometry->GetIndexCount(), sizeof(RenderCore::Geometry::IndexType)
+			));
+
+			m_Materials.push_back(m_d3d12Private->CreateMaterial(materialID));
 		}
 
 		void D3D12RHI::ExecuteCommandLists()

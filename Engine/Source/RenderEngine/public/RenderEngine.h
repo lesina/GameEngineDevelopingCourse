@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Geometry.h>
 #include <RenderEngine/export.h>
 #include <RenderObject.h>
 #include <Window/IWindow.h>
@@ -16,17 +17,16 @@ namespace GameEngine::Render
 	public:
 		RenderEngine();
 
-		void Update();
-		void OnResize(uint16_t width, uint16_t height);
+		void Update(size_t frame);
+		void OnResize();
 
-		inline uint16_t GetSwapChainWidth() const { return m_swapChainWidth; }
-		inline uint16_t GetSwapChainHeight() const { return m_swapChainHeight; }
+		void CreateRenderObject(RenderCore::Geometry::Ptr geometry, RenderObject** renderObject);
 
 	private:
-		uint16_t m_swapChainWidth;
-		uint16_t m_swapChainHeight;
+		uint32_t m_swapChainWidth;
+		uint32_t m_swapChainHeight;
 
-		std::vector<RenderObject::Ptr> m_RenderObjects;
+		std::vector<RenderObject*> m_RenderObjects;
 
 		std::shared_ptr<HAL::RHIAdapter> m_rhi;
 	};
