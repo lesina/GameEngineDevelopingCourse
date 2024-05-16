@@ -50,4 +50,5 @@ target_precompile_headers(Math
 		<cstdint>
 		<limits>
 		<chrono>
+		<filesystem>
 )

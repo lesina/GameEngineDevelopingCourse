@@ -4,13 +4,14 @@
 #include <WindowsX.h>
 #include <wrl.h>
 
+#include <Input/InputHandler.h>
+#include <Input/Windows/WindowsKeyboardButtons.h>
 #include <Window.h>
-#include <WindowEventsCallbacks.h>
 #include <Window/IWindow.h>
 
 namespace GameEngine::Core
 {
-	Window* g_MainWindowsApplication = nullptr;
+	Window::Ptr g_MainWindowsApplication = nullptr;
 
 	LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
@@ -20,20 +21,52 @@ namespace GameEngine::Core
 			PostQuitMessage(0);
 			return 0;
 		case WM_SIZE:
-			// Save the new client area dimensions.
 			g_MainWindowsApplication->Resize(LOWORD(lParam), HIWORD(lParam));
-		case WM_LBUTTONDOWN:
-		case WM_MBUTTONDOWN:
-		case WM_RBUTTONDOWN:
-			OnMouseDown(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), g_MainWindowsApplication);
 			return 0;
-		case WM_LBUTTONUP:
-		case WM_MBUTTONUP:
-		case WM_RBUTTONUP:
-			OnMouseUp(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		case WM_KEYDOWN:
+			if (wParam == VK_ESCAPE)
+			{
+				PostQuitMessage(0);
+			}
+			g_InputHandler->KeyPressed(VKToKeyboardButton(wParam));
+			return 0;
+		case WM_KEYUP:
+			g_InputHandler->KeyReleased(VKToKeyboardButton(wParam));
 			return 0;
 		case WM_MOUSEMOVE:
-			OnMouseMove(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), g_MainCamera, g_MainWindowsApplication);
+			if (!g_MainWindowsApplication->IsFocused()) [[unlikely]]
+			{
+				return 0;
+			}
+
+			POINT pt;
+			pt.x = GET_X_LPARAM(lParam);
+			pt.y = GET_Y_LPARAM(lParam);
+			ClientToScreen(GetPlatformWindowHandle(g_MainWindowsApplication->GetWindowHandle()), &pt);
+			Math::Vector2i pos = g_MainWindowsApplication->GetMousePos();
+			g_InputHandler->OnMouseMove(pt.x - pos.x, pt.y - pos.y);
+			return 0;
+		case WM_LBUTTONDOWN:
+		case WM_RBUTTONDOWN:
+		case WM_MBUTTONDOWN:
+			if (g_MainWindowsApplication->IsFocused()) [[likely]]
+			{
+				g_InputHandler->KeyPressed(MKToMouseButton(wParam));
+			}
+			return 0;
+		case WM_LBUTTONUP:
+		case WM_RBUTTONUP:
+		case WM_MBUTTONUP:
+			if (g_MainWindowsApplication->IsFocused()) [[likely]]
+			{
+				g_InputHandler->KeyReleased(MKToMouseButton(wParam));
+			}
+			return 0;
+		case WM_SETFOCUS:
+			g_MainWindowsApplication->Focus();
+			return 0;
+		case WM_KILLFOCUS:
+			g_MainWindowsApplication->UnFocus();
 			return 0;
 		}
 		return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -87,5 +120,39 @@ namespace GameEngine::Core
 		UpdateWindow(GetPlatformWindowHandle(m_WndHndl));
 
 		return;
+	}
+
+	void Window::Update()
+	{
+		if (m_IsFocused) [[likely]]
+		{
+			RECT R;
+			GetWindowRect(GetPlatformWindowHandle(GetWindowHandle()), &R);
+
+			POINT pt;
+			pt.x = R.left + (R.right - R.left) / 2;
+			pt.y = R.top + (R.bottom - R.top) / 2;
+
+			SetCursorPos(pt.x, pt.y);
+			SetMousePos(pt.x, pt.y);
+		}
+	}
+
+	void Window::Focus()
+	{
+		SetCapture(GetPlatformWindowHandle(GetWindowHandle()));
+		SetFocus(GetPlatformWindowHandle(GetWindowHandle()));
+		ShowCursor(false);
+
+		m_IsFocused = true;
+	}
+
+	void Window::UnFocus()
+	{
+		ReleaseCapture();
+		SetFocus(nullptr);
+		ShowCursor(true);
+
+		m_IsFocused = false;
 	}
 }

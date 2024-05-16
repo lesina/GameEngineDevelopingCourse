@@ -2,6 +2,7 @@
 #include <DefaultGeometry.h>
 #include <Game.h>
 #include <GameObject.h>
+#include <Input/InputHandler.h>
 
 namespace GameEngine
 {
@@ -23,6 +24,11 @@ namespace GameEngine
 			Render::RenderObject** renderObject = m_Objects.back()->GetRenderObjectRef();
 			m_renderThread->EnqueueCommand(Render::ERC::CreateRenderObject, RenderCore::DefaultGeometry::Cube(), renderObject);
 		}
+
+		Core::g_InputHandler->RegisterCallback("GoForward", [&]() { Core::g_MainCamera->Move(Core::g_MainCamera->GetViewDir()); });
+		Core::g_InputHandler->RegisterCallback("GoBack", [&]() { Core::g_MainCamera->Move(-Core::g_MainCamera->GetViewDir()); });
+		Core::g_InputHandler->RegisterCallback("GoRight", [&]() { Core::g_MainCamera->Move(Core::g_MainCamera->GetRightDir()); });
+		Core::g_InputHandler->RegisterCallback("GoLeft", [&]() { Core::g_MainCamera->Move(-Core::g_MainCamera->GetRightDir()); });
 	}
 
 	void Game::Run()
@@ -37,12 +43,16 @@ namespace GameEngine
 			m_GameTimer.Tick();
 			float dt = m_GameTimer.GetDeltaTime();
 
+			Core::g_MainWindowsApplication->Update();
+			Core::g_InputHandler->Update();
+			Core::g_MainCamera->Update(dt);
+
 			Update(dt);
-			
-			// The most common idea for such a loop is that it returns false when quit is required, or true otherwise
-			quit = !PlatformLoop();
 
 			m_renderThread->OnEndFrame();
+
+			// The most common idea for such a loop is that it returns false when quit is required, or true otherwise
+			quit = !PlatformLoop();
 		}
 	}
 

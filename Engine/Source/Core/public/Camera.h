@@ -19,11 +19,19 @@ namespace GameEngine
 			void SetPosition(Math::Vector3f position) { m_Position = position; }
 			Math::Vector3f GetViewDir() const { return m_ViewDir; }
 			void SetViewDir(Math::Vector3f viewDir) { m_ViewDir = viewDir; }
+			Math::Vector3f GetRightDir() const;
+
 			void Rotate(float yaw, float pitch);
+			void Move(Math::Vector3f dir);
+			void Update(float dt);
 
 		private:
 			Math::Vector3f m_Position;
 			Math::Vector3f m_ViewDir;
+
+			// There are temp
+			float m_MovementSpeed = 10.f;
+			Math::Vector3f m_CurrentMoveDir = Math::Vector3f::Zero();
 		};
 
 		extern CORE_API Camera* g_MainCamera;

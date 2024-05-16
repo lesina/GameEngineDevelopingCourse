@@ -55,4 +55,5 @@ target_precompile_headers(RenderEngine
 		<thread>
 		<limits>
 		<chrono>
+		<filesystem>
 )

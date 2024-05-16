@@ -128,6 +128,7 @@ namespace GameEngine
 				return Vector3<T>(x * scale, y * scale, z * scale);
 			}
 
+			// We have left hand coordinate system, so use left hand to determine ther resulted vector
 			inline Vector3<T> CrossProduct(Vector3<T> other) const
 			{
 				return Vector3<T>(

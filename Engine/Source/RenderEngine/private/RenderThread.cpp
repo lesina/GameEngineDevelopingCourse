@@ -18,6 +18,8 @@ namespace GameEngine::Render
 {
 	RenderThread::RenderThread()
 	{
+		assert(m_CurMainFrame == 0);
+
 		m_MainThreadId = std::this_thread::get_id();
 
 		frameMutex[m_CurMainFrame].lock();

@@ -69,4 +69,5 @@ target_precompile_headers(Game
 		<cstdint>
 		<limits>
 		<chrono>
+		<filesystem>
 )
