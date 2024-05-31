@@ -14,6 +14,8 @@ include(GenerateExportHeader)
 add_library(RenderCore SHARED)
 generate_export_header(RenderCore EXPORT_FILE_NAME export.h EXPORT_MACRO_NAME RENDER_CORE_API)
 
+set_target_properties(RenderCore PROPERTIES FOLDER "Engine")
+
 target_compile_definitions(RenderCore
 	PRIVATE
 		RenderCore_EXPORTS

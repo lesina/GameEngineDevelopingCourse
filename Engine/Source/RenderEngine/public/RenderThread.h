@@ -17,9 +17,13 @@ namespace GameEngine::Render
 	class RENDER_ENGINE_API RenderThread final
 	{
 	public:
+		using Ptr = std::unique_ptr<RenderThread>;
+
+	public:
 		RenderThread();
 		~RenderThread();
 
+	public:
 		void Run();
 
 		template<typename... Args>

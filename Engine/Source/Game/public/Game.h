@@ -1,5 +1,7 @@
 #pragma once
 
+#include <EntitySystem.h>
+#include <GameFramework/GameFramework.h>
 #include <RenderEngine.h>
 #include <RenderThread.h>
 #include <Timer.h>
@@ -7,8 +9,6 @@
 
 namespace GameEngine
 {
-	class GameObject;
-
 	class Game final
 	{
 	public:
@@ -26,8 +26,10 @@ namespace GameEngine
 		std::function<bool()> PlatformLoop = nullptr;
 
 	private:
+		EntitySystem::EntitySystem::Ptr m_EntitySystem = nullptr;
+		Render::RenderThread::Ptr m_renderThread = nullptr; 
+		GameFramework::Ptr m_GameFramework = nullptr;
+
 		Core::Timer m_GameTimer;
-		std::unique_ptr<Render::RenderThread> m_renderThread;
-		std::vector<GameObject*> m_Objects;
 	};
 }

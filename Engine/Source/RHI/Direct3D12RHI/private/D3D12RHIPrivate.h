@@ -76,17 +76,17 @@ namespace GameEngine
 			std::unique_ptr<UploadBuffer<ObjectConstants>> m_ObjectCB[RenderCore::g_FrameBufferCount];
 			std::unique_ptr<UploadBuffer<MaterialConstants>> m_MaterialCB[RenderCore::g_FrameBufferCount];
 			
-			UINT64 m_CurrentFence = 0;
-			UINT m_RtvDescriptorSize = 0;
-			UINT m_DsvDescriptorSize = 0;
-			UINT m_CbvSrvUavDescriptorSize = 0;
+			uint64_t m_CurrentFence = 0;
+			uint32_t m_RtvDescriptorSize = 0;
+			uint32_t m_DsvDescriptorSize = 0;
+			uint32_t m_CbvSrvUavDescriptorSize = 0;
 
 			int m_CurrBackBuffer = 0;
 			Microsoft::WRL::ComPtr<ID3D12Resource> m_SwapChainBuffer[RenderCore::g_FrameBufferCount];
 			Microsoft::WRL::ComPtr<ID3D12Resource> m_DepthStencilBuffer;
 
 			bool m_4xMsaaState = false;
-			UINT m_4xMsaaQuality = 0;
+			uint32_t m_4xMsaaQuality = 0;
 
 			DXGI_FORMAT m_BackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 			DXGI_FORMAT m_DepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;

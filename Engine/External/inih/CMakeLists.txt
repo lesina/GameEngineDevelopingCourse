@@ -20,3 +20,8 @@ add_library(inih STATIC
 	include/ini.h
 	include/INIReader.h
 )
+
+set_target_properties(inih PROPERTIES
+            LINKER_LANGUAGE CXX
+            CXX_STANDARD 20
+            CXX_STANDARD_REQUIRED ON)

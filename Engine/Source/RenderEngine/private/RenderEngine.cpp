@@ -43,7 +43,7 @@ namespace GameEngine::Render
 		}
 	}
 
-	void RenderEngine::CreateRenderObject(RenderCore::Geometry::Ptr geometry, RenderObject** renderObject)
+	void RenderEngine::CreateRenderObject(RenderCore::Geometry::Ptr geometry, RenderObject* renderObject)
 	{
 		assert(geometry);
 		assert(renderObject);
@@ -53,9 +53,8 @@ namespace GameEngine::Render
 		m_rhi->CreateMesh(geometry, meshID, materialID);
 
 		HAL::RenderData* renderData = new HAL::RenderData(meshID, materialID);
+		renderObject->SetRenderData(renderData);
 
-		*renderObject = new RenderObject(renderData);
-
-		m_RenderObjects.push_back(*renderObject);
+		m_RenderObjects.push_back(renderObject);
 	}
 }

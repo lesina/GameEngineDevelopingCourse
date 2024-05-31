@@ -65,7 +65,7 @@ namespace GameEngine::Render
 		case ERC::CreateRenderObject:
 			m_commands[m_CurMainFrame].push_back(
 				new EnqueuedRenderCommand(
-					[this](RenderCore::Geometry::Ptr geometry, RenderObject** renderObject) { m_RenderEngine->CreateRenderObject(geometry, renderObject); },
+					[this](RenderCore::Geometry::Ptr geometry, RenderObject* renderObject) { m_RenderEngine->CreateRenderObject(geometry, renderObject); },
 					std::forward<Args>(args)...)
 			);
 			break;

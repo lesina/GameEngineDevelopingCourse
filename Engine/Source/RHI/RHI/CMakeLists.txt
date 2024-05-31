@@ -27,6 +27,8 @@ include(GenerateExportHeader)
 add_library(RHI SHARED)
 generate_export_header(RHI EXPORT_FILE_NAME export.h EXPORT_MACRO_NAME RHI_API)
 
+set_target_properties(RHI PROPERTIES FOLDER "Engine")
+
 target_compile_definitions(RHI
 	PRIVATE
 		RHI_EXPORTS

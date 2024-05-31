@@ -1,5 +1,8 @@
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 // Windows Header Files
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <windows.h>
 #include <shellapi.h>
 
@@ -58,7 +61,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	assert(GameEngine::Core::g_CommandLineArguments->HasAttribute("project_root"));
 
 	GameEngine::Core::g_FileSystem = GameEngine::Core::FileSystem::Create(GameEngine::Core::g_CommandLineArguments->GetAttribute("project_root"));
-	GameEngine::Core::g_InputHandler = GameEngine::Core::InputHandler::CreateInputHandler(GameEngine::Core::g_FileSystem->GetConfigPath("Input_default.ini"));
 
 	std::unique_ptr<GameEngine::Game> game = std::make_unique<GameEngine::Game>(&WindowsMessageLoop);
 

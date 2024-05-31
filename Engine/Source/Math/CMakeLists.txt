@@ -14,6 +14,8 @@ include(GenerateExportHeader)
 add_library(Math SHARED)
 generate_export_header(Math EXPORT_FILE_NAME export.h EXPORT_MACRO_NAME MATH_API)
 
+set_target_properties(Math PROPERTIES FOLDER "Engine")
+
 target_compile_definitions(Math
 	PRIVATE
 		Math_EXPORTS
@@ -51,4 +53,6 @@ target_precompile_headers(Math
 		<limits>
 		<chrono>
 		<filesystem>
+		<bitset>
+		<queue>
 )

@@ -16,6 +16,7 @@ namespace GameEngine
 			DOWN,
 			LEFT,
 			RIGHT,
+			SPACEBAR,
 
 			UNKNOWN
 		};
@@ -26,6 +27,9 @@ namespace GameEngine
 
 			UNKNOWN
 		};
+
+		inline constexpr size_t KeyboardButtonCount = static_cast<size_t>(KeyboardButton::UNKNOWN);
+		inline constexpr size_t MouseButtonCount = static_cast<size_t>(MouseButton::UNKNOWN);
 
 		extern CORE_API const std::unordered_map<std::string, KeyboardButton> KeyboardButtonsMap;
 		extern CORE_API const std::unordered_map<std::string, MouseButton> MouseButtonsMap;

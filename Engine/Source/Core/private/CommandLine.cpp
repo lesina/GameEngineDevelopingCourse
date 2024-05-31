@@ -5,6 +5,7 @@ namespace GameEngine::Core
 {
 	CommandLine::Ptr g_CommandLineArguments = nullptr;
 
+	// This is totaly disgusting, but it is processed only at the project's startup so don't mind to refactor it
 	CommandLine::CommandLine(const std::vector<std::string>& commandLine)
 	{
 		for (const std::string_view& commandLineArg : commandLine)
@@ -18,7 +19,7 @@ namespace GameEngine::Core
 
 			if (!commandLineArg.starts_with("-") && !commandLineArgIsValid) [[unlikely]]
 			{
-				Console::PrintDebug(std::format("{} is not a valid command line arg format", commandLineArg));
+				Console::PrintDebug("{} is not a valid command line arg format", commandLineArg);
 				continue;
 			}
 

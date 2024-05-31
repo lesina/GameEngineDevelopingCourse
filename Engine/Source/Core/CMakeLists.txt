@@ -35,6 +35,8 @@ include(GenerateExportHeader)
 add_library(Core SHARED)
 generate_export_header(Core EXPORT_FILE_NAME export.h EXPORT_MACRO_NAME CORE_API)
 
+set_target_properties(Core PROPERTIES FOLDER "Engine")
+
 #setting inih libs
 if (WINDOWS)
 	find_library(INIH_DEBUG NAMES inih
@@ -95,4 +97,6 @@ target_precompile_headers(Core
 		<limits>
 		<chrono>
 		<filesystem>
+		<bitset>
+		<queue>
 )

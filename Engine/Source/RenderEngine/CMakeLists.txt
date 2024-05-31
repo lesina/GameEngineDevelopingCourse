@@ -14,6 +14,8 @@ include(GenerateExportHeader)
 add_library(RenderEngine SHARED)
 generate_export_header(RenderEngine EXPORT_FILE_NAME export.h EXPORT_MACRO_NAME RENDER_ENGINE_API)
 
+set_target_properties(RenderEngine PROPERTIES FOLDER "Engine")
+
 target_compile_definitions(RenderEngine
 	PRIVATE
 		RenderEngine_EXPORTS
@@ -56,4 +58,6 @@ target_precompile_headers(RenderEngine
 		<limits>
 		<chrono>
 		<filesystem>
+		<bitset>
+		<queue>
 )

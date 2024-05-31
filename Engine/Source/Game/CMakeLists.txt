@@ -28,6 +28,8 @@ else()
 	add_executable(Game)
 endif()
 
+set_target_properties(Game PROPERTIES FOLDER "Engine")
+
 target_compile_definitions(Game
 	PRIVATE
 		UNICODE)
@@ -47,9 +49,10 @@ target_include_directories(Game
 )
 
 target_link_libraries(Game PRIVATE
+	Core
+	EntitySystem
 	Math
 	RenderCore
-	Core
 	RenderEngine
 )
 
@@ -70,4 +73,6 @@ target_precompile_headers(Game
 		<limits>
 		<chrono>
 		<filesystem>
+		<bitset>
+		<queue>
 )

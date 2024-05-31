@@ -28,10 +28,10 @@ namespace GameEngine::Core
 			{
 				PostQuitMessage(0);
 			}
-			g_InputHandler->KeyPressed(VKToKeyboardButton(wParam));
+			InputHandler::GetInstance()->KeyPressed(VKToKeyboardButton(wParam));
 			return 0;
 		case WM_KEYUP:
-			g_InputHandler->KeyReleased(VKToKeyboardButton(wParam));
+			InputHandler::GetInstance()->KeyReleased(VKToKeyboardButton(wParam));
 			return 0;
 		case WM_MOUSEMOVE:
 			if (!g_MainWindowsApplication->IsFocused()) [[unlikely]]
@@ -44,14 +44,14 @@ namespace GameEngine::Core
 			pt.y = GET_Y_LPARAM(lParam);
 			ClientToScreen(GetPlatformWindowHandle(g_MainWindowsApplication->GetWindowHandle()), &pt);
 			Math::Vector2i pos = g_MainWindowsApplication->GetMousePos();
-			g_InputHandler->OnMouseMove(pt.x - pos.x, pt.y - pos.y);
+			InputHandler::GetInstance()->OnMouseMove(pt.x - pos.x, pt.y - pos.y);
 			return 0;
 		case WM_LBUTTONDOWN:
 		case WM_RBUTTONDOWN:
 		case WM_MBUTTONDOWN:
 			if (g_MainWindowsApplication->IsFocused()) [[likely]]
 			{
-				g_InputHandler->KeyPressed(MKToMouseButton(wParam));
+				InputHandler::GetInstance()->KeyPressed(MKToMouseButton(wParam));
 			}
 			return 0;
 		case WM_LBUTTONUP:
@@ -59,7 +59,7 @@ namespace GameEngine::Core
 		case WM_MBUTTONUP:
 			if (g_MainWindowsApplication->IsFocused()) [[likely]]
 			{
-				g_InputHandler->KeyReleased(MKToMouseButton(wParam));
+				InputHandler::GetInstance()->KeyReleased(MKToMouseButton(wParam));
 			}
 			return 0;
 		case WM_SETFOCUS:

@@ -3,48 +3,37 @@
 #include <Core/export.h>
 #include <FileSystem.h>
 #include <Input/Buttons.h>
-#include <Input/ActionMapEventManager.h>
 #include <Vector.h>
 
 namespace GameEngine::Core
 {
+	// This is just a layer between a controller and OS-specific commands to determine which buttons are pressed
+	// That is why it is singleton
+	// Basically, can be replaced with SDL
 	class CORE_API InputHandler final
-	{
-	public:
-		struct Deleter {
-			void operator()(InputHandler* cmd) { delete cmd; }
-		};
-
-		using Ptr = std::unique_ptr<InputHandler, Deleter>;
-
+	{;
 	private:
-		InputHandler() = delete;
-		InputHandler(FileSystem::Path&& config);
+		InputHandler();
 		~InputHandler() = default;
 
 	public:
-		static InputHandler::Ptr CreateInputHandler(FileSystem::Path&& config);
+		static InputHandler* GetInstance();
 
-		void Update();
+	public:
 		void KeyPressed(KeyboardButton kb);
 		void KeyReleased(KeyboardButton kb);
 		void KeyPressed(MouseButton kb);
 		void KeyReleased(MouseButton mb);
+		bool IsKeyPressed(KeyboardButton kb) const;
+		bool IsKeyPressed(MouseButton mb) const;
 		void OnMouseMove(float dx, float dy);
 
-		void RegisterCallback(std::string eventName, ActionMapEventManager::Event callback);
-
 	private:
-		std::unordered_map<KeyboardButton, std::string> m_KeyboardEventMap;
-		std::unordered_map<MouseButton, std::string> m_MouseEventMap;
+		std::bitset<
+			KeyboardButtonCount +
+			MouseButtonCount
+		> m_PressedButtons;
 
-		std::list<KeyboardButton> m_PressedKB;
-		std::list<MouseButton> m_PressedMB;
-
-		FileSystem::Path m_Config;
-
-		ActionMapEventManager::Ptr m_ActionMapEventManager = nullptr;
+		static InputHandler* m_Instance;
 	};
-
-	extern CORE_API InputHandler::Ptr g_InputHandler;
 }

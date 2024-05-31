@@ -1,7 +1,7 @@
 #include <Camera.h>
 #include <DefaultGeometry.h>
+#include <EntitySystem.h>
 #include <Game.h>
-#include <GameObject.h>
 #include <Input/InputHandler.h>
 
 namespace GameEngine
@@ -12,23 +12,13 @@ namespace GameEngine
 		PlatformLoop(PlatformLoopFunc)
 	{
 		Core::g_MainCamera = new Core::Camera();
-		Core::g_MainCamera->SetPosition(Math::Vector3f(0.0f, 6.0f, -6.0f));
-		Core::g_MainCamera->SetViewDir(Math::Vector3f(0.0f, -6.0f, 6.0f).Normalized());
+		Core::g_MainCamera->SetPosition(Math::Vector3f(0.0f, 12.0f, -10.0f));
+		Core::g_MainCamera->SetViewDir(Math::Vector3f(0.0f, -6.0f, 12.0f).Normalized());
 
 		m_renderThread = std::make_unique<Render::RenderThread>();
+		m_EntitySystem = std::make_unique<EntitySystem::EntitySystem>(m_renderThread.get());
 
-		// How many objects do we want to create
-		for (int i = 0; i < 3; ++i)
-		{
-			m_Objects.push_back(new GameObject());
-			Render::RenderObject** renderObject = m_Objects.back()->GetRenderObjectRef();
-			m_renderThread->EnqueueCommand(Render::ERC::CreateRenderObject, RenderCore::DefaultGeometry::Cube(), renderObject);
-		}
-
-		Core::g_InputHandler->RegisterCallback("GoForward", [&]() { Core::g_MainCamera->Move(Core::g_MainCamera->GetViewDir()); });
-		Core::g_InputHandler->RegisterCallback("GoBack", [&]() { Core::g_MainCamera->Move(-Core::g_MainCamera->GetViewDir()); });
-		Core::g_InputHandler->RegisterCallback("GoRight", [&]() { Core::g_MainCamera->Move(Core::g_MainCamera->GetRightDir()); });
-		Core::g_InputHandler->RegisterCallback("GoLeft", [&]() { Core::g_MainCamera->Move(-Core::g_MainCamera->GetRightDir()); });
+		m_GameFramework = std::make_unique<GameFramework>(m_EntitySystem->GetWorld());
 	}
 
 	void Game::Run()
@@ -37,6 +27,8 @@ namespace GameEngine
 
 		m_GameTimer.Reset();
 
+		m_GameFramework->Init();
+
 		bool quit = false;
 		while (!quit)
 		{
@@ -44,8 +36,6 @@ namespace GameEngine
 			float dt = m_GameTimer.GetDeltaTime();
 
 			Core::g_MainWindowsApplication->Update();
-			Core::g_InputHandler->Update();
-			Core::g_MainCamera->Update(dt);
 
 			Update(dt);
 
@@ -58,25 +48,7 @@ namespace GameEngine
 
 	void Game::Update(float dt)
 	{
-		for (int i = 0; i < m_Objects.size(); ++i)
-		{
-			Math::Vector3f pos = m_Objects[i]->GetPosition();
-
-			// Showcase
-			if (i == 0)
-			{
-				pos.x += 0.5f * dt;
-			}
-			else if (i == 1)
-			{
-				pos.y -= 0.5f * dt;
-			}
-			else if (i == 2)
-			{
-				pos.x += 0.5f * dt;
-				pos.y -= 0.5f * dt;
-			}
-			m_Objects[i]->SetPosition(pos, m_renderThread->GetMainFrame());
-		}
+		m_EntitySystem->Update(dt);
+		m_GameFramework->Update(dt);
 	}
 }

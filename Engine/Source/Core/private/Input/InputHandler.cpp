@@ -1,78 +1,81 @@
 #include <Camera.h>
 #include <Constants.h>
-#include <Debug/Console.h>
 #include <INIReader.h>
 #include <Input/InputHandler.h>
 
 namespace GameEngine::Core
 {
-	InputHandler::Ptr g_InputHandler = nullptr;
+	InputHandler* InputHandler::m_Instance = nullptr;
 
-	InputHandler::InputHandler(FileSystem::Path&& config)
-		: m_Config(std::move(config))
+	InputHandler::InputHandler()
 	{
-		INIReader reader(m_Config.string());
-		assert(reader.ParseError() >= 0);
-
-		std::set<std::string> fields = reader.GetFields("Keyboard");
-
-		for (const std::string& field : fields)
-		{
-			std::string eventName = reader.Get("Keyboard", field, "");
-
-			assert(!m_KeyboardEventMap.contains(StringToKeyboardButton(eventName)));
-			m_KeyboardEventMap.emplace(StringToKeyboardButton(eventName), field);
-		}
-
-		fields = reader.GetFields("Mouse");
-
-		for (const std::string& field : fields)
-		{
-			std::string eventName = reader.Get("Mouse", field, "");
-
-			assert(!m_MouseEventMap.contains(StringToMouseButton(eventName)));
-			m_MouseEventMap.emplace(StringToMouseButton(eventName), field);
-		}
-
-		m_ActionMapEventManager = std::make_unique<ActionMapEventManager>();
+		m_PressedButtons.reset();
 	}
 
-	void InputHandler::Update()
+	InputHandler* InputHandler::GetInstance()
 	{
-		for (const KeyboardButton& kb : m_PressedKB)
+		if (m_Instance == nullptr) [[unlikely]]
 		{
-			m_ActionMapEventManager->CallEvent(m_KeyboardEventMap[kb]);
+			m_Instance = new InputHandler();
 		}
+
+		return m_Instance;
 	}
 
 	void InputHandler::KeyPressed(KeyboardButton kb)
 	{
-		m_PressedKB.push_back(kb);
+		// Delete this logic when all the buttons
+		if (kb == KeyboardButton::UNKNOWN) [[unlikely]]
+		{
+			return;
+		}
+
+		m_PressedButtons.set(static_cast<size_t>(kb), true);
 	}
 
 	void InputHandler::KeyReleased(KeyboardButton kb)
 	{
-		m_PressedKB.remove(kb);
+		// Delete this logic when all the buttons
+		if (kb == KeyboardButton::UNKNOWN) [[unlikely]]
+		{
+			return;
+		}
+
+		m_PressedButtons.set(static_cast<size_t>(kb), false);
 	}
 
 	void InputHandler::KeyPressed(MouseButton mb)
 	{
-		m_PressedMB.push_back(mb);
+		// Delete this logic when all the buttons
+		if (mb == MouseButton::UNKNOWN) [[unlikely]]
+		{
+			return;
+		}
+
+		m_PressedButtons.set(KeyboardButtonCount + static_cast<size_t>(mb), true);
 	}
 
 	void InputHandler::KeyReleased(MouseButton mb)
 	{
-		m_PressedMB.remove(mb);
+		// Delete this logic when all the buttons
+		if (mb == MouseButton::UNKNOWN) [[unlikely]]
+		{
+			return;
+		}
+
+		m_PressedButtons.set(KeyboardButtonCount + static_cast<size_t>(mb), false);
 	}
 
-	void InputHandler::RegisterCallback(std::string eventName, ActionMapEventManager::Event callback)
+	bool InputHandler::IsKeyPressed(KeyboardButton kb) const
 	{
-		m_ActionMapEventManager->RegisterCallback(eventName, callback);
+		assert(kb != KeyboardButton::UNKNOWN);
+		return m_PressedButtons.test(static_cast<size_t>(kb));
 	}
 
-	InputHandler::Ptr InputHandler::CreateInputHandler(FileSystem::Path&& config)
+	bool InputHandler::IsKeyPressed(MouseButton mb) const
 	{
-		return InputHandler::Ptr(new InputHandler(std::move(config)), Deleter());
+		assert(mb != MouseButton::UNKNOWN);
+		return m_PressedButtons.test(KeyboardButtonCount + static_cast<size_t>(mb));
 	}
 
 	void InputHandler::OnMouseMove(float dx, float dy)
