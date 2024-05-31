@@ -30,7 +30,7 @@ namespace GameEngine
 		}
 
 	protected:
-		Render::RenderObject* m_RenderObject;
+		Render::RenderObject* m_RenderObject = nullptr;
 
 		Math::Vector3f m_Position = Math::Vector3f::Zero();
 	};

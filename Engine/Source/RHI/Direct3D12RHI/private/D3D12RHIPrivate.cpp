@@ -2,11 +2,12 @@
 #include <D3D12Material.h>
 #include <D3D12RHIPrivate.h>
 #include <DirectXMath.h>
+#include <Camera.h>
+#include <FileSystem.h>
 #include <Matrix.h>
 #include <RenderCore.h>
 #include <Vector.h>
 #include <Window/IWindow.h>
-#include <Camera.h>
 
 namespace GameEngine
 {
@@ -91,8 +92,10 @@ namespace GameEngine
 		{
 			HRESULT hr = S_OK;
 
-			m_vsByteCode = D3D12Util::CompileShader(L"..\\..\\..\\..\\..\\Assets\\Shaders\\Object.hlsl", nullptr, "VS", "vs_5_0");
-			m_psByteCode = D3D12Util::CompileShader(L"..\\..\\..\\..\\..\\Assets\\Shaders\\Object.hlsl", nullptr, "PS", "ps_5_0");
+			std::wstring shaderPath = Core::g_FileSystem->GetShaderPath("Object.hlsl");
+
+			m_vsByteCode = D3D12Util::CompileShader(shaderPath, nullptr, "VS", "vs_5_0");
+			m_psByteCode = D3D12Util::CompileShader(shaderPath, nullptr, "PS", "ps_5_0");
 
 			m_InputLayout =
 			{

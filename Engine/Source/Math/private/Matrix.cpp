@@ -94,5 +94,27 @@ namespace GameEngine
 
 			return result;
 		}
+
+		Matrix3x3f GetRotationMatrix(Vector3f axis, float angle)
+		{
+			float cos = std::cos(angle);
+			float sin = std::sin(angle);
+
+			Math::Matrix3x3f rotationMatrix;
+
+			rotationMatrix.SetElement(cos + axis.x * axis.x * (1 - cos), 0, 0);
+			rotationMatrix.SetElement(axis.x * axis.y * (1 - cos) - axis.z * sin, 0, 1);
+			rotationMatrix.SetElement(axis.x * axis.y * (1 - cos) + axis.y * sin, 0, 2);
+
+			rotationMatrix.SetElement(axis.x * axis.y * (1 - cos) + axis.z * sin, 1, 0);
+			rotationMatrix.SetElement(cos + axis.y * axis.y * (1 - cos), 1, 1);
+			rotationMatrix.SetElement(axis.y * axis.z * (1 - cos) - axis.x * sin, 1, 2);
+
+			rotationMatrix.SetElement(axis.x * axis.z * (1 - cos) - axis.y * sin, 2, 0);
+			rotationMatrix.SetElement(axis.y * axis.z * (1 - cos) + axis.x * sin, 2, 1);
+			rotationMatrix.SetElement(cos + axis.z * axis.z * (1 - cos), 2, 2);
+
+			return rotationMatrix;
+		}
 	}
 }

@@ -77,4 +77,5 @@ target_precompile_headers(RHI
 		<utility>
 		<cstdint>
 		<limits>
+		<filesystem>
 )

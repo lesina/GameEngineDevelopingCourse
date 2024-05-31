@@ -1,15 +1,20 @@
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 // Windows Header Files
 #include <windows.h>
-#include <Window/IWindow.h>
-#include <Game.h>
-#include <array.h>
-#include <iostream>
+#include <shellapi.h>
 
 #if defined(DEBUG) || defined(_DEBUG)
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
 #endif
+
+#include <CommandLine.h>
+#include <FileSystem.h>
+#include <Game.h>
+#include <Input/InputHandler.h>
+#include <Window/IWindow.h>
+
+
 
 bool WindowsMessageLoop()
 {
@@ -42,8 +47,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-	GameEngine::Core::g_MainWindowsApplication = new GameEngine::Core::Window();
+	int argc;
+	LPWSTR* argv = CommandLineToArgvW(lpCmdLine, &argc);
+	const std::vector<std::wstring> args(argv, argv + argc);
+
+	GameEngine::Core::g_MainWindowsApplication = std::make_unique<GameEngine::Core::Window>();
 	GameEngine::Core::g_MainWindowsApplication->Init(hInstance);
+
+	GameEngine::Core::g_CommandLineArguments = GameEngine::Core::CommandLine::Parse(args);
+	assert(GameEngine::Core::g_CommandLineArguments->HasAttribute("project_root"));
+
+	GameEngine::Core::g_FileSystem = GameEngine::Core::FileSystem::Create(GameEngine::Core::g_CommandLineArguments->GetAttribute("project_root"));
+	GameEngine::Core::g_InputHandler = GameEngine::Core::InputHandler::CreateInputHandler(GameEngine::Core::g_FileSystem->GetConfigPath("Input_default.ini"));
 
 	std::unique_ptr<GameEngine::Game> game = std::make_unique<GameEngine::Game>(&WindowsMessageLoop);
 

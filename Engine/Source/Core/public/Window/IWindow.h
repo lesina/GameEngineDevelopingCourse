@@ -8,6 +8,9 @@ namespace GameEngine::Core
 	class CORE_API Window final
 	{
 	public:
+		using Ptr = std::unique_ptr<Window>;
+
+	public:
 		Window() = default;
 
 		void Init(void* instance);
@@ -20,6 +23,13 @@ namespace GameEngine::Core
 		float GetAspectRatio() const { return (float)m_Width / (float)m_Height; }
 		Math::Vector2i GetMousePos() const { return m_MousePos; }
 		void SetMousePos(int x, int y) { m_MousePos.x = x; m_MousePos.y = y; }
+		
+		void Update();
+
+		void Focus();
+		void UnFocus();
+
+		inline bool IsFocused() const { return m_IsFocused; }
 
 	private:
 		uint32_t m_Width = 800;
@@ -27,8 +37,11 @@ namespace GameEngine::Core
 
 		void* m_WndHndl = nullptr;
 
+		// In screen coords
 		Math::Vector2i m_MousePos;
+
+		bool m_IsFocused = false;
 	};
 
-	extern CORE_API Window* g_MainWindowsApplication;
+	extern CORE_API Window::Ptr g_MainWindowsApplication;
 }
