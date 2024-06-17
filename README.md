@@ -16,4 +16,8 @@
 2. Use the command line arguments in order to properly launch the project
 
 ### List of useful command line Arguments
-1. -project_root=/path/to/sample/root
+1. `-project_root=/path/to/sample/root` (mandatory) is used to set a project root
+2. `-wfd` (optional) is to wait for the debugger to attach to the process before continue processing
+
+### List of useful buttons in Debug build
+1. `F2` to reload game scripts

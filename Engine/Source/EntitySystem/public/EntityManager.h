@@ -9,15 +9,15 @@ namespace GameEngine
 {
 	namespace EntitySystem
 	{
-		class ENTITY_SYSTEM_API EntitySystem final
+		class ENTITY_SYSTEM_API EntityManager final
 		{
 		public:
-			using Ptr = std::unique_ptr<EntitySystem>;
+			using Ptr = std::unique_ptr<EntityManager>;
 
 		public:
-			EntitySystem() = delete;
-			EntitySystem(Render::RenderThread* const renderThread);
-			~EntitySystem() = default;
+			EntityManager() = delete;
+			EntityManager(Render::RenderThread* const renderThread);
+			~EntityManager() = default;
 
 		public:
 			void Update(float dt);

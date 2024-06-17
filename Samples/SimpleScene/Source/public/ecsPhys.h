@@ -1,44 +1,60 @@
 #pragma once
 
 #include <flecs.h>
-#include <Vector.h>
 
-struct Position
+// This define is essential for the scripts to expose the ECS components to lua syntax
+// There is a task to rework this behavior
+#undef ECS_META_IMPL
+#ifndef GAME_FRAMEWORK
+#define ECS_META_IMPL EXTERN // Ensure meta symbols are only defined once
+#endif
+
+ECS_STRUCT(Position,
 {
-	GameEngine::Math::Vector3f value;
-};
+	float x;
+	float y;
+	float z;
+});
 
-struct Velocity
+ECS_STRUCT(Velocity,
 {
-	GameEngine::Math::Vector3f value;
-};
+	float x;
+	float y;
+	float z;
+});
 
-struct Gravity
+ECS_STRUCT(Gravity,
 {
-	GameEngine::Math::Vector3f value;
-};
+	float x;
+	float y;
+	float z;
+});
 
-struct BouncePlane
+ECS_STRUCT(BouncePlane,
 {
-	GameEngine::Math::Vector4f value;
-};
+	float x;
+	float y;
+	float z;
+	float w;
+});
 
-struct Bounciness
+ECS_STRUCT(Bounciness,
 {
 	float value;
-};
+});
 
-struct ShiverAmount
+ECS_STRUCT(ShiverAmount,
 {
 	float value;
-};
+});
 
-struct FrictionAmount
+ECS_STRUCT(FrictionAmount,
 {
 	float value;
-};
+});
 
-using Speed = float;
-
-void RegisterEcsPhysSystems(flecs::world& world);
+ECS_STRUCT(Speed,
+{
+	float value;
+});
 

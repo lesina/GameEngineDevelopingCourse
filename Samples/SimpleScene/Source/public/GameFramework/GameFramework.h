@@ -10,7 +10,7 @@
 
 #include <export.h>
 
-#include <EntitySystem.h>
+#include <EntityManager.h>
 
 class GAME_API GameFramework final
 {
@@ -22,12 +22,18 @@ public:
 	GameFramework(flecs::world& world)
 	{
 		m_World = world.get_world();
+
+		Init();
 	}
 	~GameFramework() = default;
 
 public:
 	void Init();
 	void Update(float dt);
+
+private:
+	void RegisterComponents();
+	void RegisterSystems();
 
 private:
 	flecs::world m_World;

@@ -1,9 +1,10 @@
 #pragma once
 
-#include <EntitySystem.h>
+#include <EntityManager.h>
 #include <GameFramework/GameFramework.h>
 #include <RenderEngine.h>
 #include <RenderThread.h>
+#include <ScriptManager.h>
 #include <Timer.h>
 #include <Window/IWindow.h>
 
@@ -26,7 +27,8 @@ namespace GameEngine
 		std::function<bool()> PlatformLoop = nullptr;
 
 	private:
-		EntitySystem::EntitySystem::Ptr m_EntitySystem = nullptr;
+		EntitySystem::EntityManager::Ptr m_EntityManager = nullptr;
+		ScriptSystem::ScriptManager::Ptr m_ScriptManager = nullptr;
 		Render::RenderThread::Ptr m_renderThread = nullptr; 
 		GameFramework::Ptr m_GameFramework = nullptr;
 

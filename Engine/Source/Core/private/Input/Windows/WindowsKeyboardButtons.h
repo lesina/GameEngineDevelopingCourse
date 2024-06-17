@@ -28,6 +28,8 @@ namespace GameEngine
 				return KeyboardButton::D;
 			case VK_SPACE:
 				return KeyboardButton::SPACEBAR;
+			case VK_F2:
+				return KeyboardButton::F2;
 			default:
 				return KeyboardButton::UNKNOWN;
 			}

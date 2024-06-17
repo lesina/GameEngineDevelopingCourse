@@ -12,17 +12,10 @@ void RegisterEcsMeshSystems(flecs::world& world)
 {
 	static const EntitySystem::ECS::RenderThreadPtr* renderThread = world.get<EntitySystem::ECS::RenderThreadPtr>();
 
-	world.system<const GeometryPtr, RenderObjectPtr>()
-		.each([&](flecs::entity e, const GeometryPtr& geometry, RenderObjectPtr& renderObject)
+	world.system<EntitySystem::ECS::RenderObjectPtr, const Position>()
+		.each([&](EntitySystem::ECS::RenderObjectPtr& renderObject, const Position& position)
 	{
-		renderThread->ptr->EnqueueCommand(Render::ERC::CreateRenderObject, geometry.ptr, renderObject.ptr);
-		e.remove<GeometryPtr>();
-	});
-
-	world.system<RenderObjectPtr, const Position>()
-		.each([&](RenderObjectPtr& renderObject, const Position& position)
-	{
-		renderObject.ptr->SetPosition(position.value, renderThread->ptr->GetMainFrame());
+		renderObject.ptr->SetPosition(Math::Vector3f(position.x, position.y, position.z), renderThread->ptr->GetMainFrame());
 	});
 }
 

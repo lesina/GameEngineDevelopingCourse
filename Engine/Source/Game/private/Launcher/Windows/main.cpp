@@ -37,6 +37,19 @@ bool WindowsMessageLoop()
 	return msg.message != (WM_QUIT | WM_CLOSE);
 }
 
+void WaitForDebugger()
+{
+#if defined(DEBUG)
+	if (GameEngine::Core::g_CommandLineArguments->HasAttribute("wfd"))
+	{
+		while (!::IsDebuggerPresent())
+		{
+			::Sleep(100);
+		}
+	}
+#endif
+}
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
@@ -46,7 +59,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
 	// Enable run-time memory check for debug builds.
-#if defined(DEBUG) || defined(_DEBUG)
+#if defined(DEBUG)
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
@@ -54,11 +67,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	LPWSTR* argv = CommandLineToArgvW(lpCmdLine, &argc);
 	const std::vector<std::wstring> args(argv, argv + argc);
 
-	GameEngine::Core::g_MainWindowsApplication = std::make_unique<GameEngine::Core::Window>();
-	GameEngine::Core::g_MainWindowsApplication->Init(hInstance);
-
 	GameEngine::Core::g_CommandLineArguments = GameEngine::Core::CommandLine::Parse(args);
 	assert(GameEngine::Core::g_CommandLineArguments->HasAttribute("project_root"));
+
+	WaitForDebugger();
+
+	GameEngine::Core::g_MainWindowsApplication = std::make_unique<GameEngine::Core::Window>();
+	GameEngine::Core::g_MainWindowsApplication->Init(hInstance);
 
 	GameEngine::Core::g_FileSystem = GameEngine::Core::FileSystem::Create(GameEngine::Core::g_CommandLineArguments->GetAttribute("project_root"));
 

@@ -21,7 +21,6 @@ add_library(flecs STATIC
 
 set_target_properties(flecs PROPERTIES
             LINKER_LANGUAGE CXX
-            CXX_STANDARD 11
             CXX_STANDARD_REQUIRED ON)
 
 target_include_directories(flecs 

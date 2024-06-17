@@ -40,6 +40,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	Math
 	RenderCore
 	RenderEngine
+	ScriptSystem
 )
 
 # Defining it here so the Engine's build system stay clear

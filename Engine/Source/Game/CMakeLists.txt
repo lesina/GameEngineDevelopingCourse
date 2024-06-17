@@ -54,6 +54,7 @@ target_link_libraries(Game PRIVATE
 	Math
 	RenderCore
 	RenderEngine
+	ScriptSystem
 )
 
 target_precompile_headers(Game

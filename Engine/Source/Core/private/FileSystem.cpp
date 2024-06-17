@@ -11,21 +11,27 @@ namespace GameEngine::Core
 
 		m_shadersRoot = m_root / "Shaders";
 		m_configsRoot = m_root / "Configs";
+		m_scriptsRoot = m_root / "Scripts";
 	}
 
-	std::wstring FileSystem::GetFilePath(const std::string& path) const
+	FileSystem::Path FileSystem::GetFilePath(const std::string& path) const
 	{
-		return m_root/ path;
+		return m_root / path;
 	}
 
-	std::wstring FileSystem::GetShaderPath(const std::string& path) const
+	FileSystem::Path FileSystem::GetShaderPath(const std::string& path) const
 	{
 		return m_shadersRoot / path;
 	}
 
-	std::wstring FileSystem::GetConfigPath(const std::string& path) const
+	FileSystem::Path FileSystem::GetConfigPath(const std::string& path) const
 	{
 		return m_configsRoot / path;
+	}
+
+	FileSystem::Path FileSystem::GetScriptsPath(const std::string& path) const
+	{
+		return m_scriptsRoot / path;
 	}
 
 	FileSystem::Ptr FileSystem::Create(const std::string& root)

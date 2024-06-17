@@ -24,14 +24,16 @@ namespace GameEngine
 		public:
 			static FileSystem::Ptr Create(const std::string& root);
 
-			inline std::wstring GetFilePath(const std::string& path) const;
-			inline std::wstring GetShaderPath(const std::string& path) const;
-			inline std::wstring GetConfigPath(const std::string& path) const;
+			inline Path GetFilePath(const std::string& path) const;
+			inline Path GetShaderPath(const std::string& path) const;
+			inline Path GetConfigPath(const std::string& path) const;
+			inline Path GetScriptsPath(const std::string& path) const;
 
 		private:
 			Path m_root;
 			Path m_shadersRoot;
 			Path m_configsRoot;
+			Path m_scriptsRoot;
 		};
 
 		extern CORE_API FileSystem::Ptr g_FileSystem;

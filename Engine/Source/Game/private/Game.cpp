@@ -1,6 +1,6 @@
 #include <Camera.h>
 #include <DefaultGeometry.h>
-#include <EntitySystem.h>
+#include <EntityManager.h>
 #include <Game.h>
 #include <Input/InputHandler.h>
 
@@ -16,9 +16,10 @@ namespace GameEngine
 		Core::g_MainCamera->SetViewDir(Math::Vector3f(0.0f, -6.0f, 12.0f).Normalized());
 
 		m_renderThread = std::make_unique<Render::RenderThread>();
-		m_EntitySystem = std::make_unique<EntitySystem::EntitySystem>(m_renderThread.get());
 
-		m_GameFramework = std::make_unique<GameFramework>(m_EntitySystem->GetWorld());
+		m_EntityManager = std::make_unique<EntitySystem::EntityManager>(m_renderThread.get());
+		m_GameFramework = std::make_unique<GameFramework>(m_EntityManager->GetWorld());
+		m_ScriptManager = std::make_unique<ScriptSystem::ScriptManager>(m_EntityManager->GetWorld());
 	}
 
 	void Game::Run()
@@ -26,8 +27,6 @@ namespace GameEngine
 		assert(PlatformLoop != nullptr);
 
 		m_GameTimer.Reset();
-
-		m_GameFramework->Init();
 
 		bool quit = false;
 		while (!quit)
@@ -48,7 +47,8 @@ namespace GameEngine
 
 	void Game::Update(float dt)
 	{
-		m_EntitySystem->Update(dt);
+		m_EntityManager->Update(dt);
+		m_ScriptManager->Update(dt);
 		m_GameFramework->Update(dt);
 	}
 }

@@ -31,19 +31,21 @@ void RegisterEcsControlSystems(flecs::world& world)
 		{
 			currentMoveDir = currentMoveDir + camera.ptr->GetViewDir();
 		}
-		position.value = position.value + currentMoveDir.Normalized() * speed * world.delta_time();
-		camera.ptr->SetPosition(position.value);
+		position.x = position.x + currentMoveDir.Normalized().x * speed.value * world.delta_time();
+		position.y = position.y + currentMoveDir.Normalized().y * speed.value * world.delta_time();
+		position.z = position.z + currentMoveDir.Normalized().z * speed.value * world.delta_time();
+		camera.ptr->SetPosition(Math::Vector3f(position.x, position.y, position.z));
 	});
 
 	world.system<const Position, Velocity, const ControllerPtr, const BouncePlane, const JumpSpeed>()
 		.each([&](const Position& pos, Velocity& vel, const ControllerPtr& controller, const BouncePlane& plane, const JumpSpeed& jump)
 	{
 		constexpr float planeEpsilon = 0.1f;
-		if (plane.value.x * pos.value.x + plane.value.y * pos.value.y + plane.value.z * pos.value.z < plane.value.w + planeEpsilon)
+		if (plane.x * pos.x + plane.y * pos.y + plane.z * pos.z < plane.w + planeEpsilon)
 		{
 			if (controller.ptr->IsPressed("Jump"))
 			{
-				vel.value.y = jump.value;
+				vel.y = jump.value;
 			}
 		}
 	});
