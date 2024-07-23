@@ -43,7 +43,7 @@ namespace GameEngine::Render
 		}
 	}
 
-	void RenderEngine::CreateRenderObject(RenderCore::Geometry::Ptr geometry, RenderObject* renderObject)
+	void RenderEngine::CreateRenderObject(RenderCore::Geometry* geometry, RenderObject* renderObject)
 	{
 		assert(geometry);
 		assert(renderObject);

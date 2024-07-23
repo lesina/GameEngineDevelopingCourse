@@ -57,7 +57,7 @@ namespace GameEngine
 			);
 		}
 
-		void D3D12RHI::CreateMesh(RenderCore::Geometry::Ptr geometry, RHIMesh::ID& meshID, RHIMaterial::ID& materialID)
+		void D3D12RHI::CreateMesh(RenderCore::Geometry* geometry, RHIMesh::ID& meshID, RHIMaterial::ID& materialID)
 		{
 			meshID = m_Meshes.size();
 			materialID = m_Materials.size();

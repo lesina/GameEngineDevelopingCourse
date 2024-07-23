@@ -16,8 +16,6 @@ namespace GameEngine
 		class Matrix final
 		{
 		public:
-			T m_data[width * height] = {0};
-
 			Matrix() = default;
 
 			Matrix(const Matrix&) = default;
@@ -27,7 +25,7 @@ namespace GameEngine
 			Matrix& operator=(Matrix&&) = default;
 
 		public:
-			static inline Matrix<T, width, height> Identity()
+			static inline consteval Matrix<T, width, height> Identity() noexcept
 			{
 				static_assert(width == height);
 
@@ -41,7 +39,7 @@ namespace GameEngine
 				return matrix;
 			}
 
-			inline Matrix<T, height, width> Transpose()
+			inline Matrix<T, height, width> Transpose() const noexcept
 			{
 				Matrix<T, height, width> matrix;
 
@@ -57,7 +55,7 @@ namespace GameEngine
 			}
 
 			template<DimensionType newWidth>
-			inline Matrix<T, newWidth, height> operator*(Matrix<T, newWidth, width> other)
+			inline Matrix<T, newWidth, height> operator*(const Matrix<T, newWidth, width>& other) const noexcept
 			{
 				Matrix<T, newWidth, height> matrix;
 
@@ -79,7 +77,7 @@ namespace GameEngine
 				return matrix;
 			}
 
-			inline Vector3<T> operator*(Vector3<T> other)
+			inline Vector3<T> operator*(const Vector3<T>& other) const noexcept
 			{
 				static_assert(width == 3, "Matrix and vector have different dimensions");
 				Vector3<T> result;
@@ -91,12 +89,12 @@ namespace GameEngine
 				return result;
 			}
 
-			inline T GetElement(DimensionType row, DimensionType column)
+			inline const T& GetElement(DimensionType row, DimensionType column) const noexcept
 			{
 				return m_data[GetIndex(row, column)];
 			}
 
-			inline void SetElement(T value, DimensionType row, DimensionType column)
+			inline void SetElement(T value, DimensionType row, DimensionType column) noexcept
 			{
 				assert(row < height);
 				assert(column < width);
@@ -104,12 +102,15 @@ namespace GameEngine
 			}
 
 		protected:
-			inline DimensionType GetIndex(DimensionType row, DimensionType column)
+			inline DimensionType GetIndex(DimensionType row, DimensionType column) const noexcept
 			{
 				assert(row < height);
 				assert(column < width);
 				return row * width + column;
 			}
+
+		protected:
+			T m_data[width * height] = { 0 };
 		};
 
 		using Matrix4x4f = Matrix<float, 4, 4>;

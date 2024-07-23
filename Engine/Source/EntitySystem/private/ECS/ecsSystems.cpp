@@ -12,10 +12,12 @@ namespace GameEngine::EntitySystem::ECS
 	{
 		static const RenderThreadPtr* renderThread = world.get<RenderThreadPtr>();
 
-		world.system<const GeometryPtr, RenderObjectPtr>()
-			.each([&](flecs::entity e, const GeometryPtr& geometry, RenderObjectPtr& renderObject)
+		world.system<const GeometryPtr>()
+			.each([&](flecs::entity e, const GeometryPtr& geometry)
 		{
-			renderThread->ptr->EnqueueCommand(Render::ERC::CreateRenderObject, geometry.ptr, renderObject.ptr);
+			Render::RenderObject* renderObjectPtr = new Render::RenderObject();
+			e.set(RenderObjectPtr{ renderObjectPtr });
+			renderThread->ptr->EnqueueCommand(Render::ERC::CreateRenderObject, geometry.ptr, renderObjectPtr);
 			e.remove<GeometryPtr>();
 		});
 	}

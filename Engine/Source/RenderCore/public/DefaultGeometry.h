@@ -10,7 +10,7 @@ namespace GameEngine
 	{
 		namespace DefaultGeometry
 		{
-			Geometry::Ptr Cube()
+			Geometry* Cube()
 			{
 				constexpr Core::array<Geometry::VertexType, 8> vertices =
 				{
@@ -50,8 +50,8 @@ namespace GameEngine
 					4, 0, 3,
 					4, 3, 7
 				};
-
-				return std::make_shared<Geometry>((Geometry::VertexType*)vertices.begin(), vertices.size(), (Geometry::IndexType*)indices.begin(), indices.size());
+				
+				return new Geometry((Geometry::VertexType*)vertices.begin(), vertices.size(), (Geometry::IndexType*)indices.begin(), indices.size());
 			}
 		}
 	}

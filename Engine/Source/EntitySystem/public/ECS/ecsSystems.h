@@ -3,6 +3,11 @@
 #include <flecs.h>
 #include <Geometry.h>
 
+struct GeometryPtr
+{
+	GameEngine::RenderCore::Geometry* ptr;
+};
+
 namespace GameEngine
 {
 	namespace Render
@@ -16,11 +21,6 @@ namespace GameEngine
 		struct RenderThreadPtr
 		{
 			Render::RenderThread* ptr;
-		};
-
-		struct GeometryPtr
-		{
-			GameEngine::RenderCore::Geometry::Ptr ptr;
 		};
 
 		struct RenderObjectPtr

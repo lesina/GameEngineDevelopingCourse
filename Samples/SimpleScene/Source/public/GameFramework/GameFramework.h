@@ -32,7 +32,13 @@ public:
 	void Update(float dt);
 
 private:
-	void RegisterComponents();
+	/*
+	* This function registers the components for the flecs reflection system,
+	* so it can be used in lua and for parsing an xml file
+	*/
+	void RegisterComponentsReflection();
+
+	/* Any ECS system we declare through C++ */
 	void RegisterSystems();
 
 private:

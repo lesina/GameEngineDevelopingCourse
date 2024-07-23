@@ -21,12 +21,12 @@ namespace GameEngine
 			Vector2(Vector2&&) = default;
 			Vector2& operator=(Vector2&&) = default;
 
-			static Vector2<T> Zero() { return Vector2<T>((T)0, (T)0); }
+			static inline consteval Vector2<T> Zero() noexcept { return Vector2<T>((T)0, (T)0); }
 
-			explicit constexpr Vector2(float _x, float _y) noexcept : x(_x), y(_y) {}
-			explicit constexpr Vector2(T vector[2]) : x(vector[0]), y(vector[1]) {}
+			explicit constexpr Vector2(T _x, T _y) noexcept : x(_x), y(_y) {}
+			explicit constexpr Vector2(const T (&vector)[2]) noexcept : x(vector[0]), y(vector[1]) {}
 
-			inline Vector2<T> operator-(Vector2<T> other)
+			inline Vector2<T> operator-(const Vector2<T>& other) const noexcept
 			{
 				Vector2<T> result;
 				result.x = x - other.x;
@@ -34,7 +34,7 @@ namespace GameEngine
 				return result;
 			}
 
-			inline Vector2<T> operator-()
+			inline Vector2<T> operator-() const noexcept
 			{
 				Vector2<T> result;
 				result.x = -x;
@@ -42,7 +42,7 @@ namespace GameEngine
 				return result;
 			}
 
-			inline bool operator!=(Vector2<T> other)
+			inline bool operator!=(const Vector2<T>& other) const noexcept
 			{
 				return x != other.x || y != other.y;
 			}
@@ -64,17 +64,17 @@ namespace GameEngine
 			Vector3(Vector3&&) = default;
 			Vector3& operator=(Vector3&&) = default;
 
-			static Vector3<T> Zero() { return Vector3<T>((T)0, (T)0, (T)0); }
+			static inline consteval Vector3<T> Zero() noexcept { return Vector3<T>((T)0, (T)0, (T)0); }
 
-			explicit constexpr Vector3(float _x, float _y, float _z) noexcept : x(_x), y(_y), z(_z) {}
-			explicit constexpr Vector3(T vector[3]) : x(vector[0]), y(vector[1]), z(vector[2]) {}
+			explicit constexpr Vector3(T _x, T _y, T _z) noexcept : x(_x), y(_y), z(_z) {}
+			explicit constexpr Vector3(const T (&vector)[3]) noexcept : x(vector[0]), y(vector[1]), z(vector[2]) {}
 
-			inline float GetLength() const
+			inline float GetLength() const noexcept
 			{
 				return sqrtf(x * x + y * y + z * z);
 			}
 
-			inline Vector3<T> Normalized() const
+			inline Vector3<T> Normalized() const noexcept
 			{
 				float length = GetLength();
 				Vector3<T> result;
@@ -91,7 +91,7 @@ namespace GameEngine
 				return result;
 			}
 
-			inline Vector3<T> operator+(Vector3<T> other)
+			inline Vector3<T> operator+(const Vector3<T>& other) noexcept
 			{
 				Vector3<T> result;
 				result.x = x + other.x;
@@ -100,7 +100,7 @@ namespace GameEngine
 				return result;
 			}
 
-			inline Vector3<T> operator-(Vector3<T> other)
+			inline Vector3<T> operator-(const Vector3<T>& other) noexcept
 			{
 				Vector3<T> result;
 				result.x = x - other.x;
@@ -109,7 +109,7 @@ namespace GameEngine
 				return result;
 			}
 
-			inline Vector3<T> operator-()
+			inline Vector3<T> operator-() noexcept
 			{
 				Vector3<T> result;
 				result.x = -x;
@@ -118,18 +118,18 @@ namespace GameEngine
 				return result;
 			}
 
-			inline float operator*(Vector3<T> other)
+			inline float operator*(const Vector3<T>& other) const noexcept
 			{
 				return x * other.x + y * other.y + z * other.z;
 			}
 
-			inline Vector3<T> operator*(float scale)
+			inline Vector3<T> operator*(float scale) const noexcept
 			{
 				return Vector3<T>(x * scale, y * scale, z * scale);
 			}
 
 			// We have left hand coordinate system, so use left hand to determine ther resulted vector
-			inline Vector3<T> CrossProduct(Vector3<T> other) const
+			inline Vector3<T> CrossProduct(const Vector3<T>& other) const noexcept
 			{
 				return Vector3<T>(
 					y * other.z - z * other.y,
@@ -137,7 +137,7 @@ namespace GameEngine
 					x * other.y - y * other.x);
 			}
 
-			inline bool operator!=(Vector3<T> other)
+			inline bool operator!=(const Vector3<T>& other) const noexcept
 			{
 				return x != other.x || y != other.y || z != other.z;
 			}
@@ -160,12 +160,12 @@ namespace GameEngine
 			Vector4(Vector4&&) = default;
 			Vector4& operator=(Vector4&&) = default;
 
-			static Vector4<T> Zero() { return Vector4<T>((T)0, (T)0, (T)0, (T)0); }
+			static inline consteval Vector4<T> Zero() noexcept { return Vector4<T>((T)0, (T)0, (T)0, (T)0); }
 
-			explicit constexpr Vector4(float _x, float _y, float _z, float _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
-			explicit constexpr Vector4(T vector[4]) : x(vector[0]), y(vector[1]), z(vector[2]), w(vector[3]) {}
+			explicit constexpr Vector4(T _x, T _y, T _z, T _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
+			explicit constexpr Vector4(const T (&vector)[4]) noexcept : x(vector[0]), y(vector[1]), z(vector[2]), w(vector[3]) {}
 
-			inline Vector4<T> operator-(Vector4<T> other)
+			inline Vector4<T> operator-(const Vector4<T>& other) const noexcept
 			{
 				Vector4<T> result;
 				result.x = x - other.x;
@@ -175,7 +175,7 @@ namespace GameEngine
 				return result;
 			}
 
-			inline bool operator!=(Vector4<T> other)
+			inline bool operator!=(const Vector4<T>& other) const noexcept
 			{
 				return x != other.x && y != other.y && z != other.z && w != other.w;
 			}

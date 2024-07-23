@@ -30,7 +30,7 @@ namespace GameEngine
 			virtual void BeginFrame() = 0;
 			virtual void EndFrame() = 0;
 			virtual void Draw(RenderData* renderData, size_t frame) = 0;
-			virtual void CreateMesh(RenderCore::Geometry::Ptr geometry, RHIMesh::ID& meshID, RHIMaterial::ID& materialID) = 0;
+			virtual void CreateMesh(RenderCore::Geometry* geometry, RHIMesh::ID& meshID, RHIMaterial::ID& materialID) = 0;
 			virtual void ExecuteCommandLists() = 0;
 			virtual void Flush() = 0;
 			virtual void OnResize() = 0;

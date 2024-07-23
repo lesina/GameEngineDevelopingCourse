@@ -2,59 +2,52 @@
 
 #include <flecs.h>
 
-// This define is essential for the scripts to expose the ECS components to lua syntax
-// There is a task to rework this behavior
-#undef ECS_META_IMPL
-#ifndef GAME_FRAMEWORK
-#define ECS_META_IMPL EXTERN // Ensure meta symbols are only defined once
-#endif
-
-ECS_STRUCT(Position,
+struct Position
 {
 	float x;
 	float y;
 	float z;
-});
+};
 
-ECS_STRUCT(Velocity,
+struct Velocity
 {
 	float x;
 	float y;
 	float z;
-});
+};
 
-ECS_STRUCT(Gravity,
+struct Gravity
 {
 	float x;
 	float y;
 	float z;
-});
+};
 
-ECS_STRUCT(BouncePlane,
+struct BouncePlane
 {
 	float x;
 	float y;
 	float z;
 	float w;
-});
+};
 
-ECS_STRUCT(Bounciness,
+struct Bounciness
 {
 	float value;
-});
+};
 
-ECS_STRUCT(ShiverAmount,
+struct ShiverAmount
 {
 	float value;
-});
+};
 
-ECS_STRUCT(FrictionAmount,
+struct FrictionAmount
 {
 	float value;
-});
+};
 
-ECS_STRUCT(Speed,
+struct Speed
 {
 	float value;
-});
+};
 

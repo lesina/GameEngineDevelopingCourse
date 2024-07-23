@@ -23,7 +23,7 @@ namespace GameEngine
 			virtual void BeginFrame() override;
 			virtual void EndFrame() override;
 			virtual void Draw(RenderData* renderData, size_t frame) override;
-			virtual void CreateMesh(RenderCore::Geometry::Ptr geometry, RHIMesh::ID& meshID, RHIMaterial::ID& materialID) override;
+			virtual void CreateMesh(RenderCore::Geometry* geometry, RHIMesh::ID& meshID, RHIMaterial::ID& materialID) override;
 			virtual void ExecuteCommandLists() override;
 			virtual void Flush() override;
 			virtual void OnResize() override;
