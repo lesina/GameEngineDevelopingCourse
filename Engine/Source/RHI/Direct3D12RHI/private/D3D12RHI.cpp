@@ -29,43 +29,28 @@ namespace GameEngine
 
 		Mesh::Ptr D3D12RHI::CreateBoxMesh()
 		{
-			array<Vertex, 8> vertices =
+			array<Vertex, 5> vertices =
 			{
-				Vertex({ Math::Vector3f(-1.0f, -1.0f, -1.0f), Math::Vector4f((float*)&DirectX::Colors::White) }),
-				Vertex({ Math::Vector3f(-1.0f, +1.0f, -1.0f), Math::Vector4f((float*)&DirectX::Colors::Black) }),
-				Vertex({ Math::Vector3f(+1.0f, +1.0f, -1.0f), Math::Vector4f((float*)&DirectX::Colors::Red) }),
-				Vertex({ Math::Vector3f(+1.0f, -1.0f, -1.0f), Math::Vector4f((float*)&DirectX::Colors::Green) }),
-				Vertex({ Math::Vector3f(-1.0f, -1.0f, +1.0f), Math::Vector4f((float*)&DirectX::Colors::Blue) }),
-				Vertex({ Math::Vector3f(-1.0f, +1.0f, +1.0f), Math::Vector4f((float*)&DirectX::Colors::Yellow) }),
-				Vertex({ Math::Vector3f(+1.0f, +1.0f, +1.0f), Math::Vector4f((float*)&DirectX::Colors::Cyan) }),
-				Vertex({ Math::Vector3f(+1.0f, -1.0f, +1.0f), Math::Vector4f((float*)&DirectX::Colors::Magenta) })
+				Vertex({ Math::Vector3f(-1.0f, -1.0f, -1.0f), Math::Vector4f((float*)&DirectX::Colors::Yellow) }),
+				Vertex({ Math::Vector3f(+1.0f, -1.0f, +1.0f), Math::Vector4f((float*)&DirectX::Colors::Yellow) }),
+				Vertex({ Math::Vector3f(+0.0f, +1.0f, +0.0f), Math::Vector4f((float*)&DirectX::Colors::Orange) }),
+				Vertex({ Math::Vector3f(+1.0f, -1.0f, -1.0f), Math::Vector4f((float*)&DirectX::Colors::Yellow) }),
+				Vertex({ Math::Vector3f(-1.0f, -1.0f, +1.0f), Math::Vector4f((float*)&DirectX::Colors::Yellow) }),
 			};
 
 			array<uint16_t, 36> indices =
 			{
 				// front face
-				0, 1, 2,
-				0, 2, 3,
+				0, 4, 3,
+				1, 3, 4,
 
-				// back face
-				4, 6, 5,
-				4, 7, 6,
+				0, 4, 2,
 
-				// left face
-				4, 5, 1,
-				4, 1, 0,
+				0, 2, 3, 
 
-				// right face
-				3, 2, 6,
-				3, 6, 7,
+				3, 1, 2,
 
-				// top face
-				1, 5, 6,
-				1, 6, 2,
-
-				// bottom face
-				4, 0, 3,
-				4, 3, 7
+				1, 3, 2
 			};
 
 			return m_d3d12Private->CreateMesh(vertices.begin(), vertices.size(), sizeof(Vertex), indices.begin(), indices.size(), sizeof(uint16_t));

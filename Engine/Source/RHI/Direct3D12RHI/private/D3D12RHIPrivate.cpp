@@ -253,12 +253,25 @@ namespace GameEngine
 			D3D12Mesh d3d12Mesh = *reinterpret_cast<D3D12Mesh*>(mesh.get());
 			D3D12Material d3d12Material = *reinterpret_cast<D3D12Material*>(material.get());
 
+			static float m_PositionX = 0.0f;
+			static float m_MoveSpeed = 0.01f;
+			static float m_MoveDirection = 1.0f;   
+			static float m_LeftBoundary = -2.0f;  
+			static float m_RightBoundary = 2.0f;   
+
+			m_PositionX += m_MoveSpeed * m_MoveDirection;
+
+			if (m_PositionX >= m_RightBoundary || m_PositionX <= m_LeftBoundary)
+			{
+				m_MoveDirection *= -1.0f;
+			};
+
 			float mTheta = 1.5f * DirectX::XM_PI;
 			float mPhi = DirectX::XM_PIDIV4;
 			float mRadius = 5.0f;
 
 			// Convert Spherical to Cartesian coordinates.
-			float x = mRadius * sinf(mPhi) * cosf(mTheta);
+			float x = m_PositionX;
 			float z = mRadius * sinf(mPhi) * sinf(mTheta);
 			float y = mRadius * cosf(mPhi);
 
