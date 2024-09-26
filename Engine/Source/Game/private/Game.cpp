@@ -2,6 +2,7 @@
 #include <DefaultGeometry.h>
 #include <Game.h>
 #include <GameObject.h>
+#include <INIReader.h>
 
 namespace GameEngine
 {
@@ -13,7 +14,16 @@ namespace GameEngine
 		Core::g_MainCamera = new Core::Camera();
 		Core::g_MainCamera->SetPosition(Math::Vector3f(0.0f, 6.0f, -6.0f));
 		Core::g_MainCamera->SetViewDir(Math::Vector3f(0.0f, -6.0f, 6.0f).Normalized());
-		Core::g_MainCamera->binds = { 0x57, 0x53, 0x41, 0x44, 0x20, 0x10 };
+
+		INIReader parser = INIReader("../../../../../Assets/keybinds.ini");
+
+		Core::g_MainCamera->binds = { 
+			static_cast<unsigned>(parser.GetInteger("keys", "forward", 0x57)),
+			static_cast<unsigned>(parser.GetInteger("keys", "back", 0x53)),
+			static_cast<unsigned>(parser.GetInteger("keys", "left", 0x41)),
+			static_cast<unsigned>(parser.GetInteger("keys", "right", 0x44)),
+			static_cast<unsigned>(parser.GetInteger("keys", "up", 0x20)),
+			static_cast<unsigned>(parser.GetInteger("keys", "down", 0x10)) };
 
 		m_renderThread = std::make_unique<Render::RenderThread>();
 

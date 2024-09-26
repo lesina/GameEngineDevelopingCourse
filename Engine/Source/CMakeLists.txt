@@ -4,6 +4,7 @@ include_directories(${PROJECT_BINARY_DIR}/Engine/Source)
 
 add_subdirectory(Core)
 add_subdirectory(Game)
+add_subdirectory(Inih)
 add_subdirectory(Math)
 add_subdirectory(RenderCore)
 add_subdirectory(RenderEngine)

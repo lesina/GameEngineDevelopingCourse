@@ -12,7 +12,7 @@ add_compile_definitions(
   $<$<CONFIG:Release>:RELEASE>
 )
 
-project(GameEngine LANGUAGES CXX)
+project(GameEngine LANGUAGES CXX C)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/localBuild/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/localBuild/lib)
