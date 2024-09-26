@@ -13,6 +13,7 @@ namespace GameEngine
 		Core::g_MainCamera = new Core::Camera();
 		Core::g_MainCamera->SetPosition(Math::Vector3f(0.0f, 6.0f, -6.0f));
 		Core::g_MainCamera->SetViewDir(Math::Vector3f(0.0f, -6.0f, 6.0f).Normalized());
+		Core::g_MainCamera->binds = { 0x57, 0x53, 0x41, 0x44, 0x20, 0x10 };
 
 		m_renderThread = std::make_unique<Render::RenderThread>();
 
@@ -38,7 +39,7 @@ namespace GameEngine
 			float dt = m_GameTimer.GetDeltaTime();
 
 			Update(dt);
-			
+
 			// The most common idea for such a loop is that it returns false when quit is required, or true otherwise
 			quit = !PlatformLoop();
 
@@ -48,6 +49,8 @@ namespace GameEngine
 
 	void Game::Update(float dt)
 	{
+		Core::g_MainCamera->Update(dt);
+
 		for (int i = 0; i < m_Objects.size(); ++i)
 		{
 			Math::Vector3f pos = m_Objects[i]->GetPosition();
@@ -61,11 +64,13 @@ namespace GameEngine
 			{
 				pos.y -= 0.5f * dt;
 			}
+			/*
 			else if (i == 2)
 			{
 				pos.x += 0.5f * dt;
 				pos.y -= 0.5f * dt;
 			}
+			*/
 			m_Objects[i]->SetPosition(pos, m_renderThread->GetMainFrame());
 		}
 	}

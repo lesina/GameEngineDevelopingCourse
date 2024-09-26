@@ -51,4 +51,9 @@ namespace GameEngine::Core
         m_ViewDir = rotationMatrixX * rotationMatrixY * m_ViewDir;
         m_ViewDir = m_ViewDir.Normalized();
 	}
+
+    void Camera::Update(float dt)
+    {
+        m_Position = m_Position + m_Speed * dt;
+    }
 }

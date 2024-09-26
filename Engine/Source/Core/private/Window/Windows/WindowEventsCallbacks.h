@@ -46,4 +46,23 @@ namespace GameEngine::Core
 
         window->SetMousePos(x, y);
     }
+
+    void OnKeyDown(WPARAM btnState, Camera* camera, Window* window)
+    {
+        Math::Vector3f viewDir = camera->GetViewDir();
+        Math::Vector3f up = Math::Vector3f(0.0f, 1.0f, 0.0f);
+        Math::Vector3f right = -viewDir.CrossProduct(up).Normalized();
+
+        Math::Vector3f moveDir = (
+            viewDir * ((btnState == camera->binds.forward) - (btnState == camera->binds.back)) +
+            right * ((btnState == camera->binds.right) - (btnState == camera->binds.left)) +
+            up * ((btnState == camera->binds.up) - (btnState == camera->binds.down)) ).Normalized();
+
+        camera->SetSpeed(moveDir * 1.0f);
+    }
+
+    void OnKeyUp(WPARAM btnState, Camera* camera)
+    {
+        camera->SetSpeed(Math::Vector3f(0.0f, 0.0f, 0.0f));
+    }
 }
