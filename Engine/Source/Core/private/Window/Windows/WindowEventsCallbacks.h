@@ -46,4 +46,10 @@ namespace GameEngine::Core
 
         window->SetMousePos(x, y);
     }
+    void moveObject(std::vector<POINT> &objects, int dx, int dy) {
+        for (auto &object : objects) {
+            object.x += dx;
+            object.y += dy;
+        }
+    }
 }

@@ -2,9 +2,12 @@
 #include <DefaultGeometry.h>
 #include <Game.h>
 #include <GameObject.h>
+#include <Windows.h>
+#include <array>
 
 namespace GameEngine
 {
+
 	Game::Game(
 		std::function<bool()> PlatformLoopFunc
 	) :
@@ -46,27 +49,53 @@ namespace GameEngine
 		}
 	}
 
+	bool IsKeyPressed(int keyCode) {
+		return GetAsyncKeyState(keyCode) & 0x8000;
+	}
+
 	void Game::Update(float dt)
 	{
 		for (int i = 0; i < m_Objects.size(); ++i)
 		{
+			float speed = 5.0f;
 			Math::Vector3f pos = m_Objects[i]->GetPosition();
 
-			// Showcase
 			if (i == 0)
 			{
-				pos.x += 0.5f * dt;
+				UpdatePositionForObject0(pos, dt, speed);
 			}
 			else if (i == 1)
 			{
-				pos.y -= 0.5f * dt;
+				UpdatePositionForObject1(pos, dt, speed);
 			}
 			else if (i == 2)
 			{
-				pos.x += 0.5f * dt;
-				pos.y -= 0.5f * dt;
+				UpdatePositionForObject2(pos, dt, speed);
 			}
+
 			m_Objects[i]->SetPosition(pos, m_renderThread->GetMainFrame());
 		}
+	}
+	void Game::UpdatePositionForObject0(Math::Vector3f& pos, float dt, float speed)
+	{
+		if (GetKeyState('A') & 0x8000) pos.x -= speed * dt;
+		if (GetKeyState('D') & 0x8000) pos.x += speed * dt;
+		if (GetKeyState('W') & 0x8000) pos.x += speed * dt;
+		if (GetKeyState('S') & 0x8000) pos.x -= speed * dt;
+	}
+	void Game::UpdatePositionForObject1(Math::Vector3f& pos, float dt, float speed)
+	{
+		if (GetKeyState('A') & 0x8000) pos.x += speed * dt;
+		if (GetKeyState('D') & 0x8000) pos.x -= speed * dt;
+		if (GetKeyState('W') & 0x8000) pos.y += speed * dt;
+		if (GetKeyState('S') & 0x8000) pos.y -= speed * dt;
+	}
+
+	void Game::UpdatePositionForObject2(Math::Vector3f& pos, float dt, float speed)
+	{
+		if (GetKeyState('A') & 0x8000) pos.y -= speed * dt;
+		if (GetKeyState('D') & 0x8000) pos.y += speed * dt;
+		if (GetKeyState('W') & 0x8000) pos.z += speed * dt;
+		if (GetKeyState('S') & 0x8000) pos.z -= speed * dt;
 	}
 }

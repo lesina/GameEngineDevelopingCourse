@@ -20,6 +20,10 @@ namespace GameEngine
 	public:
 		void Run();
 		void Update(float dt);
+		void UpdatePositionForObject0(Math::Vector3f& pos, float dt, float speed);
+		void UpdatePositionForObject1(Math::Vector3f& pos, float dt, float speed);
+		void UpdatePositionForObject2(Math::Vector3f& pos, float dt, float speed);
+
 
 	private:
 		// The main idea behind having this functor is to abstract the common code from the platfrom-specific code

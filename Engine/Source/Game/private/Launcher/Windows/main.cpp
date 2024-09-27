@@ -5,6 +5,7 @@
 #include <Game.h>
 #include <array.h>
 #include <iostream>
+#include <filesystem>
 
 #if defined(DEBUG) || defined(_DEBUG)
 #define _CRTDBG_MAP_ALLOC
