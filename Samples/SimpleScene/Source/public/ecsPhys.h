@@ -51,3 +51,12 @@ struct Speed
 	float value;
 };
 
+struct BulletStore
+{
+	float value;
+};
+
+struct Lifetime {
+	float value;
+};
+

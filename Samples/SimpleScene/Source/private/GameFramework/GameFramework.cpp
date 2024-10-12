@@ -71,6 +71,9 @@ void GameFramework::RegisterComponentsReflection()
 
 	m_World.component<JumpSpeed>()
 		.member<float>("value");
+
+	m_World.component<BulletStore>()
+		.member<float>("value");
 }
 
 void GameFramework::RegisterSystems()
