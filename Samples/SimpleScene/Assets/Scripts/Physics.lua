@@ -5,6 +5,20 @@ local function rand_flt(from, to)
     return from + (math.random(maxNumber) / maxNumber) * (to - from)
 end
 
+local TimePassed = 0
+local objectsMoved = false 
+
+local function ObjectDestroy(it)
+    TimePassed = TimePassed + it.delta_time
+    if TimePassed >= 10 and not objectsMoved then 
+        for pos, ent in ecs.each(it) do
+           
+            pos.y = pos.y + 10000
+        end
+        objectsMoved = true
+    end
+end
+
 local function move(it)
     for pos, vel, ent in ecs.each(it) do
         pos.x = pos.x + vel.x * it.delta_time
@@ -60,9 +74,11 @@ local function BounceSystem(it)
     end
 end
 
+
 ecs.system(move, "Move", ecs.OnUpdate, "Position, Velocity")
 ecs.system(gravity, "grav", ecs.OnUpdate, "Position, Velocity, Gravity, BouncePlane")
 ecs.system(FrictionSystem, "FrictionSystem", ecs.OnUpdate, "Velocity, FrictionAmount")
 ecs.system(ShiverSystem, "ShiverSystem", ecs.OnUpdate, "Position, ShiverAmount")
 ecs.system(BounceSystem, "BounceSystem", ecs.OnUpdate, "Position, Velocity, BouncePlane, Bounciness")
+ecs.system(ObjectDestroy, "ObjectDestroy", ecs.OnUpdate, "Position")
 
