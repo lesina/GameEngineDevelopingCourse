@@ -21,6 +21,8 @@ namespace GameEngine::ScriptSystem
 		luaL_openlibs(L);
 
 		AddScript("Physics.lua");
+		AddScript("DeathTimer.lua");
+		AddScript("Collision.lua");
 	}
 
 	ScriptManager::~ScriptManager()

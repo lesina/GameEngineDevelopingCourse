@@ -58,3 +58,12 @@ ECS_STRUCT(Speed,
 	float value;
 });
 
+ECS_STRUCT(Timer,
+{
+	float time;
+});
+
+ECS_STRUCT(Obstacle,
+{
+	bool isCollided;
+});
