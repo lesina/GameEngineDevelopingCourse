@@ -71,6 +71,18 @@ void GameFramework::RegisterComponentsReflection()
 
 	m_World.component<JumpSpeed>()
 		.member<float>("value");
+
+	m_World.component<TTL>()
+		.member<float>("value");
+
+	m_World.component<DieOnGround>()
+		.member<bool>("value");
+
+	m_World.component<Collider>()
+		.member<bool>("value");
+
+	m_World.component<JumpOnCollision>()
+		.member<bool>("value");
 }
 
 void GameFramework::RegisterSystems()

@@ -51,3 +51,22 @@ struct Speed
 	float value;
 };
 
+struct TTL
+{
+	float value;
+};
+
+struct DieOnGround
+{
+	bool value;
+};
+
+struct Collider
+{
+	bool value;
+};
+
+struct JumpOnCollision
+{
+	bool value;
+};
