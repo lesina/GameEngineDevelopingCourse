@@ -51,3 +51,17 @@ struct Speed
 	float value;
 };
 
+struct Timer
+{
+	float time;
+};
+
+struct ToDestroy
+{
+	float toDestroy;
+};
+
+struct Collision
+{
+	bool isCollided;
+};

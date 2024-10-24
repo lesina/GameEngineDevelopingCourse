@@ -21,6 +21,7 @@ namespace GameEngine::ScriptSystem
 		luaL_openlibs(L);
 
 		AddScript("Physics.lua");
+		AddScript("Script.lua");
 	}
 
 	ScriptManager::~ScriptManager()
