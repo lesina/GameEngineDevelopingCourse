@@ -60,4 +60,5 @@ target_precompile_headers(RenderEngine
 		<filesystem>
 		<bitset>
 		<queue>
+		<variant>
 )

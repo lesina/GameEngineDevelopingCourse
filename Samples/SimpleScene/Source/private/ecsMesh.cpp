@@ -15,8 +15,9 @@ void RegisterEcsMeshSystems(flecs::world& world)
 	world.system<EntitySystem::ECS::RenderObjectPtr, const Position>()
 		.each([&](EntitySystem::ECS::RenderObjectPtr& renderObject, const Position& position)
 	{
-		renderObject.ptr->SetPosition(Math::Vector3f(position.x, position.y, position.z), renderThread->ptr->GetMainFrame());
+		if (renderObject.ptr) [[likely]]
+		{
+			renderObject.ptr->SetPosition(Math::Vector3f(position.x, position.y, position.z), renderThread->ptr->GetMainFrame());
+		}
 	});
 }
-
-

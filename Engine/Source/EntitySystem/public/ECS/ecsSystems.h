@@ -26,6 +26,11 @@ namespace GameEngine
 		struct RenderObjectPtr
 		{
 			GameEngine::Render::RenderObject* ptr = nullptr;
+
+			GameEngine::Render::RenderObject** GetAddressOf()
+			{
+				return &ptr;
+			}
 		};
 
 		void RegisterEcsCoreSystems(flecs::world& world);

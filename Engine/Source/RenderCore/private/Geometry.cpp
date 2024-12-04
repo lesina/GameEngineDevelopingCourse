@@ -4,9 +4,9 @@ namespace GameEngine::RenderCore
 {
 	Geometry::Geometry(
 		VertexType* vertices,
-		size_t verticesCount,
+		uint32_t verticesCount,
 		IndexType* indices,
-		size_t indicesCount
+		uint32_t indicesCount
 	) : m_Vertices(vertices),
 		m_Indices(indices),
 		m_VerticesCount(verticesCount),

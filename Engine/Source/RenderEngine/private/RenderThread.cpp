@@ -20,7 +20,7 @@ namespace GameEngine::Render
 	{
 		assert(m_CurMainFrame == 0);
 
-		m_MainThreadId = std::this_thread::get_id();
+		s_MainThreadId = std::this_thread::get_id();
 
 		frameMutex[m_CurMainFrame].lock();
 
@@ -36,7 +36,7 @@ namespace GameEngine::Render
 	// Render Loop
 	void RenderThread::Run()
 	{
-		m_RenderThreadId = std::this_thread::get_id();
+		s_RenderThreadId = std::this_thread::get_id();
 
 		m_RenderEngine = new RenderEngine();
 
@@ -52,9 +52,9 @@ namespace GameEngine::Render
 		}
 	}
 
-	bool RenderThread::IsRenderThread() const
+	bool RenderThread::IsRenderThread()
 	{
-		return m_RenderThreadId == std::this_thread::get_id();
+		return s_RenderThreadId == std::this_thread::get_id();
 	}
 
 	template<typename... Args>
@@ -117,5 +117,10 @@ namespace GameEngine::Render
 	size_t RenderThread::GetNextFrame(size_t frameNumber) const
 	{
 		return (frameNumber + 1) % RenderCore::g_FrameBufferCount;
+	}
+
+	std::shared_ptr<HAL::RHIContext> RenderThread::GetRHI() const
+	{
+		return m_RenderEngine->GetRHI();
 	}
 }

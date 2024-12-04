@@ -64,4 +64,5 @@ target_precompile_headers(Direct3D12RHI
 		<cstdint>
 		<limits>
 		<filesystem>
+		<variant>
 )

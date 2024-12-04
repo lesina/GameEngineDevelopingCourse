@@ -9,7 +9,7 @@ namespace GameEngine::Render
 {
 	namespace HAL
 	{
-		class RHIAdapter;
+		class RHIContext;
 	}
 
 	class RENDER_ENGINE_API RenderEngine final
@@ -22,12 +22,11 @@ namespace GameEngine::Render
 
 		void CreateRenderObject(RenderCore::Geometry* geometry, RenderObject* renderObject);
 
-	private:
-		uint32_t m_swapChainWidth;
-		uint32_t m_swapChainHeight;
+		std::shared_ptr<HAL::RHIContext> GetRHI() const { return m_rhi; }
 
+	private:
 		std::vector<RenderObject*> m_RenderObjects;
 
-		std::shared_ptr<HAL::RHIAdapter> m_rhi;
+		std::shared_ptr<HAL::RHIContext> m_rhi;
 	};
 }

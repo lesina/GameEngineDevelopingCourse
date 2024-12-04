@@ -80,4 +80,5 @@ target_precompile_headers(RHI
 		<cstdint>
 		<limits>
 		<filesystem>
+		<variant>
 )

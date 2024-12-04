@@ -30,6 +30,7 @@ namespace GameEngine::Core
 		void UnFocus();
 
 		inline bool IsFocused() const { return m_IsFocused; }
+		inline bool IsWindowed() const { return m_IsWindowed; }
 
 	private:
 		uint32_t m_Width = 800;
@@ -41,6 +42,7 @@ namespace GameEngine::Core
 		Math::Vector2i m_MousePos;
 
 		bool m_IsFocused = false;
+		bool m_IsWindowed = true;
 	};
 
 	extern CORE_API Window::Ptr g_MainWindowsApplication;

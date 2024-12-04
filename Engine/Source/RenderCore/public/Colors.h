@@ -13,6 +13,7 @@ namespace GameEngine
 		{
 			RENDER_CORE_API extern Color Red;
 			RENDER_CORE_API extern Color Blue;
+			RENDER_CORE_API extern Color LightSteelBlue;
 		}
 	}
 }

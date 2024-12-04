@@ -7,6 +7,11 @@
 
 namespace GameEngine::Render
 {
+	namespace HAL
+	{
+		class RHIContext;
+	}
+
 	class RenderEngine;
 
 	enum class ERC : uint32_t
@@ -29,18 +34,21 @@ namespace GameEngine::Render
 		template<typename... Args>
 		void EnqueueCommand(ERC command, Args... args);
 
-		bool IsRenderThread() const;
 		void OnEndFrame();
 
 		size_t GetMainFrame() const { return m_CurMainFrame; }
+
+		std::shared_ptr<HAL::RHIContext> GetRHI() const;
+
+		static bool IsRenderThread();
 
 	private:
 		void ProcessCommands();
 		void SwitchFrame();
 		size_t GetNextFrame(size_t frameNumber) const;
 
-		std::jthread::id m_RenderThreadId;
-		std::jthread::id m_MainThreadId;
+		inline static std::jthread::id s_RenderThreadId;
+		inline static std::jthread::id s_MainThreadId;
 		std::unique_ptr<std::jthread> m_Thread;
 		std::mutex frameMutex[RenderCore::g_FrameBufferCount];
 

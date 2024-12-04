@@ -1,11 +1,6 @@
 #pragma once
 
-#include <RHI/RHI/export.h>
-
-// That's why macroses are bad
-#ifdef max
-#undef max
-#endif
+#include <RHIBuffer.h>
 
 namespace GameEngine::Render
 {
@@ -14,20 +9,39 @@ namespace GameEngine::Render
 		class RHIMesh
 		{
 		public:
-			using ID = size_t;
+			using ID = uint64_t;
+			using Ptr = RHIMesh*;
 
-			constexpr static ID k_invalidMeshID = std::numeric_limits<size_t>::max();
+			struct VertexBufferDescription
+			{
+				uint32_t Count = 1;
+				uint32_t ElementSize = 1;
+				void* initData = nullptr;
+			};
+
+			struct IndexBufferDescription
+			{
+				uint32_t Count = 1;
+				ResourceFormat Format = ResourceFormat::R16_UINT;
+				void* initData = nullptr;
+			};
 
 		public:
 			RHIMesh() = delete;
-			RHIMesh(HAL::RHIMesh::ID id)
-				: m_ID(id) {}
+			RHIMesh(RHIBuffer::Ptr vertexBuffer, RHIBuffer::Ptr indexBuffer, ResourceFormat IndexFormat)
+				: m_VertexBuffer(vertexBuffer)
+				, m_IndexBuffer(indexBuffer)
+				, m_IndexFormat(IndexFormat)
+			{}
 
-			HAL::RHIMesh::ID GetID() { return m_ID; }
-			const HAL::RHIMesh::ID& GetID() const { return m_ID; }
+			const RHIBuffer::Ptr& GetVertexBuffer() const { return m_VertexBuffer; }
+			const RHIBuffer::Ptr& GetIndexBuffer() const { return m_IndexBuffer; }
+			const ResourceFormat& GetIndexFormat() const { return m_IndexFormat; }
 
 		protected:
-			HAL::RHIMesh::ID m_ID;
+			RHIBuffer::Ptr m_VertexBuffer;
+			RHIBuffer::Ptr m_IndexBuffer;
+			ResourceFormat m_IndexFormat;
 		};
 	}
 }

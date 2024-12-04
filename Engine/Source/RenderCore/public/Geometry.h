@@ -21,9 +21,9 @@ namespace GameEngine
 			Geometry() = delete;
 			Geometry(
 				VertexType* vertices,
-				size_t verticesCount,
+				uint32_t verticesCount,
 				IndexType* indices,
-				size_t indicesCount);
+				uint32_t indicesCount);
 
 			~Geometry();
 
@@ -31,16 +31,16 @@ namespace GameEngine
 			VertexType* GetVertices() const { return m_Vertices; }
 			IndexType* GetIndices() const { return m_Indices; }
 
-			size_t GetVertexCount() const { return m_VerticesCount; }
-			size_t GetIndexCount() const { return m_IndicesCount; }
+			uint32_t GetVertexCount() const { return m_VerticesCount; }
+			uint32_t GetIndexCount() const { return m_IndicesCount; }
 
 		protected:
 			VertexType* m_Vertices;
 			IndexType* m_Indices;
 
 			// Put it in this order to save some memory
-			size_t m_VerticesCount;
-			size_t m_IndicesCount;
+			uint32_t m_VerticesCount;
+			uint32_t m_IndicesCount;
 		};
 	}
 }
