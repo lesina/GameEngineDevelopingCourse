@@ -14,10 +14,10 @@ namespace GameEngine::Core
 		Math::Vector3f right = GetRightDir();
 		Math::Vector3f up = m_ViewDir.CrossProduct(right).Normalized();
 
-		Math::Matrix3x3f rotationMatrixX = Math::GetRotationMatrix(up, yaw);
-		Math::Matrix3x3f rotationMatrixY = Math::GetRotationMatrix(right, pitch);
+		Math::Quaternion<float> rotation = Math::Quaternion<float>::FromAxisAngle(up, yaw);
+		rotation = Math::Quaternion<float>::FromAxisAngle(right, pitch) * rotation;
 
-		m_ViewDir = rotationMatrixX * rotationMatrixY * m_ViewDir;
+		m_ViewDir = rotation.RotateVector(m_ViewDir);
 		m_ViewDir = m_ViewDir.Normalized();
 	}
 

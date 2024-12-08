@@ -18,6 +18,7 @@ void RegisterEcsMeshSystems(flecs::world& world)
 		if (renderObject.ptr) [[likely]]
 		{
 			renderObject.ptr->SetPosition(Math::Vector3f(position.x, position.y, position.z), renderThread->ptr->GetMainFrame());
+			renderObject.ptr->SetRotation(position.rotation, renderThread->ptr->GetMainFrame());
 		}
 	});
 }

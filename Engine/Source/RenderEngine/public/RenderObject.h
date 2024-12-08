@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Vector.h>
+#include <Quaternion.h>
 #include <RenderEngine/export.h>
 #include <RenderThread.h>
 #include <Material.h>
@@ -36,11 +37,15 @@ namespace GameEngine::Render
 		const Math::Vector3f& GetPosition(size_t frame) const { return m_Position[frame]; }
 		void SetPosition(Math::Vector3f position, size_t frame) { m_Position[frame] = position; }
 
+		const Math::Quaternion<float>& GetRotation(size_t frame) const { return m_Rotation[frame]; }
+		void SetRotation(Math::Quaternion<float> rotation, size_t frame) { m_Rotation[frame] = rotation; }
+
 	private:
 		void Init();
 
 	private:
 		Math::Vector3f m_Position[RenderCore::g_FrameBufferCount];
+		Math::Quaternion<float> m_Rotation[RenderCore::g_FrameBufferCount];
 
 		MeshID m_MeshID = k_invalidMeshID;
 		Material::ID m_MaterialID = k_invalidMaterialID;
