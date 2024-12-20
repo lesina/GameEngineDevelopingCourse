@@ -49,6 +49,7 @@ target_include_directories(Game
 )
 
 target_link_libraries(Game PRIVATE
+	AudioEngine
 	Core
 	EntitySystem
 	Math

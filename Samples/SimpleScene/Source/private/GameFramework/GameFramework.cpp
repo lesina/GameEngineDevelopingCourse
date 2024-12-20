@@ -3,6 +3,7 @@
 #include <ecsControl.h>
 #include <ecsMesh.h>
 #include <ecsPhys.h>
+#include <ecsAudio.h>
 #include <ECS/ecsSystems.h>
 #include <GameFramework/GameFramework.h>
 #include <Input/Controller.h>
@@ -83,15 +84,20 @@ void GameFramework::RegisterComponentsReflection()
 
 	m_World.component<JumpOnCollision>()
 		.member<bool>("value");
+
+	m_World.component<PlaySound>()
+		.member<int>("id")
+		.member<bool>("loop");
 }
 
 void GameFramework::RegisterSystems()
 {
 	RegisterEcsMeshSystems(m_World);
 	RegisterEcsControlSystems(m_World);
+	RegisterEcsAudioSystems(m_World);
 }
 
 void GameFramework::Update(float dt)
 {
-
+	AudioSystem::g_AudioManager->Update(dt);
 }

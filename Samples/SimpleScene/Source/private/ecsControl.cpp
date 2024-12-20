@@ -6,6 +6,7 @@
 #include <Input/Controller.h>
 #include <Input/InputHandler.h>
 #include <Vector.h>
+#include <AudioEngine.h>
 
 using namespace GameEngine;
 
@@ -35,6 +36,8 @@ void RegisterEcsControlSystems(flecs::world& world)
 		position.y = position.y + currentMoveDir.Normalized().y * speed.value * world.delta_time();
 		position.z = position.z + currentMoveDir.Normalized().z * speed.value * world.delta_time();
 		camera.ptr->SetPosition(Math::Vector3f(position.x, position.y, position.z));
+		AudioSystem::g_AudioManager->SetListenerAttributes(camera.ptr->GetPosition(), camera.ptr->GetViewDir(),
+			camera.ptr->GetViewDir().CrossProduct(camera.ptr->GetRightDir()));
 	});
 
 	world.system<const Position, Velocity, const ControllerPtr, const BouncePlane, const JumpSpeed>()
@@ -50,4 +53,3 @@ void RegisterEcsControlSystems(flecs::world& world)
 		}
 	});
 }
-

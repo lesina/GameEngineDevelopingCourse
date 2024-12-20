@@ -17,8 +17,6 @@
 #include <Input/InputHandler.h>
 #include <Window/IWindow.h>
 
-
-
 bool WindowsMessageLoop()
 {
 	MSG msg = { 0 };

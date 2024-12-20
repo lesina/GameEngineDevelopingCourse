@@ -18,5 +18,3 @@ void RegisterEcsMeshSystems(flecs::world& world)
 		renderObject.ptr->SetPosition(Math::Vector3f(position.x, position.y, position.z), renderThread->ptr->GetMainFrame());
 	});
 }
-
-
