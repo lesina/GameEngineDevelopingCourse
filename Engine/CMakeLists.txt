@@ -1,3 +1,7 @@
 set(CMAKE_LIBRARY_PATH ${CMAKE_CURRENT_SOURCE_DIR}/External)
 
+# volk
+set(VOLK_STATIC_DEFINES VK_ENABLE_BETA_EXTENSIONS VK_USE_PLATFORM_WIN32_KHR)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/External/volk)
+
 add_subdirectory(Source)

@@ -74,6 +74,8 @@ namespace GameEngine::Core
 
 	void Window::Init(void* instance)
 	{
+		m_InstanceHndl = instance;
+
 		HINSTANCE hInstance = reinterpret_cast<HINSTANCE>(instance);
 
 		std::wstring windowName = L"Game";

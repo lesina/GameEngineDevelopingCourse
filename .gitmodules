@@ -7,3 +7,6 @@
 [submodule "Engine/External/inih/Source"]
 	path = Engine/External/inih/Source
 	url = https://github.com/benhoyt/inih
+[submodule "Engine/External/volk"]
+	path = Engine/External/volk
+	url = https://github.com/zeux/volk.git

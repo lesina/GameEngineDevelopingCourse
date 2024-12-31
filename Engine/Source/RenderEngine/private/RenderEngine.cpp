@@ -40,7 +40,7 @@ namespace GameEngine::Render
 
 	RenderEngine::RenderEngine()
 	{
-		m_rhi = HAL::RHIHelper::CreateRHI("D3D12");
+		m_rhi = HAL::RHIHelper::CreateRHI("Vulkan");
 
 		OnResize();
 

@@ -23,11 +23,13 @@ namespace GameEngine
 		enum class RHIType : uint8_t
 		{
 			D3D12 = 0,
+			Vulkan,
 		};
 
 		const std::unordered_map<std::string, RHIType> k_RHITypeMap =
 		{
 			{"D3D12", RHIType::D3D12},
+			{"Vulkan", RHIType::Vulkan},
 		};
 
 		class RHIContext

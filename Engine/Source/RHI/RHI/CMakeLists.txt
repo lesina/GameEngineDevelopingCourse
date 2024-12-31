@@ -55,6 +55,7 @@ if (WINDOWS)
 
 	target_link_libraries(RHI PRIVATE
 		Direct3D12RHI
+		VulkanRHI
 	)
 endif()
 

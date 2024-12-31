@@ -15,6 +15,7 @@ namespace GameEngine::Core
 
 		void Init(void* instance);
 
+		void* GetInstanceHandle() const { return m_InstanceHndl; }
 		void* GetWindowHandle() const { return m_WndHndl; }
 
 		uint32_t GetWidth() const { return m_Width; }
@@ -36,6 +37,7 @@ namespace GameEngine::Core
 		uint32_t m_Width = 800;
 		uint32_t m_Height = 600;
 
+		void* m_InstanceHndl = nullptr;
 		void* m_WndHndl = nullptr;
 
 		// In screen coords
