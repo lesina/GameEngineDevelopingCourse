@@ -28,6 +28,8 @@ namespace GameEngine
 			virtual RenderNativeObject GetNativeObject() override;
 			VkBuffer GetHandle() const;
 
+			uint32_t GetSize() const;
+
 		private:
 			VulkanRHIDevice::Ptr m_Device = nullptr;
 

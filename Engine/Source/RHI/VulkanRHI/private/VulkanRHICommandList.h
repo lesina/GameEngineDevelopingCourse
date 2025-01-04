@@ -46,13 +46,19 @@ namespace GameEngine
 
 			virtual RenderNativeObject GetNativeObject() override;
 			VkCommandBuffer GetHandle() const;
+			uint32_t GetCommandsRecorded() const;
 
 		private:
 			VulkanRHIDevice::Ptr m_Device = nullptr;
 			VkCommandBuffer m_NativeCommandBuffer = VK_NULL_HANDLE;
 
 			VulkanRHITechnique::Ptr m_BoundTechnique = nullptr;
+
+			VulkanRHITexture::Ptr m_BoundRenderTarget = nullptr;
+			VulkanRHITexture::Ptr m_BoundDepthStencil = nullptr;
+
 			bool m_Recording = false;
+			uint32_t m_CommandsRecorded = 0;
 
 		public:
 			virtual RHICommandAllocator::Ptr GetAllocator() const override;
@@ -62,6 +68,8 @@ namespace GameEngine
 
 		private:
 			void ResetIfNeeded();
+
+			void EndRenderPassIfBound();
 
 			// Move it out of here
 			// Be cautious, the param is not const

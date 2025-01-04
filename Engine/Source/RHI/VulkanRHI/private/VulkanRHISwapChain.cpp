@@ -192,7 +192,7 @@ namespace GameEngine
 				.imageColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
 				.imageExtent = extent,
 				.imageArrayLayers = 1,
-				.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+				.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
 				.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
 				.queueFamilyIndexCount = 0,
 				.pQueueFamilyIndices = nullptr,

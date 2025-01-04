@@ -210,10 +210,17 @@ namespace GameEngine
 			features12.pNext = nullptr;
 			features12.timelineSemaphore = VK_TRUE;
 
+			VkPhysicalDeviceSynchronization2Features sync2Feature =
+			{
+				.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES,
+				.pNext = &features12,
+				.synchronization2 = VK_TRUE,
+			};
+
 			VkPhysicalDeviceDynamicRenderingFeaturesKHR dynamicRenderingFeature =
 			{
 				.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR,
-				.pNext = &features12,
+				.pNext = &sync2Feature,
 				.dynamicRendering = VK_TRUE,
 			};
 

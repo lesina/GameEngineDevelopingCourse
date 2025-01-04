@@ -50,6 +50,22 @@ namespace GameEngine
 			return format == VK_FORMAT_D24_UNORM_S8_UINT;
 		}
 
+		VkImageAspectFlags ConvertToImageAspectFlags(ResourceFormat format)
+		{
+			const VkFormat vkFormat = ConvertToVkFormat(format);
+
+			if (IsDepthStencilVkFormat(vkFormat))
+			{
+				return VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+			}
+			else if (IsDepthContainingVkFormat(vkFormat))
+			{
+				return VK_IMAGE_ASPECT_DEPTH_BIT;
+			}
+
+			return VK_IMAGE_ASPECT_COLOR_BIT;
+		}
+
 		VkShaderStageFlagBits ConvertToVkShaderStage(RHITechnique::ShaderInfoDescription::ShaderType shaderType)
 		{
 			switch (shaderType)

@@ -17,6 +17,7 @@ namespace GameEngine
 		class VulkanRHIFactory;
 		class VulkanRHISwapChain;
 		class VulkanRHIFence;
+		class VulkanRHIBuffer;
 		class VulkanRHICommandQueue;
 		class VulkanRHICommandAllocator;
 		class VulkanRHICommandList;
@@ -51,12 +52,18 @@ namespace GameEngine
 			virtual RHICommandList::Ptr GetCommandList() const override;
 
 		private:
+			void RecreateTransferStagingBuffer(uint32_t size);
+
+		private:
 			RefCountPtr<VulkanRHIFactory> m_Factory = nullptr;
 			RefCountPtr<VulkanRHIDevice> m_Device = nullptr;
 			RefCountPtr<VulkanRHISwapChain> m_SwapChain = nullptr;
 			RefCountPtr<VulkanRHIFence> m_Fence = nullptr;
 			RefCountPtr<VulkanRHICommandQueue> m_CommandQueue = nullptr;
 			RefCountPtr<VulkanRHICommandList> m_CommandList = nullptr;
+
+			RefCountPtr<RHIBuffer> m_TransferStagingBuffer = nullptr;
+			RefCountPtr<VulkanRHICommandList> m_TransferCommandList = nullptr;
 
 			//Microsoft::WRL::ComPtr<IDxcUtils> m_DxcUtils;
 			RefCountPtr<IDxcLibrary> m_DxcLibrary = nullptr;

@@ -24,6 +24,8 @@ namespace GameEngine
 		bool IsDepthContainingVkFormat(VkFormat format);
 		bool IsDepthStencilVkFormat(VkFormat format);
 
+		VkImageAspectFlags ConvertToImageAspectFlags(ResourceFormat format);
+
 		VkShaderStageFlagBits ConvertToVkShaderStage(RHITechnique::ShaderInfoDescription::ShaderType shaderType);
 		VkVertexInputRate ConvertToVkVertexInputRate(RHITechnique::InputLayoutDescription::Classification classification);
 		VkPolygonMode ConvertToVkPolygonMode(PrimitiveTopologyType topologyType);

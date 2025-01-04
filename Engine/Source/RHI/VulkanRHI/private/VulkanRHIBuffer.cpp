@@ -37,8 +37,8 @@ namespace GameEngine
 			VULKAN_CALL_CHECK(vkMapMemory(
 				m_Device->GetHandle(),
 				m_Memory,
-				elementIndex * m_Description.ElementSize,
-				dataSize,
+				0,
+				VK_WHOLE_SIZE,
 				0,
 				reinterpret_cast<void**>(&mappedData)));
 
@@ -49,12 +49,17 @@ namespace GameEngine
 
 		RenderNativeObject VulkanRHIBuffer::GetNativeObject()
 		{
-			return RenderNativeObject();
+			return RenderNativeObject(m_Buffer);
 		}
 
 		VkBuffer VulkanRHIBuffer::GetHandle() const
 		{
-			return VkBuffer();
+			return m_Buffer;
+		}
+
+		uint32_t VulkanRHIBuffer::GetSize() const
+		{
+			return m_Description.Count * m_Description.ElementSize;
 		}
 	}
 }

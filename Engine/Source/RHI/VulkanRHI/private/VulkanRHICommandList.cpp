@@ -108,7 +108,7 @@ namespace GameEngine
 				vulkanRenderTarget,
 				{
 					.Stages = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
-					.Access = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
+					.Access = VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT,
 					.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 				}
 			);
@@ -117,8 +117,8 @@ namespace GameEngine
 			ValidateTextureState(
 				vulkanDepthStencil,
 				{
-					.Stages = VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT,
-					.Access = VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+					.Stages = VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT,
+					.Access = VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
 					.Layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
 				}
 			);
@@ -175,6 +175,8 @@ namespace GameEngine
 			};
 
 			vkCmdBeginRendering(m_NativeCommandBuffer, &renderingInfo);
+			m_BoundRenderTarget = static_cast<VulkanRHITexture*>(renderTarget.Get());
+			m_BoundDepthStencil = static_cast<VulkanRHITexture*>(depthStencil.Get());
 		}
 
 		void VulkanRHICommandList::SetViewport(const Viewport& viewport)
@@ -225,6 +227,8 @@ namespace GameEngine
 		{
 			if (m_Recording)
 			{
+				EndRenderPassIfBound();
+
 				m_BoundTechnique = nullptr;
 				m_Recording = false;
 				VULKAN_CALL_CHECK(vkEndCommandBuffer(m_NativeCommandBuffer));
@@ -244,6 +248,7 @@ namespace GameEngine
 			VULKAN_CALL_CHECK(vkBeginCommandBuffer(m_NativeCommandBuffer, &beginInfo));
 
 			m_Recording = true;
+			m_CommandsRecorded = 0;
 		}
 
 		void VulkanRHICommandList::SetPipelineStateObject(RHIPipelineStateObject::Ptr pso)
@@ -280,7 +285,7 @@ namespace GameEngine
 			{
 				.buffer = buffer->GetNativeObject(),
 				.offset = bufferOffset,
-				.range = VK_WHOLE_SIZE,
+				.range = buffer->GetDesc().ElementSize,
 			};
 
 			const VkWriteDescriptorSet dsWrite =
@@ -343,12 +348,52 @@ namespace GameEngine
 			return m_NativeCommandBuffer;
 		}
 
+		uint32_t VulkanRHICommandList::GetCommandsRecorded() const
+		{
+			return m_CommandsRecorded;
+		}
+
 		void VulkanRHICommandList::ResetIfNeeded()
 		{
 			if (!m_Recording)
 			{
 				Reset();
 			}
+
+			++m_CommandsRecorded;
+		}
+
+		void VulkanRHICommandList::EndRenderPassIfBound()
+		{
+			if (m_BoundRenderTarget == nullptr)
+			{
+				return;
+			}
+
+			vkCmdEndRendering(m_NativeCommandBuffer);
+
+			VulkanRHITexture* vulkanRenderTarget = reinterpret_cast<VulkanRHITexture*>(m_BoundRenderTarget.Get());
+			ValidateTextureState(
+				vulkanRenderTarget,
+				{
+					.Stages = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
+					.Access = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
+					.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+				}
+			);
+
+			VulkanRHITexture* vulkanDepthStencil = reinterpret_cast<VulkanRHITexture*>(m_BoundDepthStencil.Get());
+			ValidateTextureState(
+				vulkanDepthStencil,
+				{
+					.Stages = VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT,
+					.Access = VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+					.Layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+				}
+			);
+
+			m_BoundRenderTarget = nullptr;
+			m_BoundDepthStencil = nullptr;
 		}
 
 		void VulkanRHICommandList::ValidateTextureState(VulkanRHITexture* texture, const VulkanRHITexture::State& state)
@@ -375,7 +420,7 @@ namespace GameEngine
 
 					.subresourceRange =
 					{
-						.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+						.aspectMask = ConvertToImageAspectFlags(texture->GetFormat()),
 						.baseMipLevel = 0,
 						.levelCount = 1,
 						.baseArrayLayer = 0,

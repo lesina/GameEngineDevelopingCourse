@@ -1,4 +1,5 @@
 #include <VulkanRHICommandQueue.h>
+#include <VulkanRHICommandList.h>
 
 namespace GameEngine
 {
@@ -11,19 +12,25 @@ namespace GameEngine
 
 		void VulkanRHICommandQueue::ExecuteCommandLists(const std::vector<RHICommandList::Ptr>& cmdLists)
 		{
-			std::vector<VkCommandBufferSubmitInfo> cmdSubmitInfos(cmdLists.size());
+			std::vector<VkCommandBufferSubmitInfo> cmdSubmitInfos;
+			cmdSubmitInfos.reserve(cmdLists.size());
 
 			for (size_t index = 0; index < cmdLists.size(); ++index)
 			{
-				cmdSubmitInfos[index] =
+				VulkanRHICommandList* cmdList = static_cast<VulkanRHICommandList*>(cmdLists[index].Get());
+				if (cmdList->GetCommandsRecorded() == 0)
 				{
+					continue;
+				}
+
+				cmdSubmitInfos.push_back({
 					.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO,
 					.pNext = nullptr,
-					.commandBuffer = (VkCommandBuffer)(cmdLists[index]->GetNativeObject()),
+					.commandBuffer = (VkCommandBuffer)(cmdList->GetNativeObject()),
 					.deviceMask = 0,
-				};
+				});
 
-				cmdSubmitInfos[index].commandBuffer = (VkCommandBuffer)(cmdLists[index]->GetNativeObject());
+				cmdSubmitInfos.back().commandBuffer = (VkCommandBuffer)(cmdList->GetNativeObject());
 			}
 
 			const VkSubmitInfo2 submitInfo =

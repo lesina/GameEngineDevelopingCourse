@@ -109,6 +109,9 @@ namespace GameEngine
 			m_CommandQueue = new VulkanRHICommandQueue(m_Device->GetMainQueue());
 			m_CommandList = new VulkanRHICommandList(m_Device);
 
+			RecreateTransferStagingBuffer(1024 * 1024);
+			m_TransferCommandList = new VulkanRHICommandList(m_Device);
+
 			HRESULT hr = DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(m_DxcLibrary.GetAddressOf()));
 			assert(SUCCEEDED(hr));
 
@@ -168,7 +171,7 @@ namespace GameEngine
 				.arrayLayers = 1,
 				.samples = VK_SAMPLE_COUNT_1_BIT,
 				.tiling = VK_IMAGE_TILING_OPTIMAL,
-				.usage = ConvertToVkImageUsage(description.Flags),
+				.usage = ConvertToVkImageUsage(description.Flags) | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
 				.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
 				.queueFamilyIndexCount = 0,
 				.pQueueFamilyIndices = nullptr,
@@ -261,7 +264,26 @@ namespace GameEngine
 			if (description.UsageFlag == RHIBuffer::UsageFlag::GpuReadOnly)
  			{
  				assert(description.initData != nullptr);
-				buffer->CopyData(0, description.initData, description.Count * description.ElementSize);
+
+				uint32_t newSize = buffer->GetSize();
+				RecreateTransferStagingBuffer(newSize);
+
+				m_TransferCommandList->Reset();
+				m_TransferStagingBuffer->CopyData(0, description.initData, description.Count * description.ElementSize);
+
+				const VkBufferCopy copyInfo =
+				{
+					.srcOffset = 0,
+					.dstOffset = 0,
+					.size = newSize,
+				};
+
+				vkCmdCopyBuffer(m_TransferCommandList->GetNativeObject(), m_TransferStagingBuffer->GetNativeObject(),
+					buffer->GetHandle(), 1, &copyInfo);
+
+				m_TransferCommandList->Close();
+
+				m_CommandQueue->ExecuteCommandLists({m_TransferCommandList});
 			}
 
 			return buffer;
@@ -658,6 +680,26 @@ namespace GameEngine
 		RHICommandList::Ptr VulkanRHIContext::GetCommandList() const
 		{
 			return m_CommandList;
+		}
+
+		void VulkanRHIContext::RecreateTransferStagingBuffer(uint32_t size)
+		{
+			if (m_TransferStagingBuffer != nullptr)
+			{
+				if (size < static_cast<VulkanRHIBuffer*>(m_TransferStagingBuffer.Get())->GetSize())
+				{
+					return;
+				}
+
+				m_TransferStagingBuffer.Reset();
+			}
+
+			m_TransferStagingBuffer = CreateBuffer({
+				.Count = size,
+				.ElementSize = 1,
+				.UsageFlag = RHIBuffer::UsageFlag::CpuWrite,
+				.initData = nullptr,
+			});
 		}
 	}
 }
