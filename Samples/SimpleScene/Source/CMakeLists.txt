@@ -35,7 +35,7 @@ target_include_directories(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-	AudioEngine
+	AudioSystem
 	Core
 	EntitySystem
 	Math

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Level.h>
+#include <World/export.h>
+
 namespace GameEngine::World
 {
 	class WorldParser final
@@ -11,6 +14,10 @@ namespace GameEngine::World
 	public:
 		static Level ParseLevel(const std::string& xmlPath);
 
+		static WORLD_API const std::string& GetSoundFilePath(int soundID);
+		static WORLD_API void AddSoundFilePath(const std::string& filepath);
+		static WORLD_API int GetSoundFilePathsSize();
+
 		/*
 		* The signature suggests that custom value are always single-valued pointers
 		* And we return uint64_t because flecs doesn't know about pointers as a value...
@@ -19,5 +26,6 @@ namespace GameEngine::World
 
 	private:
 		static std::unordered_map<std::string, uint64_t> s_CustomComponents;
+		static std::vector<std::string> s_SoundFilePaths;
 	};
 }

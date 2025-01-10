@@ -14,6 +14,9 @@ using namespace GameEngine;
 
 void GameFramework::Init()
 {
+	m_AudioManager = new Audio::AudioManager();
+	m_World.set(Audio::AudioManagerPtr{ m_AudioManager });
+
 	RegisterComponentsReflection();
 	RegisterSystems();
 
@@ -86,8 +89,10 @@ void GameFramework::RegisterComponentsReflection()
 		.member<bool>("value");
 
 	m_World.component<PlaySound>()
-		.member<int>("id")
 		.member<bool>("loop");
+
+	m_World.component<SoundFilePath>()
+		.member<int>("id");
 }
 
 void GameFramework::RegisterSystems()
@@ -99,5 +104,5 @@ void GameFramework::RegisterSystems()
 
 void GameFramework::Update(float dt)
 {
-	AudioSystem::g_AudioManager->Update(dt);
+	m_AudioManager->Update(dt);
 }

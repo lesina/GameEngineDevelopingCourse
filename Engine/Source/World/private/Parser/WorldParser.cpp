@@ -12,6 +12,8 @@ namespace GameEngine::World
 		{"Cube", reinterpret_cast<uint64_t>(RenderCore::DefaultGeometry::Cube())},
 	};
 
+	std::vector<std::string> WorldParser::s_SoundFilePaths;
+
 	Level WorldParser::ParseLevel(const std::string& xmlPath)
 	{
 		tinyxml2::XMLDocument doc;
@@ -66,5 +68,20 @@ namespace GameEngine::World
 		{
 			return ComponentParser::Parse(componentName, componentValue);
 		}
+	}
+
+	const std::string& WorldParser::GetSoundFilePath(int soundID)
+	{
+		return s_SoundFilePaths[soundID];
+	}
+
+	int WorldParser::GetSoundFilePathsSize()
+	{
+		return s_SoundFilePaths.size();
+	}
+
+	void WorldParser::AddSoundFilePath(const std::string& filepath)
+	{
+		s_SoundFilePaths.push_back(filepath);
 	}
 }

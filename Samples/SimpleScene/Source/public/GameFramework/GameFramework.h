@@ -11,6 +11,7 @@
 #include <export.h>
 
 #include <EntityManager.h>
+#include <AudioSystem.h>
 
 class GAME_API GameFramework final
 {
@@ -43,4 +44,5 @@ private:
 
 private:
 	flecs::world m_World;
+	GameEngine::Audio::AudioManager* m_AudioManager = nullptr;
 };

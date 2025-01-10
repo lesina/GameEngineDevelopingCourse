@@ -10,7 +10,8 @@
       GeometryPtr="Cube"
       Collider="0"
       JumpOnCollision="0"
-      PlaySound="1, 1"
+      PlaySound="1"
+      SoundFilePath="D:\sound.mp3"
    />
 
    <entity

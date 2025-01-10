@@ -3,7 +3,6 @@
 #include <EntityManager.h>
 #include <Game.h>
 #include <Input/InputHandler.h>
-#include <AudioEngine.h>
 
 namespace GameEngine
 {
@@ -13,8 +12,6 @@ namespace GameEngine
 		Core::g_MainCamera = new Core::Camera();
 		Core::g_MainCamera->SetPosition(Math::Vector3f(0.0f, 12.0f, -10.0f));
 		Core::g_MainCamera->SetViewDir(Math::Vector3f(0.0f, -6.0f, 12.0f).Normalized());
-
-		AudioSystem::g_AudioManager = new AudioSystem::AudioManager();
 
 		m_renderThread = std::make_unique<Render::RenderThread>();
 

@@ -1,13 +1,25 @@
 #pragma once
 
 #include <flecs.h>
-#include <AudioEngine.h>
+#include <AudioSystem.h>
 
 struct PlaySound
 {
-	int id;
-	bool loop = false;
+	bool loop;
 	bool isPlaying = false;
 };
+
+struct SoundFilePath
+{
+	int id;
+};
+
+namespace GameEngine::Audio
+{
+	struct AudioManagerPtr
+	{
+		GameEngine::Audio::AudioManager* ptr;
+	};
+}
 
 void RegisterEcsAudioSystems(flecs::world& world);

@@ -24,4 +24,3 @@ struct CameraPtr
 };
 
 void RegisterEcsControlSystems(flecs::world& world);
-

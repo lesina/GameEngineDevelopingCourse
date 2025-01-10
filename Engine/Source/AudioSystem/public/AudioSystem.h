@@ -1,10 +1,10 @@
 #pragma once
 
-#include <AudioEngine/export.h>
+#include <AudioSystem/export.h>
 #include <fmod.h>
 #include <Vector.h>
 
-namespace GameEngine::AudioSystem
+namespace GameEngine::Audio
 {
 	class AUDIO_SYSTEM_API AudioManager final
 	{
@@ -12,14 +12,14 @@ namespace GameEngine::AudioSystem
 		AudioManager();
 		~AudioManager();
 
-		void SetListenerAttributes(Math::Vector3f pos, Math::Vector3f viewDir, Math::Vector3f upDir);
-		void PlaySound(int soundID, Math::Vector3f pos, bool loop = false);
-		void UpdateSoundPosition(int soundID, Math::Vector3f pos);
+		void SetListenerAttributes(const Math::Vector3f& pos, const Math::Vector3f& viewDir, const Math::Vector3f& upDir);
+		void PlaySound(int soundID, const Math::Vector3f& pos, bool loop = false);
+		void UpdateSoundPosition(int soundID, const Math::Vector3f& pos);
 
 		void Update(float dt);
 
 	private:
-		bool InitSystem();
+		void InitSystem();
 		void Cleanup();
 
 	private:
@@ -30,12 +30,5 @@ namespace GameEngine::AudioSystem
 
 		std::unordered_map<int, FMOD_CHANNEL*>         m_ActiveChannels;
 		std::unordered_map<FMOD_CHANNEL*, FMOD_SOUND*> m_ActiveSounds;
-
-		std::unordered_map<int, std::string> m_SoundIDToFilePath = {
-			{1, "sound.mp3"},
-			// Add sounds here
-		};
 	};
-
-	extern AUDIO_SYSTEM_API AudioManager* g_AudioManager;
 }

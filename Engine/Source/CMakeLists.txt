@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.19)
 
-add_subdirectory(AudioEngine)
+add_subdirectory(AudioSystem)
 add_subdirectory(Core)
 add_subdirectory(EntitySystem)
 add_subdirectory(Game)

@@ -6,12 +6,14 @@
 #include <Input/Controller.h>
 #include <Input/InputHandler.h>
 #include <Vector.h>
-#include <AudioEngine.h>
+#include <ecsAudio.h>
 
 using namespace GameEngine;
 
 void RegisterEcsControlSystems(flecs::world& world)
 {
+	const static Audio::AudioManagerPtr* audioManager = world.get<Audio::AudioManagerPtr>();
+
 	world.system<Position, CameraPtr, const Speed, const ControllerPtr>()
 		.each([&](flecs::entity e, Position& position, CameraPtr& camera, const Speed& speed, const ControllerPtr& controller)
 	{
@@ -36,7 +38,7 @@ void RegisterEcsControlSystems(flecs::world& world)
 		position.y = position.y + currentMoveDir.Normalized().y * speed.value * world.delta_time();
 		position.z = position.z + currentMoveDir.Normalized().z * speed.value * world.delta_time();
 		camera.ptr->SetPosition(Math::Vector3f(position.x, position.y, position.z));
-		AudioSystem::g_AudioManager->SetListenerAttributes(camera.ptr->GetPosition(), camera.ptr->GetViewDir(),
+		audioManager->ptr->SetListenerAttributes(camera.ptr->GetPosition(), camera.ptr->GetViewDir(),
 			camera.ptr->GetViewDir().CrossProduct(camera.ptr->GetRightDir()));
 	});
 
