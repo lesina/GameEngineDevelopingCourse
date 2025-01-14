@@ -58,9 +58,12 @@ namespace GameEngine::World
                 int ret = cursor.push();
                 ecs_assert(!ret, ECS_INTERNAL_ERROR, NULL);
 
-				bool bIsFilePath = (strchr(compValue, '/') != nullptr || strchr(compValue, '\\') != nullptr);
+				std::string strCompValue(compValue);
+				bool bIsSoundFilePath = strCompValue.ends_with(".mp3") || 
+										strCompValue.ends_with(".wav") || 
+										strCompValue.ends_with(".ogg");
 
-				if (bIsFilePath && objComponent.first == "SoundFilePath")
+				if (bIsSoundFilePath)
 				{
 					cursor.set_uint(GameEngine::Audio::AudioDataBase::GetSoundFilePathsSize()); // sound id
 					GameEngine::Audio::AudioDataBase::AddSoundFilePath(objComponent.second);
