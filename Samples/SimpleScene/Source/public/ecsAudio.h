@@ -11,7 +11,7 @@ struct PlaySound
 
 struct SoundFilePath
 {
-	int id;
+	unsigned int id;
 };
 
 namespace GameEngine::Audio

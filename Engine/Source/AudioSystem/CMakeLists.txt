@@ -42,13 +42,12 @@ target_sources(AudioSystem
 target_include_directories(AudioSystem 
 	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/public
 	PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private
-	PUBLIC ${CMAKE_LIBRARY_PATH}/fmod/include
+	PRIVATE ${CMAKE_LIBRARY_PATH}/fmod/include
 )
 
 target_link_libraries(AudioSystem PRIVATE
 	Core
 	Math
-	World
 
 	${FMOD_LIBRARIES}
 )

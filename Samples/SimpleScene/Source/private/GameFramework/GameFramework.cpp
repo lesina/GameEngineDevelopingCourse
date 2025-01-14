@@ -92,7 +92,7 @@ void GameFramework::RegisterComponentsReflection()
 		.member<bool>("loop");
 
 	m_World.component<SoundFilePath>()
-		.member<int>("id");
+		.member<unsigned int>("id");
 }
 
 void GameFramework::RegisterSystems()

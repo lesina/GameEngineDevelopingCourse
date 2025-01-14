@@ -54,6 +54,7 @@ target_link_libraries(World PRIVATE
 	Math
 	EntitySystem
 	RenderCore
+	AudioSystem
 	
 	${TINYXML_LIBRARIES}
 )

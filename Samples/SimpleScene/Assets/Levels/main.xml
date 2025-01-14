@@ -11,7 +11,7 @@
       Collider="0"
       JumpOnCollision="0"
       PlaySound="1"
-      SoundFilePath="D:\sound.mp3"
+      SoundFilePath="Sounds\sound.mp3"
    />
 
    <entity
