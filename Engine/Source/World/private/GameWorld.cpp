@@ -1,6 +1,6 @@
 ﻿#include <GameWorld.h>
 #include <Parser/WorldParser.h>
-#include <SoundFilePaths.h>
+#include <AudioDataBase.h>
 
 namespace GameEngine::World
 {
@@ -60,10 +60,10 @@ namespace GameEngine::World
 
 				bool bIsFilePath = (strchr(compValue, '/') != nullptr || strchr(compValue, '\\') != nullptr);
 
-				if (bIsFilePath)
+				if (bIsFilePath && objComponent.first == "SoundFilePath")
 				{
-					cursor.set_uint(GameEngine::Audio::SoundFilePaths::GetSoundFilePathsSize()); // sound id
-					GameEngine::Audio::SoundFilePaths::AddSoundFilePath(objComponent.second);
+					cursor.set_uint(GameEngine::Audio::AudioDataBase::GetSoundFilePathsSize()); // sound id
+					GameEngine::Audio::AudioDataBase::AddSoundFilePath(objComponent.second);
 				}
 				else
 				{

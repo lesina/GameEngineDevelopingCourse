@@ -4,7 +4,7 @@
 
 namespace GameEngine::Audio
 {
-	class AUDIO_SYSTEM_API SoundFilePaths final
+	class AUDIO_SYSTEM_API AudioDataBase final
 	{
 	public:
 		static const std::string& GetSoundFilePath(unsigned int soundID);

@@ -5,6 +5,8 @@
 
 namespace GameEngine::Audio
 {
+	class AudioManagerData;
+
 	class AUDIO_SYSTEM_API AudioManager final
 	{
 	public:
@@ -23,6 +25,6 @@ namespace GameEngine::Audio
 		void Cleanup();
 
 	private:
-		void* data;
+		AudioManagerData* audioManagerData;
 	};
 }
