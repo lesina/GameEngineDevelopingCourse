@@ -48,6 +48,12 @@ namespace GameEngine
 			VkCommandBuffer GetHandle() const;
 			uint32_t GetCommandsRecorded() const;
 
+			void EndRenderPassIfBound();
+
+			void CopyBufferToBuffer(RHIBuffer::Ptr src, RHIBuffer::Ptr dst, uint32_t sizeBytes);
+
+			void ValidateTextureState(VulkanRHITexture* texture, const VulkanRHITexture::State& state);
+
 		private:
 			VulkanRHIDevice::Ptr m_Device = nullptr;
 			VkCommandBuffer m_NativeCommandBuffer = VK_NULL_HANDLE;
@@ -68,12 +74,6 @@ namespace GameEngine
 
 		private:
 			void ResetIfNeeded();
-
-			void EndRenderPassIfBound();
-
-			// Move it out of here
-			// Be cautious, the param is not const
-			void ValidateTextureState(VulkanRHITexture* texture, const VulkanRHITexture::State& state);
 		};
 	}
 }

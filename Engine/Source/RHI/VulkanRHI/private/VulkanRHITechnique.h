@@ -37,7 +37,6 @@ namespace GameEngine
 
 			VkDescriptorSetLayout GetDescriptorSetLayout() const { return m_DescriptorSetLayout; }
 			VkPipelineLayout GetPipelineLayout() const { return m_PipelineLayout; }
-			VkDescriptorSet GetDescriptorSet() const { return m_DescriptorSet; }
 
 			const InputBindingList& GetInputBindings() const { return m_InputBindingList; }
 			const InputAttributeList& GetInputAttributes() const { return m_InputAttributeList; }
@@ -45,7 +44,7 @@ namespace GameEngine
 
 		private:
 			void FillInputAssemblyInfo();
-			void CreateDescriptorSet();
+			void CreateDescriptorSetLayout();
 			void CreatePipelineLayout();
 
 		private:
@@ -53,9 +52,6 @@ namespace GameEngine
 
 			VkDescriptorSetLayout m_DescriptorSetLayout = VK_NULL_HANDLE;
 			VkPipelineLayout m_PipelineLayout = VK_NULL_HANDLE;
-
-			VkDescriptorPool m_DescriptorPool = VK_NULL_HANDLE;
-			VkDescriptorSet m_DescriptorSet = VK_NULL_HANDLE;
 
 			ShaderModuleList m_ShaderModuleList;
 			InputBindingList m_InputBindingList;

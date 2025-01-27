@@ -119,6 +119,47 @@ namespace GameEngine::Render
 		m_rhi->GetFence()->Sync(m_rhi->GetCommandQueue());
 	}
 
+	RenderEngine::~RenderEngine()
+	{
+		for (size_t i = 0; i < RenderCore::g_FrameBufferCount; ++i)
+		{
+			if (m_ObjectCB[i].Get())
+			{
+				m_ObjectCB[i].Reset();
+			}
+
+			if (m_MaterialCB[i].Get())
+			{
+				m_MaterialCB[i].Reset();
+			}
+		}
+
+		if (m_Technique.Get())
+		{
+			m_Technique.Reset();
+		}
+
+		if (m_PSO.Get())
+		{
+			m_PSO.Reset();
+		}
+
+		if (depthStencil.Get())
+		{
+			depthStencil.Reset();
+		}
+
+		for (HAL::RHIMesh::Ptr mesh : m_Meshes)
+		{
+			delete mesh;
+		}
+
+		for (Material* material : m_Materials)
+		{
+			delete material;
+		}
+	}
+
 	void RenderEngine::Update(size_t frame)
 	{
 		m_rhi->GetCommandList()->GetAllocator()->Reset();

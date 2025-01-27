@@ -3,6 +3,7 @@
 #include <VulkanRHICore.h>
 #include <VulkanRHISwapChain.h>
 #include <VulkanRHITexture.h>
+#include <VulkanRHICommandList.h>
 
 #include <RenderCore.h>
 #include <Window/IWindow.h>
@@ -15,23 +16,35 @@ namespace GameEngine
 			VulkanRHIDevice::Ptr device,
 			VulkanRHIFactory::Ptr factory
 		)
-			: m_Device(device), m_Factory(factory), m_BackBufferFormat(ConvertToVkFormat(RHISettings::BackBuffer))
+			: m_Device(device)
+			, m_Factory(factory)
+			, m_BackBufferFormat(ConvertToVkFormat(RHISettings::BackBuffer))
 		{
 			CreateSurface(factory->GetHandle());
 			CreateSwapChain();
+
+			const VkFenceCreateInfo fenceInfo =
+			{
+				.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = VK_FENCE_CREATE_SIGNALED_BIT,
+			};
+
+			VULKAN_CALL_CHECK(vkCreateFence(m_Device->GetHandle(), &fenceInfo, nullptr, &m_AcquireFence));
+
+			AcquireNext();
 		}
 
 		VulkanRHISwapChain::~VulkanRHISwapChain()
 		{
 			DestroySwapChain();
 			vkDestroySurfaceKHR(m_Factory->GetHandle(), m_Surface, nullptr);
+			vkDestroyFence(m_Device->GetHandle(), m_AcquireFence, nullptr);
 		}
 
 		void VulkanRHISwapChain::Present()
 		{
-			// TODO
-			//HRESULT hr = m_NativeSwapChain->Present(0, 0);
-			//assert(SUCCEEDED(hr));
+			VULKAN_CALL_CHECK(vkQueueWaitIdle(m_Device->GetMainQueue()));
 
 			const uint32_t imageIndex = static_cast<uint32_t>(m_CurrentBackBufferIdx);
 
@@ -39,8 +52,8 @@ namespace GameEngine
 			{
 				.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
 				.pNext = nullptr,
-				.waitSemaphoreCount = 0U,  // TODO
-				.pWaitSemaphores = nullptr,  // TODO
+				.waitSemaphoreCount = 0U,
+				.pWaitSemaphores = nullptr,
 				.swapchainCount = 1,
 				.pSwapchains = &m_SwapChain,
 				.pImageIndices = &imageIndex,
@@ -48,15 +61,12 @@ namespace GameEngine
 			};
 
 			const VkResult res = vkQueuePresentKHR(m_Device->GetMainQueue(), &present_info);
-			if (res == VK_ERROR_OUT_OF_DATE_KHR || res == VK_SUBOPTIMAL_KHR) {
-				// TODO
-
-				//valid = false;
-				//WaitIdle();
+			if (res == VK_ERROR_OUT_OF_DATE_KHR || res == VK_SUBOPTIMAL_KHR)
+			{
+				// TODO: Handle swapchain resize on suboptimal present
 			}
 
-			// FIXME: actually get the real image idx
-			m_CurrentBackBufferIdx = (m_CurrentBackBufferIdx + 1) % RenderCore::g_FrameBufferCount;
+			AcquireNext();
 		}
 
 		void VulkanRHISwapChain::MakeBackBufferPresentable(RHICommandList::Ptr commandList)
@@ -64,19 +74,22 @@ namespace GameEngine
 			assert(commandList != nullptr);
 
 			VulkanRHITexture* backBuffer = m_BackBuffer[m_CurrentBackBufferIdx].Get();
-			//VulkanRHICommandList* backBuffer = reinterpret_cast<D3D12RHICommandList*>(commandList.Get());
+			VulkanRHICommandList* commandBuffer = reinterpret_cast<VulkanRHICommandList*>(commandList.Get());
 
 			const VulkanRHITexture::State currentState = backBuffer->GetCurrentState();
 
 			if (currentState.Layout != VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
 			{
-				// TODO
+				commandBuffer->EndRenderPassIfBound();
 
-				//D3D12_RESOURCE_BARRIER ResBarrierTransition = CD3DX12_RESOURCE_BARRIER::Transition(backBuffer->GetHandle(),
-				//	backBuffer->GetCurrentState(), D3D12_RESOURCE_STATE_PRESENT);
-				//d3d12CommandList->GetHandle()->ResourceBarrier(1, &ResBarrierTransition);
-
-				//backBuffer->SetCurrentState(D3D12_RESOURCE_STATE_PRESENT);
+				commandBuffer->ValidateTextureState(
+					m_BackBuffer[m_CurrentBackBufferIdx],
+					{
+						.Stages = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+						.Access = VK_ACCESS_2_NONE,
+						.Layout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+					}
+				);
 			}
 		}
 
@@ -147,6 +160,8 @@ namespace GameEngine
 					vkImages[i],
 					view);
 			}
+
+			AcquireNext();
 		}
 
 		RHITexture::Ptr VulkanRHISwapChain::GetCurrentBackBuffer()
@@ -170,11 +185,6 @@ namespace GameEngine
 
 		void VulkanRHISwapChain::CreateSwapChain()
 		{
-			// TODO: Is actually needed?
-
-			//VkSurfaceCapabilitiesKHR surfaceCapabilities;
-			//VULKAN_CALL_CHECK(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_Device->GetPhysicalDevice(), m_Surface, &surfaceCapabilities));
-
 			const VkExtent2D extent =
 			{
 				.width = Core::g_MainWindowsApplication->GetWidth(),
@@ -214,6 +224,22 @@ namespace GameEngine
 			}
 
 			vkDestroySwapchainKHR(m_Device->GetHandle(), m_SwapChain, nullptr);
+		}
+
+		void VulkanRHISwapChain::AcquireNext()
+		{
+			vkResetFences(m_Device->GetHandle(), 1, &m_AcquireFence);
+
+			uint32_t imageIdx = 0;
+			const VkResult res = vkAcquireNextImageKHR(m_Device->GetHandle(), m_SwapChain, UINT64_MAX, VK_NULL_HANDLE, m_AcquireFence, &imageIdx);
+			if (res == VK_ERROR_OUT_OF_DATE_KHR || res == VK_SUBOPTIMAL_KHR)
+			{
+				// TODO: Handle swapchain resize on suboptimal acquire
+			}
+
+			m_CurrentBackBufferIdx = imageIdx;
+
+			vkWaitForFences(m_Device->GetHandle(), 1, &m_AcquireFence, VK_TRUE, UINT64_MAX);
 		}
 	}
 }

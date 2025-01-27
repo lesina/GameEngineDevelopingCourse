@@ -108,7 +108,7 @@ namespace GameEngine
 				vulkanRenderTarget,
 				{
 					.Stages = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
-					.Access = VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT,
+					.Access = VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
 					.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 				}
 			);
@@ -117,8 +117,8 @@ namespace GameEngine
 			ValidateTextureState(
 				vulkanDepthStencil,
 				{
-					.Stages = VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT,
-					.Access = VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
+					.Stages = VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT,
+					.Access = VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
 					.Layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
 				}
 			);
@@ -186,9 +186,9 @@ namespace GameEngine
 			const VkViewport vulkanViewport =
 			{
 				.x = viewport.LeftX,
-				.y = viewport.TopY,
+				.y = viewport.BottomY,
 				.width = viewport.GetWidth(),
-				.height = viewport.GetHeight(),
+				.height = -viewport.GetHeight(),
 				.minDepth = viewport.MinDepth,
 				.maxDepth = viewport.MaxDepth,
 			};
@@ -284,7 +284,7 @@ namespace GameEngine
 			const VkDescriptorBufferInfo bufferInfo =
 			{
 				.buffer = buffer->GetNativeObject(),
-				.offset = bufferOffset,
+				.offset = bufferOffset * buffer->GetDesc().ElementSize,
 				.range = buffer->GetDesc().ElementSize,
 			};
 
@@ -292,7 +292,7 @@ namespace GameEngine
 			{
 				.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 				.pNext = nullptr,
-				.dstSet = m_BoundTechnique->GetDescriptorSet(),
+				.dstSet = VK_NULL_HANDLE,
 				.dstBinding = ParameterIdx,
 				.dstArrayElement = 0,
 				.descriptorCount = 1,
@@ -302,7 +302,8 @@ namespace GameEngine
 				.pTexelBufferView = nullptr,
 			};
 
-			vkUpdateDescriptorSets(m_Device->GetHandle(), 1, &dsWrite, 0, nullptr);
+			vkCmdPushDescriptorSetKHR(m_NativeCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+				m_BoundTechnique->GetPipelineLayout(), 0, 1, &dsWrite);
 		}
 
 		void VulkanRHICommandList::SetTechnique(RHITechnique::Ptr technique)
@@ -372,28 +373,25 @@ namespace GameEngine
 
 			vkCmdEndRendering(m_NativeCommandBuffer);
 
-			VulkanRHITexture* vulkanRenderTarget = reinterpret_cast<VulkanRHITexture*>(m_BoundRenderTarget.Get());
-			ValidateTextureState(
-				vulkanRenderTarget,
-				{
-					.Stages = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
-					.Access = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
-					.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-				}
-			);
-
-			VulkanRHITexture* vulkanDepthStencil = reinterpret_cast<VulkanRHITexture*>(m_BoundDepthStencil.Get());
-			ValidateTextureState(
-				vulkanDepthStencil,
-				{
-					.Stages = VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT,
-					.Access = VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
-					.Layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-				}
-			);
-
 			m_BoundRenderTarget = nullptr;
 			m_BoundDepthStencil = nullptr;
+		}
+
+		void VulkanRHICommandList::CopyBufferToBuffer(RHIBuffer::Ptr src, RHIBuffer::Ptr dst, uint32_t sizeBytes)
+		{
+			ResetIfNeeded();
+
+			const VkBufferCopy region =
+			{
+				.srcOffset = 0,
+				.dstOffset = 0,
+				.size = sizeBytes,
+			};
+
+			VulkanRHIBuffer* vulkanSrcBuffer = reinterpret_cast<VulkanRHIBuffer*>(src.Get());
+			VulkanRHIBuffer* vulkanDstBuffer = reinterpret_cast<VulkanRHIBuffer*>(dst.Get());
+
+			vkCmdCopyBuffer(m_NativeCommandBuffer, vulkanSrcBuffer->GetHandle(), vulkanDstBuffer->GetHandle(), 1, &region);
 		}
 
 		void VulkanRHICommandList::ValidateTextureState(VulkanRHITexture* texture, const VulkanRHITexture::State& state)

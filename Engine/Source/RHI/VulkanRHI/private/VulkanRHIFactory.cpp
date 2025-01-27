@@ -37,6 +37,8 @@ namespace GameEngine
 
 		VulkanRHIFactory::VulkanRHIFactory()
 		{
+			constexpr bool ENABLE_VALIDATION = true;
+
 			static constexpr std::array INSTANCE_EXTENSIONS =
 			{
 				VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
@@ -80,8 +82,8 @@ namespace GameEngine
 				.pNext = &debugUtilsMessengerInfo,
 				.flags = 0,
 				.pApplicationInfo = &appInfo,
-				.enabledLayerCount = static_cast<uint32_t>(LAYERS.size()),
-				.ppEnabledLayerNames = LAYERS.data(),
+				.enabledLayerCount = ENABLE_VALIDATION ? static_cast<uint32_t>(LAYERS.size()) : 0,
+				.ppEnabledLayerNames = ENABLE_VALIDATION ? LAYERS.data() : nullptr,
 				.enabledExtensionCount = static_cast<uint32_t>(INSTANCE_EXTENSIONS.size()),
 				.ppEnabledExtensionNames = INSTANCE_EXTENSIONS.data(),
 			};

@@ -16,7 +16,7 @@ namespace GameEngine
 			, m_ShaderModuleList(std::move(shaderModuleList))
 		{
 			FillInputAssemblyInfo();
-			CreateDescriptorSet();
+			CreateDescriptorSetLayout();
 			CreatePipelineLayout();
 		}
 
@@ -29,14 +29,6 @@ namespace GameEngine
 					vkDestroyShaderModule(m_Device->GetHandle(), shaderModule, nullptr);
 					shaderModule = VK_NULL_HANDLE;
 				}
-			}
-
-			m_DescriptorSet = VK_NULL_HANDLE;
-
-			if (m_DescriptorPool != VK_NULL_HANDLE)
-			{
-				vkDestroyDescriptorPool(m_Device->GetHandle(), m_DescriptorPool, nullptr);
-				m_DescriptorPool = VK_NULL_HANDLE;
 			}
 
 			if (m_PipelineLayout != VK_NULL_HANDLE)
@@ -96,9 +88,8 @@ namespace GameEngine
 			m_InputAttributeList = attributes;
 		}
 
-		void VulkanRHITechnique::CreateDescriptorSet()
+		void VulkanRHITechnique::CreateDescriptorSetLayout()
 		{
-			/* Descriptor Layout */
 			std::vector<VkDescriptorSetLayoutBinding> dsBindings;
 			dsBindings.reserve(m_RootSignature.size());
 
@@ -124,43 +115,12 @@ namespace GameEngine
 			{
 				.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
 				.pNext = nullptr,
-				.flags = 0,
+				.flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR,
 				.bindingCount = static_cast<uint32_t>(dsBindings.size()),
 				.pBindings = dsBindings.data(),
 			};
 
 			VULKAN_CALL_CHECK(vkCreateDescriptorSetLayout(m_Device->GetHandle(), &dsLayoutInfo, nullptr, &m_DescriptorSetLayout));
-
-			/* Descriptor Pool */
-			const VkDescriptorPoolSize poolSize =
-			{
-				.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-				.descriptorCount = static_cast<uint32_t>(m_RootSignature.size()),
-			};
-
-			const VkDescriptorPoolCreateInfo poolInfo =
-			{
-				.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
-				.pNext = nullptr,
-				.flags = 0,
-				.maxSets = 1,
-				.poolSizeCount = 1,
-				.pPoolSizes = &poolSize,
-			};
-
-			VULKAN_CALL_CHECK(vkCreateDescriptorPool(m_Device->GetHandle(), &poolInfo, nullptr, &m_DescriptorPool));
-
-			/* Allocate Descriptor Set */
-			const VkDescriptorSetAllocateInfo dsAllocateInfo =
-			{
-				.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-				.pNext = nullptr,
-				.descriptorPool = m_DescriptorPool,
-				.descriptorSetCount = 1,
-				.pSetLayouts = &m_DescriptorSetLayout,
-			};
-
-			VULKAN_CALL_CHECK(vkAllocateDescriptorSets(m_Device->GetHandle(), &dsAllocateInfo, &m_DescriptorSet));
 		}
 
 		void VulkanRHITechnique::CreatePipelineLayout()

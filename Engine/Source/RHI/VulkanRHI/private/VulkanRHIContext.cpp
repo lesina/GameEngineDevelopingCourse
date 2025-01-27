@@ -9,18 +9,18 @@
 #include <FileSystem.h>
 #include <Vector.h>
 #include <RHICommon.h>
- #include <VulkanRHIBuffer.h>
- #include <VulkanRHIFactory.h>
- #include <VulkanRHIDevice.h>
- #include <VulkanRHISwapChain.h>
- #include <VulkanRHIFence.h>
- #include <VulkanRHICommandQueue.h>
- #include <VulkanRHICommandAllocator.h>
- #include <VulkanRHICommandList.h>
- #include <VulkanRHITexture.h>
- #include <VulkanRHIContext.h>
- #include <VulkanRHITechnique.h>
- #include <VulkanRHIPipelineStateObject.h>
+#include <VulkanRHIBuffer.h>
+#include <VulkanRHIFactory.h>
+#include <VulkanRHIDevice.h>
+#include <VulkanRHISwapChain.h>
+#include <VulkanRHIFence.h>
+#include <VulkanRHICommandQueue.h>
+#include <VulkanRHICommandAllocator.h>
+#include <VulkanRHICommandList.h>
+#include <VulkanRHITexture.h>
+#include <VulkanRHIContext.h>
+#include <VulkanRHITechnique.h>
+#include <VulkanRHIPipelineStateObject.h>
 
 namespace GameEngine
 {
@@ -269,21 +269,14 @@ namespace GameEngine
 				RecreateTransferStagingBuffer(newSize);
 
 				m_TransferCommandList->Reset();
+
 				m_TransferStagingBuffer->CopyData(0, description.initData, description.Count * description.ElementSize);
-
-				const VkBufferCopy copyInfo =
-				{
-					.srcOffset = 0,
-					.dstOffset = 0,
-					.size = newSize,
-				};
-
-				vkCmdCopyBuffer(m_TransferCommandList->GetNativeObject(), m_TransferStagingBuffer->GetNativeObject(),
-					buffer->GetHandle(), 1, &copyInfo);
+				m_TransferCommandList->CopyBufferToBuffer(m_TransferStagingBuffer, buffer, newSize);
 
 				m_TransferCommandList->Close();
-
 				m_CommandQueue->ExecuteCommandLists({m_TransferCommandList});
+
+				m_Fence->Sync(m_CommandQueue);
 			}
 
 			return buffer;
@@ -624,8 +617,6 @@ namespace GameEngine
 			assert(vertexDesc.initData);
 			assert(indexDesc.initData);
 
-			m_CommandList->Reset();
-
 			RHIBuffer::Ptr vertexBuffer = CreateBuffer(
 				{
 					.Count = vertexDesc.Count,
@@ -643,11 +634,6 @@ namespace GameEngine
 					.initData = indexDesc.initData
 				}
 			);
-
-			m_CommandList->Close();
-			m_CommandQueue->ExecuteCommandLists({ m_CommandList });
-
-			m_Fence->Sync(m_CommandQueue);
 
 			return RHIMesh::Ptr(new RHIMesh(vertexBuffer, indexBuffer, indexDesc.Format));
 		}

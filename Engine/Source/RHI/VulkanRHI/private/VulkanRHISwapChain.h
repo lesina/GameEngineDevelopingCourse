@@ -41,6 +41,8 @@ namespace GameEngine
 
 			void DestroySwapChain();
 
+			void AcquireNext();
+
 		private:
 			VulkanRHIDevice::Ptr m_Device = nullptr;
 			VulkanRHIFactory::Ptr m_Factory = nullptr;
@@ -48,6 +50,8 @@ namespace GameEngine
 			VkSurfaceKHR m_Surface = VK_NULL_HANDLE;
 			VkFormat m_BackBufferFormat;
 			VkSwapchainKHR m_SwapChain = VK_NULL_HANDLE;
+
+			VkFence m_AcquireFence = VK_NULL_HANDLE;
 
 			VulkanRHITexture::Ptr m_BackBuffer[RenderCore::g_FrameBufferCount];
 		};
