@@ -21,6 +21,7 @@
 #include <VulkanRHIContext.h>
 #include <VulkanRHITechnique.h>
 #include <VulkanRHIPipelineStateObject.h>
+#include <VulkanShaderCompiler.h>
 
 namespace GameEngine
 {
@@ -82,22 +83,10 @@ namespace GameEngine
 			return vulkanUsage;
 		}
 
-		static LPCWSTR ConvertToDxcTargetProfile(RHITechnique::ShaderInfoDescription::ShaderType shaderType)
-		{
-			switch (shaderType)
-			{
-			case RHITechnique::ShaderInfoDescription::ShaderType::VertexShader:
-				return L"vs_6_8";
-			case RHITechnique::ShaderInfoDescription::ShaderType::PixelShader:
-				return L"ps_6_8";
-			default:
-				ASSERT_NOT_IMPLEMENTED;
-				return L"vs_6_8";
-			}
-		}
-
 		VulkanRHIContext::VulkanRHIContext()
 		{
+			m_ShaderCompiler = std::make_unique<VulkanShaderCompiler>();
+
 			m_Factory = new VulkanRHIFactory();
 			m_Device = new VulkanRHIDevice(m_Factory);
 
@@ -111,15 +100,6 @@ namespace GameEngine
 
 			RecreateTransferStagingBuffer(1024 * 1024);
 			m_TransferCommandList = new VulkanRHICommandList(m_Device);
-
-			HRESULT hr = DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(m_DxcLibrary.GetAddressOf()));
-			assert(SUCCEEDED(hr));
-
-			hr = m_DxcLibrary->CreateIncludeHandler(m_DxcIncludeHandler.GetAddressOf());
-			assert(SUCCEEDED(hr));
-
-			hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(m_DxcCompiler.GetAddressOf()));
-			assert(SUCCEEDED(hr));
 		}
 
 		VulkanRHIContext::~VulkanRHIContext()
@@ -291,51 +271,17 @@ namespace GameEngine
 			VulkanRHITechnique::ShaderModuleList shaderModules;
 			shaderModules.reserve(shaderInfo.size());
 
-			RefCountPtr<IDxcBlobEncoding> blobEncoding = nullptr;
-			RefCountPtr<IDxcOperationResult> dxcResult = nullptr;
-			RefCountPtr<IDxcBlob> dxcBlob = nullptr;
-
-			std::vector<uint32_t> spirv;
-
 			for (const RHITechnique::ShaderInfoDescription& shaderDesc : shaderInfo)
 			{
-				std::wstring filename = Core::g_FileSystem->GetShaderPath(shaderDesc.ShaderFile);
-				std::wstring entryPoint(shaderDesc.EntryPoint.begin(), shaderDesc.EntryPoint.end());
-
-				UINT32 codePage = CP_UTF8;
-				HRESULT hr = m_DxcLibrary->CreateBlobFromFile(filename.data(), &codePage, blobEncoding.ReleaseAndGetAddressOf());
-				assert(SUCCEEDED(hr));
-
-				LPCWSTR targetProfile = ConvertToDxcTargetProfile(shaderDesc.Type);
-
-				// FIXME: Dxc requires const wchar**, not const wchar* const * .....
-				static std::vector<LPCWSTR> args =
-				{
-					L"-spirv",
-					L"-T",
-					targetProfile,
-					L"-Zi"
-				};
-
-				hr = m_DxcCompiler->Compile(blobEncoding, filename.data(), entryPoint.data(), targetProfile, args.data(),
-					static_cast<uint32_t>(args.size()), nullptr, 0, m_DxcIncludeHandler, dxcResult.ReleaseAndGetAddressOf());
-				assert(SUCCEEDED(hr));
-
-				dxcResult->GetResult(dxcBlob.ReleaseAndGetAddressOf());
-
-				const size_t spirvSizeBytes = dxcBlob->GetBufferSize();
-				assert(spirvSizeBytes > 0 && (spirvSizeBytes % 4) == 0);
-
-				spirv.resize(spirvSizeBytes / 4);
-				memcpy(spirv.data(), dxcBlob->GetBufferPointer(), spirvSizeBytes);
+				std::vector<uint32_t> spirv = m_ShaderCompiler->CompileFromFile(shaderDesc);
 
 				const VkShaderModuleCreateInfo shaderModuleInfo =
 				{
 					.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
 					.pNext = nullptr,
 					.flags = 0,
-					.codeSize = spirvSizeBytes,
-					.pCode = reinterpret_cast<const uint32_t*>(dxcBlob->GetBufferPointer()),
+					.codeSize = spirv.size() * sizeof(spirv[0]),
+					.pCode = spirv.data(),
 				};
 
 				VkShaderModule vulkanShaderModule = VK_NULL_HANDLE;

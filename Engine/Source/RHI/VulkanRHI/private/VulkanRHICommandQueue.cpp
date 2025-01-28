@@ -38,12 +38,12 @@ namespace GameEngine
 				.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO_2,
 				.pNext = nullptr,
 				.flags = 0,
-				.waitSemaphoreInfoCount = 0, // TODO
-				.pWaitSemaphoreInfos = nullptr, // TODO
+				.waitSemaphoreInfoCount = 0,
+				.pWaitSemaphoreInfos = nullptr,
 				.commandBufferInfoCount = static_cast<uint32_t>(cmdSubmitInfos.size()),
 				.pCommandBufferInfos = cmdSubmitInfos.data(),
-				.signalSemaphoreInfoCount = 0, // TODO
-				.pSignalSemaphoreInfos = nullptr, // TODO
+				.signalSemaphoreInfoCount = 0,
+				.pSignalSemaphoreInfos = nullptr,
 			};
 
 			VULKAN_CALL_CHECK(vkQueueSubmit2(m_NativeCommandQueue, 1, &submitInfo, VK_NULL_HANDLE));

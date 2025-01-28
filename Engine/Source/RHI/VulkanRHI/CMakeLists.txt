@@ -49,6 +49,7 @@ target_link_libraries(VulkanRHI PRIVATE
 
 target_precompile_headers(VulkanRHI
 	PRIVATE
+		<array>
 		<unordered_map>
 		<vector>
 		<string>

@@ -1,8 +1,5 @@
 #pragma once
 
-#include <Windows.h>
-#include <dxcapi.h>
-
 #include <Geometry.h>
 #include <RHIContext.h>
 #include <RHI/VulkanRHI/export.h>
@@ -19,9 +16,8 @@ namespace GameEngine
 		class VulkanRHIFence;
 		class VulkanRHIBuffer;
 		class VulkanRHICommandQueue;
-		class VulkanRHICommandAllocator;
 		class VulkanRHICommandList;
-		class VulkanDescriptorHeap;
+		class VulkanShaderCompiler;
 
 		class VULKAN_API VulkanRHIContext final : public RHIContext
 		{
@@ -55,6 +51,8 @@ namespace GameEngine
 			void RecreateTransferStagingBuffer(uint32_t size);
 
 		private:
+			std::unique_ptr<VulkanShaderCompiler> m_ShaderCompiler = nullptr;
+
 			RefCountPtr<VulkanRHIFactory> m_Factory = nullptr;
 			RefCountPtr<VulkanRHIDevice> m_Device = nullptr;
 			RefCountPtr<VulkanRHISwapChain> m_SwapChain = nullptr;
@@ -64,11 +62,6 @@ namespace GameEngine
 
 			RefCountPtr<RHIBuffer> m_TransferStagingBuffer = nullptr;
 			RefCountPtr<VulkanRHICommandList> m_TransferCommandList = nullptr;
-
-			//Microsoft::WRL::ComPtr<IDxcUtils> m_DxcUtils;
-			RefCountPtr<IDxcLibrary> m_DxcLibrary = nullptr;
-			RefCountPtr<IDxcIncludeHandler> m_DxcIncludeHandler = nullptr;
-			RefCountPtr<IDxcCompiler> m_DxcCompiler = nullptr;
 		};
 	}
 }
