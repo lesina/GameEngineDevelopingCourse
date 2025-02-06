@@ -40,6 +40,8 @@ namespace GameEngine::Render
 
 		m_RenderEngine = new RenderEngine();
 
+		m_RenderEngineIsReady.release();
+
 		while (true)
 		{
 			std::lock_guard<std::mutex> lock(frameMutex[m_CurrRenderFrame]);
@@ -47,6 +49,8 @@ namespace GameEngine::Render
 			ProcessCommands();
 
 			m_RenderEngine->Update(m_CurrRenderFrame);
+
+			m_RenderEngine->OnEndFrame();
 
 			OnEndFrame();
 		}
@@ -119,8 +123,13 @@ namespace GameEngine::Render
 		return (frameNumber + 1) % RenderCore::g_FrameBufferCount;
 	}
 
-	std::shared_ptr<HAL::RHIContext> RenderThread::GetRHI() const
+	RenderEngine* RenderThread::GetRenderEngine()
 	{
-		return m_RenderEngine->GetRHI();
+		return m_RenderEngine;
+	}
+
+	void RenderThread::WaitForRenderEngineToInit()
+	{
+		m_RenderEngineIsReady.acquire();
 	}
 }

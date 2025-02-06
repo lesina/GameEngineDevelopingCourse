@@ -2,10 +2,11 @@
 
 #include <Core/export.h>
 #include <Vector.h>
+#include <PackedVariables.h>
 
 namespace GameEngine::Core
 {
-	class CORE_API Window final
+	class CORE_API Window
 	{
 	public:
 		using Ptr = std::unique_ptr<Window>;
@@ -26,9 +27,13 @@ namespace GameEngine::Core
 		
 		void Update();
 
+		void CaptureMouse();
+		void ReleaseMouse();
+
 		void Focus();
 		void UnFocus();
 
+		inline bool IsMouseCaptured() const { return m_IsMouseCaptured; }
 		inline bool IsFocused() const { return m_IsFocused; }
 		inline bool IsWindowed() const { return m_IsWindowed; }
 
@@ -41,9 +46,11 @@ namespace GameEngine::Core
 		// In screen coords
 		Math::Vector2i m_MousePos;
 
+		bool m_IsMouseCaptured = false;
 		bool m_IsFocused = false;
 		bool m_IsWindowed = true;
 	};
 
+	extern CORE_API std::function<bool(PackedVariables&)> g_GUIWindowsCallback;
 	extern CORE_API Window::Ptr g_MainWindowsApplication;
 }

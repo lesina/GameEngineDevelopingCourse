@@ -11,7 +11,14 @@ namespace GameEngine::Core
 	// That is why it is singleton
 	// Basically, can be replaced with SDL
 	class CORE_API InputHandler final
-	{;
+	{
+	public:
+		struct MouseMovevement
+		{
+			float dx;
+			float dy;
+		};
+
 	private:
 		InputHandler();
 		~InputHandler() = default;
@@ -20,6 +27,8 @@ namespace GameEngine::Core
 		static InputHandler* GetInstance();
 
 	public:
+		void Update(float dt);
+
 		void KeyPressed(KeyboardButton kb);
 		void KeyReleased(KeyboardButton kb);
 		void KeyPressed(MouseButton kb);
@@ -28,7 +37,11 @@ namespace GameEngine::Core
 		bool IsKeyPressed(MouseButton mb) const;
 		void OnMouseMove(float dx, float dy);
 
+		const MouseMovevement& GetMouseMovement() const { return m_MouseMovevement; }
+
 	private:
+		MouseMovevement m_MouseMovevement;
+
 		std::bitset<
 			KeyboardButtonCount +
 			MouseButtonCount

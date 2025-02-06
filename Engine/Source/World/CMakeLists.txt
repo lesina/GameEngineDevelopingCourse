@@ -77,4 +77,5 @@ target_precompile_headers(World
 		<filesystem>
 		<bitset>
 		<queue>
+		<stack>
 )

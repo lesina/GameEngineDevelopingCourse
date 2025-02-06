@@ -15,7 +15,7 @@
                 "CMAKE_SYSTEM_VERSION": "10.0.19041.0",
 				"WINDOWS": "TRUE"
             },
-            "toolset":"host=x64,version=14.34",
+            "toolset":"host=x64",
             "architecture":"x64"
         }
     ]

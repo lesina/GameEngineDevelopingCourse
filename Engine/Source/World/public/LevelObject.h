@@ -21,6 +21,7 @@ namespace GameEngine::World
 		const std::string& GetName() const { return m_Name; }
 		void AddComponent(const ComponentName& name, const ComponentDesc& desc);
 		const ComponentList& GetComponents() const { return m_ComponentList; }
+		ComponentList& GetComponents() { return m_ComponentList; }
 
 	private:
 		std::string m_Name = "None";

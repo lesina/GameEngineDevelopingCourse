@@ -6,18 +6,32 @@
 
 #include <Input/InputHandler.h>
 #include <Input/Windows/WindowsKeyboardButtons.h>
-#include <Window.h>
 #include <Window/IWindow.h>
 
 namespace GameEngine::Core
 {
 	Window::Ptr g_MainWindowsApplication = nullptr;
 
+	std::function<bool(PackedVariables&)> g_GUIWindowsCallback = nullptr;
+
+	HWND GetPlatformWindowHandle(void* handle)
+	{
+		return reinterpret_cast<HWND>(handle);
+	}
+
 	LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
+		PackedVariables packedVariables;
+		packedVariables.Encode(hwnd, msg, wParam, lParam);
+		if (g_GUIWindowsCallback && g_GUIWindowsCallback(packedVariables))
+		{
+			return true;
+		}
+
 		switch (msg)
 		{
 		case WM_DESTROY:
+		case WM_CLOSE:
 			PostQuitMessage(0);
 			return 0;
 		case WM_SIZE:
@@ -44,7 +58,9 @@ namespace GameEngine::Core
 			pt.y = GET_Y_LPARAM(lParam);
 			ClientToScreen(GetPlatformWindowHandle(g_MainWindowsApplication->GetWindowHandle()), &pt);
 			Math::Vector2i pos = g_MainWindowsApplication->GetMousePos();
+
 			InputHandler::GetInstance()->OnMouseMove(pt.x - pos.x, pt.y - pos.y);
+
 			return 0;
 		case WM_LBUTTONDOWN:
 		case WM_RBUTTONDOWN:
@@ -59,7 +75,16 @@ namespace GameEngine::Core
 		case WM_MBUTTONUP:
 			if (g_MainWindowsApplication->IsFocused()) [[likely]]
 			{
-				InputHandler::GetInstance()->KeyReleased(MKToMouseButton(wParam));
+				// This is the only way to determine which button is pressed
+				// wParam only contains buttons that are down
+				// https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-rbuttonup
+
+				WPARAM button = wParam;
+				if (msg == WM_LBUTTONUP) { button = MK_LBUTTON; }
+				if (msg == WM_RBUTTONUP) { button = MK_RBUTTON; }
+				if (msg == WM_MBUTTONUP) { button = MK_MBUTTON; }
+
+				InputHandler::GetInstance()->KeyReleased(MKToMouseButton(button));
 			}
 			return 0;
 		case WM_SETFOCUS:
@@ -119,12 +144,14 @@ namespace GameEngine::Core
 		ShowWindow(GetPlatformWindowHandle(m_WndHndl), SW_SHOW);
 		UpdateWindow(GetPlatformWindowHandle(m_WndHndl));
 
+		CaptureMouse();
+
 		return;
 	}
 
 	void Window::Update()
 	{
-		if (m_IsFocused) [[likely]]
+		if (m_IsMouseCaptured && m_IsFocused) [[likely]]
 		{
 			RECT R;
 			GetWindowRect(GetPlatformWindowHandle(GetWindowHandle()), &R);
@@ -142,17 +169,38 @@ namespace GameEngine::Core
 	{
 		SetCapture(GetPlatformWindowHandle(GetWindowHandle()));
 		SetFocus(GetPlatformWindowHandle(GetWindowHandle()));
-		ShowCursor(false);
 
 		m_IsFocused = true;
+
+		if (m_IsMouseCaptured)
+		{
+			CaptureMouse();
+		}
 	}
 
 	void Window::UnFocus()
 	{
 		ReleaseCapture();
 		SetFocus(nullptr);
-		ShowCursor(true);
 
 		m_IsFocused = false;
+
+		bool isMouseCaptured = m_IsMouseCaptured;
+		ReleaseMouse();
+		m_IsMouseCaptured = isMouseCaptured;
+	}
+
+	void Window::CaptureMouse()
+	{
+		ShowCursor(false);
+
+		m_IsMouseCaptured = true;
+	}
+
+	void Window::ReleaseMouse()
+	{
+		ShowCursor(true);
+
+		m_IsMouseCaptured = false;
 	}
 }

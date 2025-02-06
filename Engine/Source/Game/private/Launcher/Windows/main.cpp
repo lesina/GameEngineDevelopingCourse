@@ -28,13 +28,13 @@ bool WindowsMessageLoop()
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 
-		if (msg.message == (WM_QUIT | WM_CLOSE))
+		if (msg.message == WM_QUIT)
 		{
 			return false;
 		}
 	}
 
-	return msg.message != (WM_QUIT | WM_CLOSE);
+	return true;
 }
 
 void WaitForDebugger()

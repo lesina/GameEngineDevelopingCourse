@@ -25,6 +25,7 @@ namespace GameEngine
 		enum class MouseButton : uint16_t
 		{
 			LMB = 0,
+			RMB,
 
 			UNKNOWN
 		};

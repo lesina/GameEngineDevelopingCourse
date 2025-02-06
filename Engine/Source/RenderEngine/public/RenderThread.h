@@ -38,9 +38,11 @@ namespace GameEngine::Render
 
 		size_t GetMainFrame() const { return m_CurMainFrame; }
 
-		std::shared_ptr<HAL::RHIContext> GetRHI() const;
+		RenderEngine* GetRenderEngine();
 
 		static bool IsRenderThread();
+
+		void WaitForRenderEngineToInit();
 
 	private:
 		void ProcessCommands();
@@ -51,8 +53,9 @@ namespace GameEngine::Render
 		inline static std::jthread::id s_MainThreadId;
 		std::unique_ptr<std::jthread> m_Thread;
 		std::mutex frameMutex[RenderCore::g_FrameBufferCount];
+		std::binary_semaphore m_RenderEngineIsReady{ 0 };
 
-		RenderEngine* m_RenderEngine;
+		RenderEngine* m_RenderEngine = nullptr;
 
 		size_t m_CurrRenderFrame = 0;
 		size_t m_CurMainFrame = 0;

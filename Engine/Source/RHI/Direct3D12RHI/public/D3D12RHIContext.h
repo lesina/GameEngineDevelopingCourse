@@ -38,6 +38,7 @@ namespace GameEngine
 				const RHIMesh::VertexBufferDescription& vertexDesc,
 				const RHIMesh::IndexBufferDescription& indexDesc
 			) override;
+			virtual void SetDescriptorHeaps() override;
 
 		public:
 			virtual RHIDevice::Ptr GetDevice() const override;
@@ -49,6 +50,9 @@ namespace GameEngine
 
 		private:
 			void EnableDebugLayer() const;
+
+		public:
+			RefCountPtr<D3D12DescriptorHeap> GetSrvHeap() const;
 
 		private:
 			RefCountPtr<D3D12RHIDevice> m_Device = nullptr;

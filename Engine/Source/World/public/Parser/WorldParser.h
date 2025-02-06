@@ -1,9 +1,14 @@
 #pragma once
 
+#include <World/export.h>
+
 namespace GameEngine::World
 {
-	class WorldParser final
+	class WORLD_API WorldParser final
 	{
+	public:
+		using CustomComponentsMap = std::unordered_map<std::string, uint64_t>;
+
 	public:
 		WorldParser() = delete;
 		~WorldParser() = delete;
@@ -17,7 +22,10 @@ namespace GameEngine::World
 		*/
 		static uint64_t ParseCustom(const std::string& componentName, const std::string& componentValue);
 
+	public:
+		static CustomComponentsMap GetCustomComponents();
+
 	private:
-		static std::unordered_map<std::string, uint64_t> s_CustomComponents;
+		static CustomComponentsMap s_CustomComponents;
 	};
 }

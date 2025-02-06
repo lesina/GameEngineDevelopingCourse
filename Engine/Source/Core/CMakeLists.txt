@@ -28,6 +28,12 @@ if (WINDOWS)
 		private/Input/Windows/*.h
 		private/Input/Windows/*.cpp
 	)
+	
+	file(GLOB
+		PLATFORM_PUBLIC_FILES
+		public/Window/Windows/*.cpp
+		public/Window/Windows/*.h
+	)
 endif()
 
 # Add library
@@ -58,6 +64,7 @@ target_sources(Core
 	PRIVATE ${PRIVATE_FILES}
 	PRIVATE ${PUBLIC_FILES}
 	PRIVATE ${PLATFORM_PRIVATE_FILES}
+	PRIVATE ${PLATFORM_PUBLIC_FILES}
 )
 
 # include dir
@@ -99,4 +106,6 @@ target_precompile_headers(Core
 		<filesystem>
 		<bitset>
 		<queue>
+		<stack>
+		<tuple>
 )

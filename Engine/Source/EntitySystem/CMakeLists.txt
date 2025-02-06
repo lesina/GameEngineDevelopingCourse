@@ -76,4 +76,6 @@ target_precompile_headers(EntitySystem
 		<filesystem>
 		<bitset>
 		<queue>
+		<stack>
+		<semaphore>
 )

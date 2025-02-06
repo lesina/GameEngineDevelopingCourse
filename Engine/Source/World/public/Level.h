@@ -19,6 +19,9 @@ namespace GameEngine::World
 	public:
 		void AddLevelObject(const LevelObject& levelObject);
 		const LevelObjectList& GetLevelObjects() const { return m_LevelObjectList; }
+		LevelObjectList& GetLevelObjects() { return m_LevelObjectList; }
+
+		const std::string& GetName() const { return m_Name; }
 
 	private:
 		std::string m_Name;

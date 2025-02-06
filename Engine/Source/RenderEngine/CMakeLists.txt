@@ -34,6 +34,7 @@ target_include_directories(RenderEngine
 )
 
 target_link_libraries(RenderEngine PRIVATE
+	GUI
 	Math
 	RenderCore
 	RHI
@@ -61,4 +62,6 @@ target_precompile_headers(RenderEngine
 		<bitset>
 		<queue>
 		<variant>
+		<stack>
+		<semaphore>
 )

@@ -48,6 +48,7 @@ namespace GameEngine
 				const RHIMesh::VertexBufferDescription& vertexDesc,
 				const RHIMesh::IndexBufferDescription& indexDesc
 			) = 0;
+			virtual void SetDescriptorHeaps() = 0;
 
 		public:
 			virtual RHIDevice::Ptr GetDevice() const = 0;

@@ -25,6 +25,7 @@ if (WINDOWS)
 endif()
 
 include_directories(${PROJECT_BINARY_DIR}/Engine/Source)
+include_directories(${PROJECT_BINARY_DIR}/Engine/Editor)
 include_directories(${PROJECT_BINARY_DIR}/Source)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/../../Engine/ Engine)

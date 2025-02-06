@@ -56,4 +56,5 @@ target_precompile_headers(RenderCore
 		<limits>
 		<chrono>
 		<filesystem>
+		<stack>
 )

@@ -81,4 +81,5 @@ target_precompile_headers(RHI
 		<limits>
 		<filesystem>
 		<variant>
+		<stack>
 )

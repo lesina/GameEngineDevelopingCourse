@@ -41,6 +41,8 @@ namespace GameEngine
 			{
 			case MK_LBUTTON:
 				return MouseButton::LMB;
+			case MK_RBUTTON:
+				return MouseButton::RMB;
 			default:
 				return MouseButton::UNKNOWN;
 			}

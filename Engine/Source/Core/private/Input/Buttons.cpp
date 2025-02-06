@@ -25,7 +25,8 @@ namespace GameEngine::Core
 
 	const std::unordered_map<std::string, MouseButton> MouseButtonsMap =
 	{
-		{"lmb", MouseButton::LMB}
+		{"lmb", MouseButton::LMB},
+		{"rmb", MouseButton::RMB}
 	};
 
 	MouseButton StringToMouseButton(const std::string& key)

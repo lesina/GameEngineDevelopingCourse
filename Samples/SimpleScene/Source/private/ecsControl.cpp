@@ -1,5 +1,6 @@
 #include <Camera.h>
 #include <ecsControl.h>
+#include <Constants.h>
 #include <ECS/ecsSystems.h>
 #include <ecsPhys.h>
 #include <flecs.h>
@@ -14,6 +15,13 @@ void RegisterEcsControlSystems(flecs::world& world)
 	world.system<Position, CameraPtr, const Speed, const ControllerPtr>()
 		.each([&](flecs::entity e, Position& position, CameraPtr& camera, const Speed& speed, const ControllerPtr& controller)
 	{
+		Core::InputHandler::MouseMovevement mouseMovement = Core::InputHandler::GetInstance()->GetMouseMovement();
+
+		mouseMovement.dx *= 0.25 * Math::Constants::PI / 180.f;
+		mouseMovement.dy *= 0.25 * Math::Constants::PI / 180.f;
+
+		camera.ptr->Rotate(mouseMovement.dx, mouseMovement.dy);
+
 		Math::Vector3f currentMoveDir = Math::Vector3f::Zero();
 		if (controller.ptr->IsPressed("GoLeft"))
 		{

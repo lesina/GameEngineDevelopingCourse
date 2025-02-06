@@ -51,6 +51,7 @@ target_include_directories(Game
 target_link_libraries(Game PRIVATE
 	Core
 	EntitySystem
+	GUI
 	Math
 	RenderCore
 	RenderEngine
@@ -76,4 +77,6 @@ target_precompile_headers(Game
 		<filesystem>
 		<bitset>
 		<queue>
+		<stack>
+		<semaphore>
 )

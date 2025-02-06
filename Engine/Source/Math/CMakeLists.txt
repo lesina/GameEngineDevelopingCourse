@@ -55,4 +55,5 @@ target_precompile_headers(Math
 		<filesystem>
 		<bitset>
 		<queue>
+		<stack>
 )

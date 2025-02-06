@@ -80,9 +80,13 @@ namespace GameEngine::Core
 
 	void InputHandler::OnMouseMove(float dx, float dy)
 	{
-		dx *= 0.25 * Math::Constants::PI / 180.f;
-		dy *= 0.25 * Math::Constants::PI / 180.f;
+		m_MouseMovevement = { dx, dy };
+	}
 
-		g_MainCamera->Rotate(dx, dy);
+	void InputHandler::Update(float dt)
+	{
+		// We are probably already processed the mouse movement info and don't need it anymore
+		// That's why we are setting to zero like we didn't get the mouse movement info from OS during the last frame
+		m_MouseMovevement = { 0.0, 0.0 };
 	}
 }

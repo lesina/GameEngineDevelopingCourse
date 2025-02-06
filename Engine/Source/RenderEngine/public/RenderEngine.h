@@ -19,6 +19,7 @@ namespace GameEngine::Render
 
 		void Update(size_t frame);
 		void OnResize();
+		void OnEndFrame();
 
 		void CreateRenderObject(RenderCore::Geometry* geometry, RenderObject* renderObject);
 

@@ -11,6 +11,8 @@
 #include <RHIBuffer.h>
 #include <RHIPipelineStateObject.h>
 
+#include <GUIContext.h>
+
 namespace GameEngine::Render
 {
 	// Supposed to be as a part of Render Pass
@@ -43,6 +45,8 @@ namespace GameEngine::Render
 		m_rhi = HAL::RHIHelper::CreateRHI("D3D12");
 
 		OnResize();
+
+		GUI::GUIContext::GetInstance()->InitRenderBackend(m_rhi);
 
 		for (int i = 0; i < RenderCore::g_FrameBufferCount; ++i)
 		{
@@ -125,6 +129,8 @@ namespace GameEngine::Render
 
 		m_rhi->GetCommandList()->Reset();
 
+		m_rhi->SetDescriptorHeaps();
+
 		OnResize();
 
 		m_rhi->GetCommandList()->SetPipelineStateObject(m_PSO);
@@ -192,6 +198,11 @@ namespace GameEngine::Render
 				m_Meshes[meshID]->GetIndexBuffer()->GetDesc().Count,
 				1, 0, 0, 0);
 		}
+	}
+
+	void RenderEngine::OnEndFrame()
+	{
+		GUI::GUIContext::GetInstance()->Render();
 
 		m_rhi->GetSwapChain()->MakeBackBufferPresentable(m_rhi->GetCommandList());
 

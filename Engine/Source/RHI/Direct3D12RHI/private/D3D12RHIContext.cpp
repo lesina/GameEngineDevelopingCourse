@@ -173,6 +173,7 @@ namespace GameEngine
 			assert(SUCCEEDED(hr));
 
 			D3D12_CPU_DESCRIPTOR_HANDLE depthStencilCpuDesciptor = D3D12_CPU_DESCRIPTOR_HANDLE(0);
+			D3D12_GPU_DESCRIPTOR_HANDLE depthStencilGpuDesciptor = D3D12_GPU_DESCRIPTOR_HANDLE(0);
 			// Creating Depth Stencil
 			if (description.Flags & RHITexture::UsageFlags::DepthStencil)
 			{
@@ -182,23 +183,25 @@ namespace GameEngine
 				dsvDesc.Format = ConvertToDXGIFormat(description.Format);
 				dsvDesc.Texture2D.MipSlice = 0;
 
-				depthStencilCpuDesciptor = m_DsvHeap->AllocateNewDescriptor();
+				m_DsvHeap->Alloc(&depthStencilCpuDesciptor, &depthStencilGpuDesciptor);
 
 				m_Device->GetHandle()->CreateDepthStencilView(textureResource.Get(), &dsvDesc, depthStencilCpuDesciptor);
 			}
 
 			D3D12_CPU_DESCRIPTOR_HANDLE srvCpuDesciptor = D3D12_CPU_DESCRIPTOR_HANDLE(0);
+			D3D12_GPU_DESCRIPTOR_HANDLE srvGpuDesciptor = D3D12_GPU_DESCRIPTOR_HANDLE(0);
 			// Creating Shader Resource
 			if (description.Flags & RHITexture::UsageFlags::ShaderResource)
 			{
 				assert(0 && "Shader Resource View: Not supported");
 				D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc;
 
-				srvCpuDesciptor = m_SrvCbvUavHeap->AllocateNewDescriptor();
+				m_SrvCbvUavHeap->Alloc(&srvCpuDesciptor, &srvGpuDesciptor);
 				m_Device->GetHandle()->CreateShaderResourceView(textureResource.Get(), &srvDesc, srvCpuDesciptor);
 			}
 
 			D3D12_CPU_DESCRIPTOR_HANDLE rtvCpuDesciptor = D3D12_CPU_DESCRIPTOR_HANDLE(0);
+			D3D12_GPU_DESCRIPTOR_HANDLE rtvGpuDesciptor = D3D12_GPU_DESCRIPTOR_HANDLE(0);
 			// Creating Render Target
 			if (description.Flags & RHITexture::UsageFlags::RenderTarget)
 			{
@@ -206,7 +209,7 @@ namespace GameEngine
 
 				D3D12_RENDER_TARGET_VIEW_DESC rtvDesc;
 
-				rtvCpuDesciptor = m_RtvHeap->AllocateNewDescriptor();
+				m_RtvHeap->Alloc(&rtvCpuDesciptor, &rtvGpuDesciptor);
 				m_Device->GetHandle()->CreateRenderTargetView(textureResource.Get(), &rtvDesc, rtvCpuDesciptor);
 			}
 
@@ -395,6 +398,17 @@ namespace GameEngine
 			assert(SUCCEEDED(hr));
 
 			return D3D12RHIPipelineStateObject::Ptr(new D3D12RHIPipelineStateObject(description, pso));
+		}
+
+		RefCountPtr<D3D12DescriptorHeap> D3D12RHIContext::GetSrvHeap() const
+		{
+			return m_SrvCbvUavHeap;
+		}
+
+		void D3D12RHIContext::SetDescriptorHeaps()
+		{
+			ID3D12DescriptorHeap* descriptorHeaps[] = { m_SrvCbvUavHeap->GetHandle().Get()};
+			m_CommandList->GetHandle()->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 		}
 	}
 }
