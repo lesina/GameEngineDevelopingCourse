@@ -272,6 +272,26 @@ namespace GameEngine
 			Math::Matrix4x4f proj = Core::Math::ProjectionMatrixLH(0.25f * DirectX::XM_PI, Core::MainWindowsApplication->GetAspectRatio(), 1.0f, 1000.0f);
 
 			Math::Matrix4x4f world = Math::Matrix4x4f::Identity();
+
+            static float z_pos = 0;
+            static float direction = 1;
+            static float step = 1e-4;
+            z_pos += direction * step;
+            if (z_pos > 1.0f || z_pos < -1.0f) direction *= -1;
+            world.SetElement(z_pos, 3, 0);
+
+            static float angle = 0;
+            float angle_step = 1e-4;
+            angle += angle_step;
+            float cosAngle = cos(angle);
+            float sinAngle = sin(angle);
+            Math::Matrix4x4f rotation_matrix = Math::Matrix4x4f::Identity();
+            rotation_matrix.SetElement(cosAngle, 0, 0);
+            rotation_matrix.SetElement(sinAngle, 0, 2);
+            rotation_matrix.SetElement(-sinAngle, 2, 0);
+            rotation_matrix.SetElement(cosAngle, 2, 2);
+            world = rotation_matrix * world;
+
 			Math::Matrix4x4f worldViewProj = world * view * proj;
 
 			ObjectConstants objConstants;

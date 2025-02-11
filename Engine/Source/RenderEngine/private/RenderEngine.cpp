@@ -21,19 +21,9 @@ namespace GameEngine::Render
 
 	void RenderEngine::Update()
 	{
-        MoveTetrahedron();
 		m_rhi->Update(m_RenderObjects[0]->m_mesh, m_RenderObjects[0]->m_material);
 		m_rhi->Flush();
 	}
-
-    void RenderEngine::MoveTetrahedron()
-    {
-        static float z_pos = 0;
-        z_pos += 0.1;
-        RenderObject::Ptr tetrahedron = m_RenderObjects[0];
-        tetrahedron->m_mesh = m_rhi->CreateTetrahedronMesh(Core::Math::Vector3f(0, 0, 0));
-        tetrahedron->m_material = m_rhi->GetMaterial(tetrahedron->m_mesh->GetName());
-    }
 
 	void RenderEngine::OnResize(uint16_t width, uint16_t height)
 	{
