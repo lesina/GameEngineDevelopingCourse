@@ -22,7 +22,7 @@ namespace GameEngine
 			// The most common idea for such a loop is that it returns false when quit is required, or true otherwise
 			quit = !PlatformLoop();
 
-			ProcessSystemParams();
+            ProcessSystemParams();
 
 			m_renderEngine->Update();
 		}

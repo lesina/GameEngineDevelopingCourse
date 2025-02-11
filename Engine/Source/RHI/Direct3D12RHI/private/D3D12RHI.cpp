@@ -71,6 +71,32 @@ namespace GameEngine
 			return m_d3d12Private->CreateMesh(vertices.begin(), vertices.size(), sizeof(Vertex), indices.begin(), indices.size(), sizeof(uint16_t));
 		}
 
+        Mesh::Ptr D3D12RHI::CreateTetrahedronMesh(Math::Vector3f pos)
+		{
+			array<Vertex, 5> vertices =
+			{
+				Vertex({ pos - -Math::Vector3f(-1.0f, -1.0f, -1.0f), Math::Vector4f((float*)&DirectX::Colors::Blue) }),
+				Vertex({ pos - -Math::Vector3f(-1.0f, -1.0f, +1.0f), Math::Vector4f((float*)&DirectX::Colors::Aquamarine) }),
+				Vertex({ pos - -Math::Vector3f(+1.0f, -1.0f, +1.0f), Math::Vector4f((float*)&DirectX::Colors::DeepSkyBlue) }),
+				Vertex({ pos - -Math::Vector3f(+1.0f, -1.0f, -1.0f), Math::Vector4f((float*)&DirectX::Colors::DarkSlateBlue) }),
+				Vertex({ pos - -Math::Vector3f( 0.0f, +1.0f,  0.0f), Math::Vector4f((float*)&DirectX::Colors::White) }),
+			};
+
+			array<uint16_t, 18> indices =
+			{
+                // base
+                2, 0, 1,
+                2, 3, 0,
+                // sides
+				0, 1, 4,
+				1, 2, 4,
+				2, 3, 4,
+				3, 0, 4,
+			};
+
+			return m_d3d12Private->CreateMesh(vertices.begin(), vertices.size(), sizeof(Vertex), indices.begin(), indices.size(), sizeof(uint16_t));
+		}
+
 		Material::Ptr D3D12RHI::GetMaterial(const std::string& name)
 		{
 			return m_d3d12Private->GetMaterial(name);

@@ -3,6 +3,7 @@
 #include <RHIAdapter.h>
 #include <RHI/Direct3D12RHI/export.h>
 #include <Mesh.h>
+#include <Math/Vector.h>
 
 namespace GameEngine
 {
@@ -22,6 +23,7 @@ namespace GameEngine
 			virtual void Init() override;
 			virtual void Update(Mesh::Ptr mesh, Material::Ptr material) override;
 			virtual Mesh::Ptr CreateBoxMesh() override;
+			virtual Mesh::Ptr CreateTetrahedronMesh(Core::Math::Vector3f pos) override;
 			virtual Material::Ptr GetMaterial(const std::string& name) override;
 			virtual void ExecuteCommandLists() override;
 			virtual void Flush() override;
