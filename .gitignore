@@ -354,3 +354,6 @@ cmake_output/
 
 # Local Build
 localBuild/
+
+# VScode folder
+.vscode
