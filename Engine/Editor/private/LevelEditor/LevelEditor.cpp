@@ -8,6 +8,7 @@
 
 #include <imgui.h>
 #include <imgui_stdlib.h>
+#include <regex>
 
 namespace cqe
 {
@@ -69,7 +70,16 @@ namespace cqe
 					{
 						for (World::LevelObject::Component& component : levelObject.GetComponents())
 						{
-							ImGui::InputText(component.first.c_str(), &component.second);
+							const bool bIsPositionAttribute = !std::strcmp(component.first.c_str(), "Position");
+							if (bIsPositionAttribute) 
+							{
+								std::vector<float> positionAsNumbers = FromStringToFloat3(component.second, ",");
+								ImGui::InputFloat3(component.first.c_str(), &positionAsNumbers[0]);
+							}
+							else 
+							{
+								ImGui::InputText(component.first.c_str(), &component.second);
+							}
 						}
 
 						ImGui::TreePop();
@@ -108,6 +118,25 @@ namespace cqe
 		{
 			assert(m_Level.has_value());
 			LevelSerializer::Serialize(Core::g_FileSystem->GetFilePath("Levels/Main.xml").generic_string(), m_Level.value());
+		}
+
+		std::vector<float> LevelEditor::FromStringToFloat3(const std::string inputString, const std::string delimiter)
+		{
+			std::vector<float> outputFloat3 = std::vector<float>(); 
+
+			const std::regex del(delimiter);
+			std::sregex_token_iterator posBegin = std::sregex_token_iterator(inputString.begin(), inputString.end(), del, -1);
+			const std::sregex_token_iterator posEnd = std::sregex_token_iterator();
+
+			while (posBegin != posEnd)
+			{
+				std::string numberStr = *posBegin;
+				outputFloat3.push_back(std::stof(numberStr));
+
+				posBegin++;
+			}
+
+			return outputFloat3;
 		}
 	}
 }

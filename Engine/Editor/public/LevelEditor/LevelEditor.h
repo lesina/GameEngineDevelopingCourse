@@ -22,6 +22,7 @@ namespace cqe
 
 		private:
 			void Save();
+			std::vector<float> FromStringToFloat3(const std::string inputString, const std::string delimiter);
 
 		private:
 			Core::Timer m_SaveButtonMessageTimer;
