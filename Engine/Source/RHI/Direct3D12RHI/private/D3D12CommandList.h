@@ -33,6 +33,7 @@ namespace cqe
 
 			virtual void SetPipelineStateObject(PipelineStateObject::Ptr pso) override;
 			virtual void SetMesh(Mesh::Ptr mesh) override;
+			virtual void SetGraphicsDescriptorTableForTexture(uint32_t parameterIdx, Texture* texture) override;
 			virtual void SetGraphicsConstantBuffer(uint32_t ParameterIdx, Buffer::Ptr buffer, uint32_t bufferOffset = 0) override;
 			virtual void SetTechnique(Technique::Ptr technique) override;
 			virtual void SetPrimitiveTopology(PrimitiveTopology topology) override;

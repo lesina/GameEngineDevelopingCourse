@@ -27,6 +27,7 @@ namespace cqe
 
 			virtual void SetPipelineStateObject(PipelineStateObject::Ptr pso) = 0;
 			virtual void SetMesh(Mesh::Ptr mesh) = 0;
+			virtual void SetGraphicsDescriptorTableForTexture(uint32_t parameterIdx, Texture* texture) = 0;
 			virtual void SetGraphicsConstantBuffer(uint32_t ParameterIdx, Buffer::Ptr buffer, uint32_t bufferOffset = 0) = 0;
 			virtual void SetTechnique(Technique::Ptr technique) = 0;
 			virtual void SetPrimitiveTopology(PrimitiveTopology topology) = 0;

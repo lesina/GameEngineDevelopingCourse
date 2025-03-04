@@ -350,6 +350,8 @@ namespace cqe
 				return 2;
 			case ResourceFormat::R16_UNORM:
 				return 2;
+			case ResourceFormat::RG32_FLOAT:
+				return 8;
 			case ResourceFormat::RGB32_FLOAT:
 				return 12;
 			default:

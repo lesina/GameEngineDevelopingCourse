@@ -112,7 +112,8 @@ namespace cqe
 					nullptr,
 					rtvHeapHandle,
 					D3D12_CPU_DESCRIPTOR_HANDLE(0),
-					D3D12_CPU_DESCRIPTOR_HANDLE(0));
+					D3D12_CPU_DESCRIPTOR_HANDLE(0),
+					D3D12_GPU_DESCRIPTOR_HANDLE(0));
 
 				hr = m_NativeSwapChain->GetBuffer(i, IID_PPV_ARGS(backBuffer->GetHandleAddress()));
 				assert(SUCCEEDED(hr));

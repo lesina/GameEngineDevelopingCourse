@@ -36,7 +36,9 @@ namespace cqe
 			using Ptr = std::shared_ptr<Context>;
 
 		public:
-			virtual Texture::Ptr CreateTexture(const Texture::Description& description) = 0;
+			virtual Texture* CreateTexture(const Texture::Description& description) = 0;
+			virtual void FreeTexture(const Texture* texture, Texture::UsageFlags::Flag usageFlag) = 0;
+			virtual void LoadTextureFromFile(Texture* texture, const std::wstring&& filePath) = 0;
 			virtual Buffer::Ptr CreateBuffer(Buffer::Description&& description) = 0;
 			virtual Technique::Ptr CreateTechnique(
 				const Technique::ShaderInfo& shaderInfo,

@@ -14,7 +14,13 @@ namespace cqe
 			// IndexType should be consistent with index format
 			// DXGI_FORMAT_R16_UINT
 			using IndexType = uint16_t;
-			using VertexType = Math::Vector3f;
+
+			struct Vertex
+			{
+				Math::Vector3f m_Pos = Math::Vector3f{ 0.0f, 0.0f, 0.0f };
+				Math::Vector2f m_Uv = Math::Vector2f{ 0.0f, 0.0f };
+			};
+			using VertexType = Vertex;
 			using Ptr = std::shared_ptr<Geometry>;
 
 		public:

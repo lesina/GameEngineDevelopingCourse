@@ -10,6 +10,7 @@
 #include <Technique.h>
 #include <Buffer.h>
 #include <PipelineStateObject.h>
+#include <FileSystem.h>
 
 #include <GUIContext.h>
 
@@ -104,6 +105,14 @@ namespace cqe::Render
 				.InputSlot = 0,
 				.InputSlotClass = RHI::Technique::InputLayoutDescription::Classification::PerVertex,
 				.InstanceDataStepRate = 0
+			},
+			{
+				.SemanticName = "TEXCOORD",
+				.Index = 0,
+				.Format = RHI::ResourceFormat::RG32_FLOAT,
+				.InputSlot = 0,
+				.InputSlotClass = RHI::Technique::InputLayoutDescription::Classification::PerVertex,
+				.InstanceDataStepRate = 0
 			}
 		};
 
@@ -137,6 +146,7 @@ namespace cqe::Render
 
 		for (Material* material : g_RenderPassResources->Materials)
 		{
+			m_rhi->FreeTexture(material->GetTexture(), RHI::Texture::UsageFlags::ShaderResource);
 			delete material;
 		}
 
@@ -213,6 +223,8 @@ namespace cqe::Render
 			m_rhi->GetCommandList()->SetGraphicsConstantBuffer(0, g_RenderPassResources->ObjectCB[m_rhi->GetSwapChain()->GetCurrentBackBufferIdx()], meshID);
 			m_rhi->GetCommandList()->SetGraphicsConstantBuffer(1, g_RenderPassResources->MaterialCB[m_rhi->GetSwapChain()->GetCurrentBackBufferIdx()], materialID);
 
+			m_rhi->GetCommandList()->SetGraphicsDescriptorTableForTexture(2, material->GetTexture());
+
 			m_rhi->GetCommandList()->DrawIndexedInstanced(
 				g_RenderPassResources->Meshes[meshID]->GetIndexBuffer()->GetDesc().Count,
 				1, 0, 0, 0);
@@ -284,14 +296,28 @@ namespace cqe::Render
 				.initData = geometry->GetIndices()
 			});
 
-			g_RenderPassResources->Meshes.push_back(mesh);
+		g_RenderPassResources->Meshes.push_back(mesh);
 
-			Material::ID materialID = g_RenderPassResources->Materials.size();
-			Material* material = new Material(materialID);
-			g_RenderPassResources->Materials.push_back(material);
+		RHI::Texture* texture = m_rhi->CreateTexture(
+			{
+				// TODO: fetch these values from somewhere
+				.Dimension = RHI::Texture::Dimensions::Two,
+				.Width = 512,
+				.Height = 512,
+				.MipLevels = 10,
+				.Format = RHI::ResourceFormat::BC1_UNORM,
+				.Flags = RHI::Texture::UsageFlags::ShaderResource
+			}
+		);
 
-			renderObject->SetMeshID(meshID);
-			renderObject->SetMaterialID(materialID);
-			m_RenderObjects.push_back(renderObject);
+		m_rhi->LoadTextureFromFile(texture, Core::g_FileSystem->GetFilePath("Texture.dds"));
+
+		Material::ID materialID = g_RenderPassResources->Materials.size();
+		Material* material = new Material(materialID, texture);
+		g_RenderPassResources->Materials.push_back(material);
+
+		renderObject->SetMeshID(meshID);
+		renderObject->SetMaterialID(materialID);
+		m_RenderObjects.push_back(renderObject);
 	}
 }
