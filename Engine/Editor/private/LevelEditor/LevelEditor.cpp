@@ -9,6 +9,7 @@
 #include <imgui.h>
 #include <imgui_stdlib.h>
 #include <regex>
+#include <array>
 
 namespace cqe
 {
@@ -44,12 +45,13 @@ namespace cqe
 					assert(World::WorldParser::GetCustomComponents().contains(geometryAttribute->second));
 
 					std::string levelObjectName = levelObject.GetName().c_str();
-					std::pair<std::string, std::vector<float>> storePositionInEditor (levelObjectName, std::vector<float>());
+					std::array<float, 3> levelObjectPositions = {0.0, 0.0, 0.0};
+					std::pair<std::string, std::array<float, 3>> storePositionInEditor (levelObjectName, levelObjectPositions);
 					m_objectPositions.insert(storePositionInEditor);
 
 					std::string positionAttributeDesc = positionAttribute->second;
 					FromStringToFloat3(positionAttributeDesc, ",", m_objectPositions[levelObjectName]);
-					entity.set(EntitySystem::LevelEditorECS::PositionDesc{ &m_objectPositions[levelObjectName] });
+					entity.set(EntitySystem::LevelEditorECS::PositionDesc{ &m_objectPositions[levelObjectName]});
 
 					// Can be set to 0 since it doesn't matter now, will be updated by the system
 					entity.set(EntitySystem::EditorECS::Position{ 0.0f, 0.0f, 0.0f });
@@ -79,9 +81,9 @@ namespace cqe
 							const bool bIsPositionAttribute = !std::strcmp(component.first.c_str(), "Position");
 							if (bIsPositionAttribute) 
 							{
-								std::vector<float>* position = &m_objectPositions[levelObject.GetName().c_str()];
+								std::array<float, 3>* position = &m_objectPositions[levelObject.GetName().c_str()];
 								FromStringToFloat3(component.second, ",", *position);
-								ImGui::InputFloat3(component.first.c_str(), &(*position)[0]);
+								ImGui::InputFloat3(component.first.c_str(), position->data());
 							}
 							else 
 							{
@@ -127,18 +129,16 @@ namespace cqe
 			LevelSerializer::Serialize(Core::g_FileSystem->GetFilePath("Levels/Main.xml").generic_string(), m_Level.value(), m_objectPositions);
 		}
 
-		void LevelEditor::FromStringToFloat3(const std::string inputString, const std::string delimiter, std::vector<float>& outFloat3)
+		void LevelEditor::FromStringToFloat3(const std::string inputString, const std::string delimiter, std::array<float, 3>& outFloat3)
 		{
-			outFloat3.clear();
-
 			const std::regex del(delimiter);
 			std::sregex_token_iterator posBegin = std::sregex_token_iterator(inputString.begin(), inputString.end(), del, -1);
 			const std::sregex_token_iterator posEnd = std::sregex_token_iterator();
 
-			while (posBegin != posEnd)
+			for (int i = 0; i < 2; i++) 
 			{
 				std::string numberStr = *posBegin;
-				outFloat3.push_back(std::stof(numberStr));
+				outFloat3[i] = std::stof(numberStr);
 
 				posBegin++;
 			}

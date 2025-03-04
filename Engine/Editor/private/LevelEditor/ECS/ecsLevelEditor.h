@@ -9,7 +9,7 @@ namespace cqe::EntitySystem::LevelEditorECS
 {
 	struct PositionDesc
 	{
-		const std::vector<float>* value;
+		const std::array<float, 3>* value;
 	};
 
 	void RegisterLevelEditorEcsSystems(flecs::world& world);

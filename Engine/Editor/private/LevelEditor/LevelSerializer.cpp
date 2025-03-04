@@ -4,6 +4,7 @@
 #include <tinyxml2.h>
 #include <unordered_map>
 #include <string.h>
+#include <array>
 
 namespace cqe::Editor
 {
@@ -12,7 +13,7 @@ namespace cqe::Editor
 		return World::WorldParser::ParseLevel(filepath);
 	}
 
-	void LevelSerializer::Serialize(const std::string& filepath, const World::Level& level, const std::unordered_map<std::string, std::vector<float>>& objectPositions)
+	void LevelSerializer::Serialize(const std::string& filepath, const World::Level& level, const std::unordered_map<std::string, std::array<float, 3>>& objectPositions)
 	{
 		tinyxml2::XMLDocument doc;
 
@@ -36,7 +37,7 @@ namespace cqe::Editor
 				{
 					std::string positionAsString = "";
 
-					std::unordered_map<std::string, std::vector<float>>::const_iterator position = objectPositions.find(levelObject.GetName().c_str());
+					std::unordered_map<std::string, std::array<float, 3>>::const_iterator position = objectPositions.find(levelObject.GetName().c_str());
 					for (int i = 0; i < position->second.size(); i++) 
 					{
 						if (i != 0) 

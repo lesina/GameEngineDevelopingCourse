@@ -22,14 +22,14 @@ namespace cqe
 
 		private:
 			void Save();
-			void FromStringToFloat3(const std::string inputString, const std::string delimiter, std::vector<float>& outFloat3);
+			void FromStringToFloat3(const std::string inputString, const std::string delimiter, std::array<float, 3>& outFloat3);
 
 		private:
 			Core::Timer m_SaveButtonMessageTimer;
 			bool m_SaveButtonPressed = false;
 			float m_TimeToShowSaveButtonMessage = 3.f;
 
-			std::unordered_map<std::string, std::vector<float>> m_objectPositions;
+			std::unordered_map<std::string, std::array<float, 3>> m_objectPositions;
 
 			std::optional<World::Level> m_Level = std::nullopt;
 		};

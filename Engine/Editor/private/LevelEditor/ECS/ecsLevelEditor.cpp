@@ -1,4 +1,5 @@
 #include <LevelEditor/ECS/ecsLevelEditor.h>
+#include<array>
 
 namespace
 {
