@@ -8,21 +8,11 @@ namespace
 	)
 	{
 		assert(positionDesc.value);
-		assert(std::ranges::count(*positionDesc.value, ',') == 2);
+		assert(positionDesc.value->size() == 3);
 
-		const char* compValue = positionDesc.value->c_str();
-		char* end;
-
-		float f = std::strtof(compValue, &end);
-		position.x = f;
-		compValue = end + 1;
-
-		f = std::strtof(compValue, &end);
-		position.y = f;
-		compValue = end + 1;
-
-		f = std::strtof(compValue, &end);
-		position.z = f;
+		position.x = (*positionDesc.value)[0];
+		position.y = (*positionDesc.value)[1];
+		position.z = (*positionDesc.value)[2];
 	}
 }
 

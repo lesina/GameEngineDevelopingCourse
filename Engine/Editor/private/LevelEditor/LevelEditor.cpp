@@ -43,7 +43,13 @@ namespace cqe
 				{
 					assert(World::WorldParser::GetCustomComponents().contains(geometryAttribute->second));
 
-					entity.set(EntitySystem::LevelEditorECS::PositionDesc{ &positionAttribute->second });
+					std::string levelObjectName = levelObject.GetName().c_str();
+					std::pair<std::string, std::vector<float>> storePositionInEditor (levelObjectName, std::vector<float>());
+					m_objectPositions.insert(storePositionInEditor);
+
+					std::string positionAttributeDesc = positionAttribute->second;
+					FromStringToFloat3(positionAttributeDesc, ",", m_objectPositions[levelObjectName]);
+					entity.set(EntitySystem::LevelEditorECS::PositionDesc{ &m_objectPositions[levelObjectName] });
 
 					// Can be set to 0 since it doesn't matter now, will be updated by the system
 					entity.set(EntitySystem::EditorECS::Position{ 0.0f, 0.0f, 0.0f });
@@ -73,8 +79,9 @@ namespace cqe
 							const bool bIsPositionAttribute = !std::strcmp(component.first.c_str(), "Position");
 							if (bIsPositionAttribute) 
 							{
-								std::vector<float> positionAsNumbers = FromStringToFloat3(component.second, ",");
-								ImGui::InputFloat3(component.first.c_str(), &positionAsNumbers[0]);
+								std::vector<float>* position = &m_objectPositions[levelObject.GetName().c_str()];
+								FromStringToFloat3(component.second, ",", *position);
+								ImGui::InputFloat3(component.first.c_str(), &(*position)[0]);
 							}
 							else 
 							{
@@ -117,12 +124,12 @@ namespace cqe
 		void LevelEditor::Save()
 		{
 			assert(m_Level.has_value());
-			LevelSerializer::Serialize(Core::g_FileSystem->GetFilePath("Levels/Main.xml").generic_string(), m_Level.value());
+			LevelSerializer::Serialize(Core::g_FileSystem->GetFilePath("Levels/Main.xml").generic_string(), m_Level.value(), m_objectPositions);
 		}
 
-		std::vector<float> LevelEditor::FromStringToFloat3(const std::string inputString, const std::string delimiter)
+		void LevelEditor::FromStringToFloat3(const std::string inputString, const std::string delimiter, std::vector<float>& outFloat3)
 		{
-			std::vector<float> outputFloat3 = std::vector<float>(); 
+			outFloat3.clear();
 
 			const std::regex del(delimiter);
 			std::sregex_token_iterator posBegin = std::sregex_token_iterator(inputString.begin(), inputString.end(), del, -1);
@@ -131,12 +138,10 @@ namespace cqe
 			while (posBegin != posEnd)
 			{
 				std::string numberStr = *posBegin;
-				outputFloat3.push_back(std::stof(numberStr));
+				outFloat3.push_back(std::stof(numberStr));
 
 				posBegin++;
 			}
-
-			return outputFloat3;
 		}
 	}
 }

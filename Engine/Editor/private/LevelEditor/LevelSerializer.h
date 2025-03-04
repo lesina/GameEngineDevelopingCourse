@@ -12,7 +12,7 @@ namespace cqe::Editor
 		~LevelSerializer() = delete;
 
 	public:
-		static void Serialize(const std::string& filepath, const World::Level& level);
+		static void Serialize(const std::string& filepath, const World::Level& level, const std::unordered_map<std::string, std::vector<float>>& objectPositions);
 		[[nodiscard]] static World::Level Deserialize(const std::string& filepath);
 	};
 }

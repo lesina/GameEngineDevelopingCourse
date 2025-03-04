@@ -2,6 +2,8 @@
 #include <Parser/WorldParser.h>
 
 #include <tinyxml2.h>
+#include <unordered_map>
+#include <string.h>
 
 namespace cqe::Editor
 {
@@ -10,7 +12,7 @@ namespace cqe::Editor
 		return World::WorldParser::ParseLevel(filepath);
 	}
 
-	void LevelSerializer::Serialize(const std::string& filepath, const World::Level& level)
+	void LevelSerializer::Serialize(const std::string& filepath, const World::Level& level, const std::unordered_map<std::string, std::vector<float>>& objectPositions)
 	{
 		tinyxml2::XMLDocument doc;
 
@@ -29,7 +31,29 @@ namespace cqe::Editor
 
 			for (const World::LevelObject::Component& component : levelObject.GetComponents())
 			{
-				entityElem->SetAttribute(component.first.c_str(), component.second.c_str());
+				const bool bIsPositionAttribute = !std::strcmp(component.first.c_str(), "Position");
+				if (bIsPositionAttribute) 
+				{
+					std::string positionAsString = "";
+
+					std::unordered_map<std::string, std::vector<float>>::const_iterator position = objectPositions.find(levelObject.GetName().c_str());
+					for (int i = 0; i < position->second.size(); i++) 
+					{
+						if (i != 0) 
+						{
+							positionAsString.append(",");
+						}
+
+						std::string number = std::to_string(position->second[i]);
+						positionAsString.append(number);
+					}
+
+					entityElem->SetAttribute(component.first.c_str(), positionAsString.c_str());
+				}
+				else 
+				{
+					entityElem->SetAttribute(component.first.c_str(), component.second.c_str());
+				}
 			}
 		}
 
