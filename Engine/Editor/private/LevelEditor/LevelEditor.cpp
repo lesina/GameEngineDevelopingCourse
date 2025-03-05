@@ -82,7 +82,6 @@ namespace cqe
 							if (bIsPositionAttribute) 
 							{
 								std::array<float, 3>* position = &m_objectPositions[levelObject.GetName().c_str()];
-								FromStringToFloat3(component.second, ",", *position);
 								ImGui::InputFloat3(component.first.c_str(), position->data());
 							}
 							else 
