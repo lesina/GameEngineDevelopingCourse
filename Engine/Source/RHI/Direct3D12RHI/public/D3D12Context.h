@@ -36,7 +36,7 @@ namespace cqe
 				const Technique::RootSignatureDescription& rootSignatureDescriptor
 			) override;
 			virtual PipelineStateObject::Ptr CreatePSO(const PipelineStateObject::Description& description) override;
-			virtual Mesh::Ptr CreateMesh(
+			virtual Mesh* CreateMesh(
 				const Mesh::VertexBufferDescription& vertexDesc,
 				const Mesh::IndexBufferDescription& indexDesc
 			) override;

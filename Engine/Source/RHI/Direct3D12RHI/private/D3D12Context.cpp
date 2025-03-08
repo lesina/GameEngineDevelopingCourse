@@ -121,7 +121,7 @@ namespace cqe
 			return m_CommandList;
 		}
 
-		Mesh::Ptr D3D12Context::CreateMesh(
+		Mesh* D3D12Context::CreateMesh(
 			const Mesh::VertexBufferDescription& vertexDesc,
 			const Mesh::IndexBufferDescription& indexDesc
 		)
@@ -154,7 +154,7 @@ namespace cqe
 
 			m_Fence->Sync(m_CommandQueue);
 
-			return Mesh::Ptr(new Mesh(vertexBuffer, indexBuffer, indexDesc.Format));
+			return new Mesh(vertexBuffer, indexBuffer, indexDesc.Format);
 		}
 
 		Texture* D3D12Context::CreateTexture(const Texture::Description& description)

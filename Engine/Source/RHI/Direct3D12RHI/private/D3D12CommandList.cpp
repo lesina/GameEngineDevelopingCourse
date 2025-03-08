@@ -124,7 +124,7 @@ namespace cqe
 			m_NativeCommandList->SetPipelineState(d3d12pso->GetHandle());
 		}
 
-		void D3D12CommandList::SetMesh(Mesh::Ptr mesh)
+		void D3D12CommandList::SetMesh(const Mesh* mesh)
 		{
 			assert(mesh != nullptr);
 

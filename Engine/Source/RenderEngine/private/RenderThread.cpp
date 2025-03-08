@@ -15,13 +15,16 @@ namespace
 
 namespace cqe::Render
 {
+	size_t RenderThread::s_RenderFrame = 0;
+	size_t RenderThread::s_MainFrame = 0;
+
 	RenderThread::RenderThread()
 	{
-		assert(m_CurMainFrame == 0);
+		assert(s_MainFrame == 0);
 
 		s_MainThreadId = std::this_thread::get_id();
 
-		m_FrameMutexes[m_CurMainFrame].lock();
+		m_FrameMutexes[s_MainFrame].lock();
 
 		m_Thread = std::make_unique<std::jthread>(RunThisThread, this);
 		m_Thread->detach();
@@ -45,13 +48,11 @@ namespace cqe::Render
 
 		while (m_IsRunning)
 		{
-			std::lock_guard<std::mutex> lock(m_FrameMutexes[m_CurrRenderFrame]);
+			std::lock_guard<std::mutex> lock(m_FrameMutexes[s_RenderFrame]);
 
 			ProcessCommands();
 
-			m_RenderEngine->Update(m_CurrRenderFrame);
-
-			m_RenderEngine->OnEndFrame();
+			m_RenderEngine->Update();
 
 			OnEndFrame();
 		}
@@ -61,7 +62,7 @@ namespace cqe::Render
 
 	void RenderThread::Stop()
 	{
-		m_FrameMutexes[m_CurMainFrame].unlock();
+		m_FrameMutexes[s_MainFrame].unlock();
 		m_IsRunning = false;
 	}
 
@@ -72,23 +73,23 @@ namespace cqe::Render
 
 	void RenderThread::EnqueueCommand(RenderCommand::Task task)
 	{
-		m_Commands[m_CurMainFrame].emplace_back(new RenderCommand(std::move(task)));
+		m_Commands[s_MainFrame].emplace_back(new RenderCommand(std::move(task)));
 
 		if (IsRenderThread())
 		{
-			m_Commands[m_CurMainFrame].front()->DoTask();
-			m_Commands[m_CurMainFrame].pop_back();
+			m_Commands[s_MainFrame].front()->DoTask();
+			m_Commands[s_MainFrame].pop_back();
 		}
 	}
 
 	void RenderThread::ProcessCommands()
 	{
-		for (RenderCommand::Ptr& command : m_Commands[m_CurrRenderFrame])
+		for (RenderCommand::Ptr& command : m_Commands[s_RenderFrame])
 		{
 			command->DoTask();
 		}
 
-		m_Commands[m_CurrRenderFrame].clear();
+		m_Commands[s_RenderFrame].clear();
 	}
 
 	void RenderThread::OnEndFrame()
@@ -100,15 +101,15 @@ namespace cqe::Render
 	{
 		if (IsRenderThread())
 		{
-			m_CurrRenderFrame = GetNextFrame(m_CurrRenderFrame);
+			s_RenderFrame = GetNextFrame(s_RenderFrame);
 		}
 		else
 		{
-			m_FrameMutexes[m_CurMainFrame].unlock();
+			m_FrameMutexes[s_MainFrame].unlock();
 
-			m_CurMainFrame = GetNextFrame(m_CurMainFrame);
+			s_MainFrame = GetNextFrame(s_MainFrame);
 
-			m_FrameMutexes[m_CurMainFrame].lock();
+			m_FrameMutexes[s_MainFrame].lock();
 		}
 	}
 

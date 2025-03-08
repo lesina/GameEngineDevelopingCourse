@@ -12,29 +12,37 @@
 
 namespace cqe::Render
 {
+	namespace RHI
+	{
+		class Mesh;
+	}
+
 	class RENDER_ENGINE_API RenderObject final
 	{
 	public:
-		using MeshID = uint64_t;
-
-		constexpr static MeshID k_invalidMeshID = std::numeric_limits<MeshID>::max();
-		constexpr static Material::ID k_invalidMaterialID = std::numeric_limits<Material::ID>::max();
-
-	public:
 		RenderObject() = delete;
 		RenderObject(std::nullptr_t);
-		RenderObject(MeshID meshID, Material::ID materialID);
+		RenderObject(RHI::Mesh* mesh, Material* material);
 		~RenderObject();
 
 	public:
-		const MeshID& GetMeshID() const { return m_MeshID; }
-		const Material::ID& GetMaterialID() const { return m_MaterialID; }
+		const RHI::Mesh* GetMesh() const { return m_Mesh; }
+		const Material* GetMaterial() const { return m_Material; }
 
-		void SetMeshID(MeshID id) { assert(RenderThread::IsRenderThread()); m_MeshID = id; }
-		void SetMaterialID(Material::ID id) { assert(RenderThread::IsRenderThread()); m_MaterialID = id; }
+		void SetMesh(RHI::Mesh* mesh) { assert(RenderThread::IsRenderThread()); m_Mesh = mesh; }
+		void SetMaterial(Material* material) { assert(RenderThread::IsRenderThread()); m_Material = material; }
 
-		const Math::Vector3f& GetPosition(size_t frame) const { return m_Position[frame]; }
-		void SetPosition(Math::Vector3f position, size_t frame) { m_Position[frame] = position; }
+		const Math::Vector3f& GetPosition() const
+		{
+			size_t frame = RenderThread::IsRenderThread() ? RenderThread::GetRenderFrame() : RenderThread::GetMainFrame();
+			return m_Position[frame];
+		}
+
+		void SetPosition(Math::Vector3f position)
+		{
+			size_t frame = RenderThread::IsRenderThread() ? RenderThread::GetRenderFrame() : RenderThread::GetMainFrame();
+			m_Position[frame] = position;
+		}
 
 	private:
 		void Init();
@@ -42,7 +50,7 @@ namespace cqe::Render
 	private:
 		Math::Vector3f m_Position[RenderCore::g_FrameBufferCount];
 
-		MeshID m_MeshID = k_invalidMeshID;
-		Material::ID m_MaterialID = k_invalidMaterialID;
+		Material* m_Material = nullptr;
+		RHI::Mesh* m_Mesh = nullptr;
 	};
 }

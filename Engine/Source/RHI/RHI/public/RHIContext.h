@@ -46,7 +46,7 @@ namespace cqe
 				const Technique::RootSignatureDescription& rootSignatureDescription
 			) = 0;
 			virtual PipelineStateObject::Ptr CreatePSO(const PipelineStateObject::Description& description) = 0;
-			virtual Mesh::Ptr CreateMesh(
+			virtual Mesh* CreateMesh(
 				const Mesh::VertexBufferDescription& vertexDesc,
 				const Mesh::IndexBufferDescription& indexDesc
 			) = 0;

@@ -3,9 +3,9 @@
 
 namespace cqe::Render
 {
-	RenderObject::RenderObject(MeshID meshID, Material::ID materialID)
-		: m_MeshID(meshID)
-		, m_MaterialID(materialID)
+	RenderObject::RenderObject(RHI::Mesh* mesh, Material* material)
+		: m_Mesh(mesh)
+		, m_Material(material)
 	{
 		Init();
 	}
@@ -17,11 +17,11 @@ namespace cqe::Render
 
 	void RenderObject::Init()
 	{
-		static_assert(std::is_same_v<MeshID, RHI::Mesh::ID> == true, "RHI::Mesh::ID type should be the same as ID type in RenderObject");
+
 	}
 
 	RenderObject::~RenderObject()
 	{
-
+		delete m_Material;
 	}
 }
