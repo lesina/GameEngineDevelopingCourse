@@ -29,7 +29,7 @@ namespace cqe
 			bool m_SaveButtonPressed = false;
 			float m_TimeToShowSaveButtonMessage = 3.f;
 
-			std::unordered_map<std::string, std::array<float, 3>> m_objectPositions;
+			std::unordered_map<std::string, std::array<float, 3>> m_ObjectPositions;
 
 			std::optional<World::Level> m_Level = std::nullopt;
 		};

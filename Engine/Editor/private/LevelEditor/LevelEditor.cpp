@@ -45,13 +45,10 @@ namespace cqe
 					assert(World::WorldParser::GetCustomComponents().contains(geometryAttribute->second));
 
 					std::string levelObjectName = levelObject.GetName().c_str();
-					std::array<float, 3> levelObjectPositions = {0.0, 0.0, 0.0};
-					std::pair<std::string, std::array<float, 3>> storePositionInEditor (levelObjectName, levelObjectPositions);
-					m_objectPositions.insert(storePositionInEditor);
+					m_ObjectPositions.insert( {levelObjectName, { 0.0, 0.0, 0.0 }} );
 
-					std::string positionAttributeDesc = positionAttribute->second;
-					FromStringToFloat3(positionAttributeDesc, ",", m_objectPositions[levelObjectName]);
-					entity.set(EntitySystem::LevelEditorECS::PositionDesc{ &m_objectPositions[levelObjectName]});
+					FromStringToFloat3(positionAttribute->second, ",", m_ObjectPositions[levelObjectName]);
+					entity.set(EntitySystem::LevelEditorECS::PositionDesc{ &m_ObjectPositions[levelObjectName] });
 
 					// Can be set to 0 since it doesn't matter now, will be updated by the system
 					entity.set(EntitySystem::EditorECS::Position{ 0.0f, 0.0f, 0.0f });
@@ -78,10 +75,10 @@ namespace cqe
 					{
 						for (World::LevelObject::Component& component : levelObject.GetComponents())
 						{
-							const bool bIsPositionAttribute = !std::strcmp(component.first.c_str(), "Position");
-							if (bIsPositionAttribute) 
+							const bool isPositionAttribute = !std::strcmp(component.first.c_str(), "Position");
+							if (isPositionAttribute) 
 							{
-								std::array<float, 3>* position = &m_objectPositions[levelObject.GetName().c_str()];
+								std::array<float, 3>* position = &m_ObjectPositions[levelObject.GetName().c_str()];
 								ImGui::InputFloat3(component.first.c_str(), position->data());
 							}
 							else 
@@ -125,7 +122,7 @@ namespace cqe
 		void LevelEditor::Save()
 		{
 			assert(m_Level.has_value());
-			LevelSerializer::Serialize(Core::g_FileSystem->GetFilePath("Levels/Main.xml").generic_string(), m_Level.value(), m_objectPositions);
+			LevelSerializer::Serialize(Core::g_FileSystem->GetFilePath("Levels/Main.xml").generic_string(), m_Level.value(), m_ObjectPositions);
 		}
 
 		void LevelEditor::FromStringToFloat3(const std::string inputString, const std::string delimiter, std::array<float, 3>& outFloat3)

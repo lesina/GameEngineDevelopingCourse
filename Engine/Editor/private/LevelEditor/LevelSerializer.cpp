@@ -2,7 +2,6 @@
 #include <Parser/WorldParser.h>
 
 #include <tinyxml2.h>
-#include <unordered_map>
 #include <string.h>
 #include <array>
 
@@ -32,8 +31,8 @@ namespace cqe::Editor
 
 			for (const World::LevelObject::Component& component : levelObject.GetComponents())
 			{
-				const bool bIsPositionAttribute = !std::strcmp(component.first.c_str(), "Position");
-				if (bIsPositionAttribute) 
+				const bool isPositionAttribute = !std::strcmp(component.first.c_str(), "Position");
+				if (isPositionAttribute) 
 				{
 					std::string positionAsString = "";
 

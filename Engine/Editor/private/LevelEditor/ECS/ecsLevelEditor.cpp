@@ -9,7 +9,6 @@ namespace
 	)
 	{
 		assert(positionDesc.value);
-		assert(positionDesc.value->size() == 3);
 
 		position.x = (*positionDesc.value)[0];
 		position.y = (*positionDesc.value)[1];
