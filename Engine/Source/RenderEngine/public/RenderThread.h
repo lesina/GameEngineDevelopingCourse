@@ -31,7 +31,8 @@ namespace cqe::Render
 
 		void OnEndFrame();
 
-		size_t GetMainFrame() const { return m_CurMainFrame; }
+		static size_t GetMainFrame() { return s_RenderFrame; }
+		static size_t GetRenderFrame() { return s_MainFrame; }
 
 		RenderEngine* GetRenderEngine();
 
@@ -52,8 +53,8 @@ namespace cqe::Render
 
 		RenderEngine* m_RenderEngine = nullptr;
 
-		size_t m_CurrRenderFrame = 0;
-		size_t m_CurMainFrame = 0;
+		static size_t s_RenderFrame;
+		static size_t s_MainFrame;
 
 		std::vector<RenderCommand::Ptr> m_Commands[RenderCore::g_FrameBufferCount];
 

@@ -121,7 +121,7 @@ namespace cqe
 			return m_CommandList;
 		}
 
-		Mesh::Ptr D3D12Context::CreateMesh(
+		Mesh* D3D12Context::CreateMesh(
 			const Mesh::VertexBufferDescription& vertexDesc,
 			const Mesh::IndexBufferDescription& indexDesc
 		)
@@ -154,10 +154,10 @@ namespace cqe
 
 			m_Fence->Sync(m_CommandQueue);
 
-			return Mesh::Ptr(new Mesh(vertexBuffer, indexBuffer, indexDesc.Format));
+			return new Mesh(vertexBuffer, indexBuffer, indexDesc.Format);
 		}
 
-		Texture::Ptr D3D12Context::CreateTexture(const Texture::Description& description)
+		Texture* D3D12Context::CreateTexture(const Texture::Description& description)
 		{
 			RefCountPtr<ID3D12Resource> textureResource;
 
@@ -167,7 +167,7 @@ namespace cqe
 			d3d12textureDesc.Width = description.Width;
 			d3d12textureDesc.Height = description.Height;
 			d3d12textureDesc.DepthOrArraySize = 1;
-			d3d12textureDesc.MipLevels = 1;
+			d3d12textureDesc.MipLevels = description.MipLevels;
 			d3d12textureDesc.Format = ConvertToDXGIFormat(description.Format);
 			d3d12textureDesc.SampleDesc.Count = 1;
 			d3d12textureDesc.SampleDesc.Quality = 0;
@@ -189,13 +189,15 @@ namespace cqe
 			optClear.DepthStencil.Depth = 1.0f;
 			optClear.DepthStencil.Stencil = 0;
 
+			bool noClear = description.Flags & Texture::UsageFlags::ShaderResource;
+
 			D3D12_HEAP_PROPERTIES heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 			HRESULT hr = m_Device->GetHandle()->CreateCommittedResource(
 				&heapProperties,
 				D3D12_HEAP_FLAG_NONE,
 				&d3d12textureDesc,
 				D3D12_RESOURCE_STATE_COMMON,
-				&optClear,
+				noClear ? nullptr : &optClear,
 				IID_PPV_ARGS(textureResource.GetAddressOf()));
 			assert(SUCCEEDED(hr));
 
@@ -220,8 +222,29 @@ namespace cqe
 			// Creating Shader Resource
 			if (description.Flags & Texture::UsageFlags::ShaderResource)
 			{
-				assert(0 && "Shader Resource View: Not supported");
-				D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc;
+				assert((description.Dimension == Texture::Dimensions::Two || description.Dimension == Texture::Dimensions::Three) && "Currently only 2D and 3D SRVs are supported");
+
+				D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc
+				{
+					.Format = ConvertToDXGIFormat(description.Format),
+					.ViewDimension = description.Dimension == Texture::Dimensions::Two ? D3D12_SRV_DIMENSION_TEXTURE2D : D3D12_SRV_DIMENSION_TEXTURE3D,
+					.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING
+				};
+
+				switch (description.Dimension)
+				{
+				case Texture::Dimensions::Two:
+					srvDesc.Texture2D.MipLevels = description.MipLevels;
+					srvDesc.Texture2D.MostDetailedMip = 0;
+					srvDesc.Texture2D.PlaneSlice = 0;
+					srvDesc.Texture2D.ResourceMinLODClamp = 0;
+					break;
+				case Texture::Dimensions::Three:
+					srvDesc.Texture3D.MipLevels = description.MipLevels;
+					srvDesc.Texture3D.MostDetailedMip = 0;
+					srvDesc.Texture3D.ResourceMinLODClamp = 0;
+					break;
+				}
 
 				m_SrvCbvUavHeap->Alloc(&srvCpuDesciptor, &srvGpuDesciptor);
 				m_Device->GetHandle()->CreateShaderResourceView(textureResource.Get(), &srvDesc, srvCpuDesciptor);
@@ -240,7 +263,62 @@ namespace cqe
 				m_Device->GetHandle()->CreateRenderTargetView(textureResource.Get(), &rtvDesc, rtvCpuDesciptor);
 			}
 
-			return D3D12Texture::Ptr(new D3D12Texture(description, textureResource, srvCpuDesciptor, rtvCpuDesciptor, depthStencilCpuDesciptor));
+			return new D3D12Texture(description, textureResource, rtvCpuDesciptor, srvCpuDesciptor, depthStencilCpuDesciptor, srvGpuDesciptor);
+		}
+
+		void D3D12Context::FreeTexture(const Texture* texture, Texture::UsageFlags::Flag usageFlag)
+		{
+			const D3D12Texture* d3d12Texture = static_cast<const D3D12Texture*>(texture);
+
+			if (usageFlag & Texture::UsageFlags::DepthStencil)
+			{
+				m_DsvHeap->Free(d3d12Texture->GetDepthStencilView());
+			}
+
+			if (usageFlag & Texture::UsageFlags::ShaderResource)
+			{
+				m_SrvCbvUavHeap->Free(d3d12Texture->GetShaderResourceView(), d3d12Texture->GetGpuShaderResourceView());
+			}
+
+			if (usageFlag & Texture::UsageFlags::RenderTarget)
+			{
+				m_RtvHeap->Free(d3d12Texture->GetRenderTargetView());
+			}
+		}
+
+		void D3D12Context::LoadTextureFromFile(Texture* texture, const std::wstring&& filePath)
+		{
+			D3D12Texture* d3d12Texture = static_cast<D3D12Texture*>(texture);
+			assert(d3d12Texture != nullptr);
+			
+			std::vector<D3D12_SUBRESOURCE_DATA> subresourceData;
+			std::unique_ptr<uint8_t[]> ddsData;
+			HRESULT hr = DirectX::LoadDDSTextureFromFile(m_Device->GetHandle(), filePath.c_str(), d3d12Texture->GetHandle().ReleaseAndGetAddressOf(), ddsData, subresourceData);
+			assert(SUCCEEDED(hr));
+
+			const uint64_t dataSize = GetRequiredIntermediateSize(d3d12Texture->GetHandle().Get(), 0, subresourceData.size());
+
+			m_CommandList->Reset();
+
+			Buffer::Ptr uploadBuffer = CreateBuffer({
+					.Count = 1,
+					.ElementSize = static_cast<uint32_t>(dataSize),
+					.UsageFlag = Buffer::UsageFlag::CpuWrite
+				});
+
+			ID3D12Resource* uploadRes = reinterpret_cast<ID3D12Resource*>(uploadBuffer.Get()->GetNativeObject().GetPtr());
+
+			UpdateSubresources(m_CommandList->GetHandle(), d3d12Texture->GetHandle().Get(), uploadRes, 0, 0, static_cast<uint32_t>(subresourceData.size()), subresourceData.data());
+
+			CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(d3d12Texture->GetHandle().Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES);
+			m_CommandList->GetHandle()->ResourceBarrier(1, &barrier);
+
+			m_CommandList->Close();
+			m_CommandQueue->ExecuteCommandLists({ m_CommandList });
+
+			m_Fence->Sync(m_CommandQueue);
+
+			d3d12Texture->SetCurrentState(D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 		}
 
 		Buffer::Ptr D3D12Context::CreateBuffer(Buffer::Description&& description)

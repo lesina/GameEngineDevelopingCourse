@@ -36,7 +36,9 @@ namespace cqe
 			using Ptr = std::shared_ptr<Context>;
 
 		public:
-			virtual Texture::Ptr CreateTexture(const Texture::Description& description) = 0;
+			virtual Texture* CreateTexture(const Texture::Description& description) = 0;
+			virtual void FreeTexture(const Texture* texture, Texture::UsageFlags::Flag usageFlag) = 0;
+			virtual void LoadTextureFromFile(Texture* texture, const std::wstring&& filePath) = 0;
 			virtual Buffer::Ptr CreateBuffer(Buffer::Description&& description) = 0;
 			virtual Technique::Ptr CreateTechnique(
 				const Technique::ShaderInfo& shaderInfo,
@@ -44,7 +46,7 @@ namespace cqe
 				const Technique::RootSignatureDescription& rootSignatureDescription
 			) = 0;
 			virtual PipelineStateObject::Ptr CreatePSO(const PipelineStateObject::Description& description) = 0;
-			virtual Mesh::Ptr CreateMesh(
+			virtual Mesh* CreateMesh(
 				const Mesh::VertexBufferDescription& vertexDesc,
 				const Mesh::IndexBufferDescription& indexDesc
 			) = 0;

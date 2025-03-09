@@ -124,7 +124,7 @@ namespace cqe
 			m_NativeCommandList->SetPipelineState(d3d12pso->GetHandle());
 		}
 
-		void D3D12CommandList::SetMesh(Mesh::Ptr mesh)
+		void D3D12CommandList::SetMesh(const Mesh* mesh)
 		{
 			assert(mesh != nullptr);
 
@@ -149,6 +149,16 @@ namespace cqe
 				.Format = ConvertToDXGIFormat(mesh->GetIndexFormat())
 			};
 			m_NativeCommandList->IASetIndexBuffer(&ibView);
+		}
+
+		// TODO: delete after implementing bindless rendering
+		void D3D12CommandList::SetGraphicsDescriptorTableForTexture(uint32_t parameterIdx, Texture* texture)
+		{
+			assert(texture != nullptr);
+
+			D3D12Texture* d3d12Texture = static_cast<D3D12Texture*>(texture);
+
+			m_NativeCommandList->SetGraphicsRootDescriptorTable(parameterIdx, d3d12Texture->GetGpuShaderResourceView());
 		}
 
 		void D3D12CommandList::SetGraphicsConstantBuffer(uint32_t ParameterIdx, Buffer::Ptr buffer, uint32_t bufferOffset)

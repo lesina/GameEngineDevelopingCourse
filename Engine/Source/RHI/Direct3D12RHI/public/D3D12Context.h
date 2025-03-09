@@ -26,7 +26,9 @@ namespace cqe
 			~D3D12Context();
 
 		public:
-			virtual Texture::Ptr CreateTexture(const Texture::Description& description) override;
+			virtual Texture* CreateTexture(const Texture::Description& description) override;
+			virtual void FreeTexture(const Texture* texture, Texture::UsageFlags::Flag usageFlag) override;
+			virtual void LoadTextureFromFile(Texture* texture, const std::wstring&& filePath) override;
 			virtual Buffer::Ptr CreateBuffer(Buffer::Description&& description) override;
 			virtual Technique::Ptr CreateTechnique(
 				const Technique::ShaderInfo& shaderInfo,
@@ -34,7 +36,7 @@ namespace cqe
 				const Technique::RootSignatureDescription& rootSignatureDescriptor
 			) override;
 			virtual PipelineStateObject::Ptr CreatePSO(const PipelineStateObject::Description& description) override;
-			virtual Mesh::Ptr CreateMesh(
+			virtual Mesh* CreateMesh(
 				const Mesh::VertexBufferDescription& vertexDesc,
 				const Mesh::IndexBufferDescription& indexDesc
 			) override;

@@ -6,11 +6,13 @@ namespace cqe::Render
 {
 	namespace RHI
 	{
+		// This part of the code is a replacement for the MeshManager that we are going to develop later
+		static uint64_t s_GlobalMeshCounter = 0;
+
 		class Mesh
 		{
 		public:
 			using ID = uint64_t;
-			using Ptr = Mesh*;
 
 			struct VertexBufferDescription
 			{
@@ -32,16 +34,23 @@ namespace cqe::Render
 				: m_VertexBuffer(vertexBuffer)
 				, m_IndexBuffer(indexBuffer)
 				, m_IndexFormat(IndexFormat)
+				, m_ID(s_GlobalMeshCounter++)
 			{}
 
 			const Buffer::Ptr& GetVertexBuffer() const { return m_VertexBuffer; }
 			const Buffer::Ptr& GetIndexBuffer() const { return m_IndexBuffer; }
 			const ResourceFormat& GetIndexFormat() const { return m_IndexFormat; }
+			const ID GetID() const { return m_ID; }
 
 		protected:
 			Buffer::Ptr m_VertexBuffer;
 			Buffer::Ptr m_IndexBuffer;
 			ResourceFormat m_IndexFormat;
+
+		protected:
+			// This part of the code is a replacement for the MeshManager that we are going to develop later
+			ID m_ID = 0;
 		};
+
 	}
 }

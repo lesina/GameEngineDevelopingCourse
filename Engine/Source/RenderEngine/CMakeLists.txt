@@ -4,9 +4,18 @@ file(GLOB
 	private/*.cpp
 	private/*.h
 )
+
+file(GLOB_RECURSE
+	RENDER_PIPELINE_FILES
+	private/RenderPipeline/*.cpp
+	private/RenderPipeline/*.h
+)
+
 file(GLOB
 	PUBLIC_FILES
 	public/*.h
+	public/RenderPipeline/*.h
+	public/RenderPipeline/Features/*.h
 )
 
 # Add library
@@ -23,6 +32,7 @@ target_compile_definitions(RenderEngine
 
 # Set Sources
 target_sources(RenderEngine
+	PRIVATE ${RENDER_PIPELINE_FILES}
 	PRIVATE ${PRIVATE_FILES}
 	PRIVATE ${PUBLIC_FILES}
 )
