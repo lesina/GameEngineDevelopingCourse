@@ -11,13 +11,14 @@ namespace GameEngine::Core
 
 	void Camera::Rotate(float yaw, float pitch)
 	{
-		Math::Vector3f right = GetRightDir();
-		Math::Vector3f up = m_ViewDir.CrossProduct(right).Normalized();
-
-		Math::Matrix3x3f rotationMatrixX = Math::GetRotationMatrix(up, yaw);
-		Math::Matrix3x3f rotationMatrixY = Math::GetRotationMatrix(right, pitch);
-
-		m_ViewDir = rotationMatrixX * rotationMatrixY * m_ViewDir;
+		Math::Quaternion yawQuat = Math::Quaternion::FromAxisAngle(Math::Vector3f(0.0f, 1.0f, 0.0f), yaw);
+		Math::Quaternion pitchQuat = Math::Quaternion::FromAxisAngle(GetRightDir(), pitch);
+		
+		m_Rotation = yawQuat * pitchQuat * m_Rotation;
+		m_Rotation = m_Rotation.Normalized();
+		
+		// Update view direction based on rotation
+		m_ViewDir = m_Rotation * Math::Vector3f(0.0f, 0.0f, 1.0f);
 		m_ViewDir = m_ViewDir.Normalized();
 	}
 

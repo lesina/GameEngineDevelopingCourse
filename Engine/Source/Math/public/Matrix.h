@@ -128,7 +128,5 @@ namespace GameEngine
 			float NearZ,
 			float FarZ
 		);
-
-		MATH_API Matrix3x3f GetRotationMatrix(Vector3f axis, float angle);
 	}
 }

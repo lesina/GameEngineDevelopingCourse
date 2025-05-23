@@ -3,6 +3,7 @@
 #include <Core/export.h>
 #include <Matrix.h>
 #include <Vector.h>
+#include <Quaternion.h>
 
 namespace GameEngine
 {
@@ -26,6 +27,7 @@ namespace GameEngine
 		private:
 			Math::Vector3f m_Position;
 			Math::Vector3f m_ViewDir;
+			Math::Quaternion m_Rotation;
 		};
 
 		extern CORE_API Camera* g_MainCamera;

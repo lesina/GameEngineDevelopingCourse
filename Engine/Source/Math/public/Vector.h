@@ -91,7 +91,7 @@ namespace GameEngine
 				return result;
 			}
 
-			inline Vector3<T> operator+(const Vector3<T>& other) noexcept
+			inline Vector3<T> operator+(const Vector3<T>& other) const noexcept
 			{
 				Vector3<T> result;
 				result.x = x + other.x;
@@ -100,7 +100,7 @@ namespace GameEngine
 				return result;
 			}
 
-			inline Vector3<T> operator-(const Vector3<T>& other) noexcept
+			inline Vector3<T> operator-(const Vector3<T>& other) const noexcept
 			{
 				Vector3<T> result;
 				result.x = x - other.x;
@@ -109,7 +109,7 @@ namespace GameEngine
 				return result;
 			}
 
-			inline Vector3<T> operator-() noexcept
+			inline Vector3<T> operator-() const noexcept
 			{
 				Vector3<T> result;
 				result.x = -x;
