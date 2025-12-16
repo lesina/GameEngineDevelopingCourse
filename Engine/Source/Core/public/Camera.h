@@ -11,6 +11,8 @@ namespace GameEngine
 		class CORE_API Camera final
 		{
 		public:
+			using Ptr = std::unique_ptr<Camera>;
+
 			Camera() = default;
 
 		public:
@@ -27,7 +29,5 @@ namespace GameEngine
 			Math::Vector3f m_Position;
 			Math::Vector3f m_ViewDir;
 		};
-
-		extern CORE_API Camera* g_MainCamera;
 	}
 }

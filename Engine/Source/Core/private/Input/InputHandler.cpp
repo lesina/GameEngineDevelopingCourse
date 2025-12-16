@@ -30,7 +30,17 @@ namespace GameEngine::Core
 			return;
 		}
 
-		m_PressedButtons.set(static_cast<size_t>(kb), true);
+		m_PressedButtons.set(2 * static_cast<size_t>(kb), true);
+	}
+
+	void InputHandler::SetWasKeyPressed(KeyboardButton kb)
+	{
+		if (kb == KeyboardButton::UNKNOWN) [[unlikely]]
+		{
+			return;
+		}
+
+		m_PressedButtons.set(2 * static_cast<size_t>(kb) + 1, true);
 	}
 
 	void InputHandler::KeyReleased(KeyboardButton kb)
@@ -41,7 +51,8 @@ namespace GameEngine::Core
 			return;
 		}
 
-		m_PressedButtons.set(static_cast<size_t>(kb), false);
+		m_PressedButtons.set(2 * static_cast<size_t>(kb), false);
+		m_PressedButtons.set(2 * static_cast<size_t>(kb) + 1, false);
 	}
 
 	void InputHandler::KeyPressed(MouseButton mb)
@@ -52,7 +63,17 @@ namespace GameEngine::Core
 			return;
 		}
 
-		m_PressedButtons.set(KeyboardButtonCount + static_cast<size_t>(mb), true);
+		m_PressedButtons.set(2 * KeyboardButtonCount + 2 * static_cast<size_t>(mb), true);
+	}
+
+	void InputHandler::SetWasKeyPressed(MouseButton mb)
+	{
+		if (mb == MouseButton::UNKNOWN) [[unlikely]]
+		{
+			return;
+		}
+
+		m_PressedButtons.set(2 * KeyboardButtonCount + 2 * static_cast<size_t>(mb) + 1, true);
 	}
 
 	void InputHandler::KeyReleased(MouseButton mb)
@@ -63,19 +84,32 @@ namespace GameEngine::Core
 			return;
 		}
 
-		m_PressedButtons.set(KeyboardButtonCount + static_cast<size_t>(mb), false);
+		m_PressedButtons.set(2 * KeyboardButtonCount + 2 * static_cast<size_t>(mb), false);
+		m_PressedButtons.set(2 * KeyboardButtonCount + 2 * static_cast<size_t>(mb) + 1, false);
 	}
 
 	bool InputHandler::IsKeyPressed(KeyboardButton kb) const
 	{
 		assert(kb != KeyboardButton::UNKNOWN);
-		return m_PressedButtons.test(static_cast<size_t>(kb));
+		return m_PressedButtons.test(2 * static_cast<size_t>(kb));
 	}
 
 	bool InputHandler::IsKeyPressed(MouseButton mb) const
 	{
 		assert(mb != MouseButton::UNKNOWN);
-		return m_PressedButtons.test(KeyboardButtonCount + static_cast<size_t>(mb));
+		return m_PressedButtons.test(2 * KeyboardButtonCount + 2 * static_cast<size_t>(mb));
+	}
+
+	bool InputHandler::WasKeyPressed(KeyboardButton kb) const
+	{
+		assert(kb != KeyboardButton::UNKNOWN);
+		return m_PressedButtons.test(2 * static_cast<size_t>(kb) + 1);
+	}
+
+	bool InputHandler::WasKeyPressed(MouseButton mb) const
+	{
+		assert(mb != MouseButton::UNKNOWN);
+		return m_PressedButtons.test(2 * KeyboardButtonCount + 2 * static_cast<size_t>(mb) + 1);
 	}
 
 	void InputHandler::OnMouseMove(float dx, float dy)

@@ -1,4 +1,4 @@
-#include <Camera.h>
+#include <CameraManager.h>
 #include <DefaultGeometry.h>
 #include <EntityManager.h>
 #include <Game.h>
@@ -12,9 +12,7 @@ namespace GameEngine
 	) :
 		PlatformLoop(PlatformLoopFunc)
 	{
-		Core::g_MainCamera = new Core::Camera();
-		Core::g_MainCamera->SetPosition(Math::Vector3f(0.0f, 12.0f, -10.0f));
-		Core::g_MainCamera->SetViewDir(Math::Vector3f(0.0f, -6.0f, 12.0f));
+		Core::g_CameraManager = std::make_unique<Core::CameraManager>();
 
 		m_renderThread = std::make_unique<Render::RenderThread>();
 

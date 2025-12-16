@@ -1,4 +1,3 @@
-#include <Camera.h>
 #include <DefaultGeometry.h>
 #include <ecsControl.h>
 #include <ecsMesh.h>
@@ -8,6 +7,7 @@
 #include <Input/Controller.h>
 #include <RenderObject.h>
 #include <GameWorld.h>
+#include <CameraManager.h>
 
 using namespace GameEngine;
 
@@ -19,12 +19,18 @@ void GameFramework::Init()
 	World::GameWorld::GetInstance()->LoadLevel(
 		m_World,
 		Core::g_FileSystem->GetFilePath("Levels/Main.xml").generic_string()
+		//Core::g_FileSystem->GetFilePath("Levels/FixedCamerasToObjects.xml").generic_string()
 	);
 
+	m_World.set(CameraManagerPtr{ Core::g_CameraManager.get() });
+
+	flecs::entity cameraSavingSystem = m_World.entity()
+		.set(SavedCameraPtr{})
+		.set(ControllerPtr{ new Core::Controller(Core::g_FileSystem->GetConfigPath("Input_default.ini")) });
+
 	flecs::entity camera = m_World.entity()
-		.set(Position{ 0.0f, 12.0f, -10.0f })
+		.set(CameraPtr{ Core::g_CameraManager->CreateCamera() })
 		.set(Speed{ 10.f })
-		.set(CameraPtr{ Core::g_MainCamera })
 		.set(ControllerPtr{ new Core::Controller(Core::g_FileSystem->GetConfigPath("Input_default.ini")) });
 }
 
@@ -71,6 +77,11 @@ void GameFramework::RegisterComponentsReflection()
 
 	m_World.component<JumpSpeed>()
 		.member<float>("value");
+
+	m_World.component<DeltaFixedCamera>()
+		.member<float>("dx")
+		.member<float>("dy")
+		.member<float>("dz");
 }
 
 void GameFramework::RegisterSystems()

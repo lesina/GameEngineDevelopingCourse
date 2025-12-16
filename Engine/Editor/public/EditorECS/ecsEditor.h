@@ -4,11 +4,18 @@
 
 namespace GameEngine::Core
 {
+	class CameraManager;
 	class Camera;
+
 }
 
 namespace GameEngine::EntitySystem::EditorECS
 {
+	struct CameraManagerPtr
+	{
+		Core::CameraManager* ptr;
+	};
+
 	struct CameraPtr
 	{
 		Core::Camera* ptr;

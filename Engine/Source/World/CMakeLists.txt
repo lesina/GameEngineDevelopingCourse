@@ -62,6 +62,7 @@ target_precompile_headers(World
 	PRIVATE
 		<unordered_map>
 		<vector>
+		<list>
 		<string>
 		<cassert>
 		<format>

@@ -78,6 +78,8 @@ target_precompile_headers(Editor
 	PRIVATE
 		<algorithm>
 		<unordered_map>
+		<set>
+		<list>
 		<vector>
 		<string>
 		<cassert>

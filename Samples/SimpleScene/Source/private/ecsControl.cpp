@@ -1,4 +1,4 @@
-#include <Camera.h>
+#include <CameraManager.h>
 #include <ecsControl.h>
 #include <Constants.h>
 #include <ECS/ecsSystems.h>
@@ -10,39 +10,80 @@
 
 using namespace GameEngine;
 
+
+static void ProcessButtonPress(const ControllerPtr& controller,
+                               const char* actionName,
+                               const std::function<void()>& action)
+{
+	if (controller.ptr->IsPressed(actionName))
+	{
+		if (!controller.ptr->WasPressed(actionName))
+		{
+			action();
+			controller.ptr->SetWasPressed(actionName);
+		}
+	}
+}
+
 void RegisterEcsControlSystems(flecs::world& world)
 {
-	world.system<Position, CameraPtr, const Speed, const ControllerPtr>()
-		.each([&](flecs::entity e, Position& position, CameraPtr& camera, const Speed& speed, const ControllerPtr& controller)
+	world.system<CameraPtr, const Speed, const ControllerPtr>()
+		.each([&](flecs::entity e, CameraPtr& cameraPtr, const Speed& speed, const ControllerPtr& controller)
 	{
-		Core::InputHandler::MouseMovevement mouseMovement = Core::InputHandler::GetInstance()->GetMouseMovement();
+		static const CameraManagerPtr* cameraManagerPtr = world.get<CameraManagerPtr>();
 
-		mouseMovement.dx *= 0.25 * Math::Constants::PI / 180.f;
-		mouseMovement.dy *= 0.25 * Math::Constants::PI / 180.f;
+		if (cameraPtr.ptr == cameraManagerPtr->ptr->GetActiveCamera())
+		{
+			Core::InputHandler::MouseMovevement mouseMovement = Core::InputHandler::GetInstance()->GetMouseMovement();
 
-		camera.ptr->Rotate(mouseMovement.dx, mouseMovement.dy);
+			mouseMovement.dx *= 0.25 * Math::Constants::PI / 180.f;
+			mouseMovement.dy *= 0.25 * Math::Constants::PI / 180.f;
 
-		Math::Vector3f currentMoveDir = Math::Vector3f::Zero();
-		if (controller.ptr->IsPressed("GoLeft"))
-		{
-			currentMoveDir = currentMoveDir - camera.ptr->GetRightDir();
+			Core::Camera* camera = cameraPtr.ptr;
+
+			camera->Rotate(mouseMovement.dx, mouseMovement.dy);
+
+			Math::Vector3f currentMoveDir = Math::Vector3f::Zero();
+			if (controller.ptr->IsPressed("GoLeft"))
+			{
+				currentMoveDir = currentMoveDir - camera->GetRightDir();
+			}
+			if (controller.ptr->IsPressed("GoRight"))
+			{
+				currentMoveDir = currentMoveDir + camera->GetRightDir();
+			}
+			if (controller.ptr->IsPressed("GoBack"))
+			{
+				currentMoveDir = currentMoveDir - camera->GetViewDir();
+			}
+			if (controller.ptr->IsPressed("GoForward"))
+			{
+				currentMoveDir = currentMoveDir + camera->GetViewDir();
+			}
+
+			Math::Vector3f position = camera->GetPosition() + currentMoveDir.Normalized() * speed.value * world.delta_time();
+			camera->SetPosition(position);
+
+			ProcessButtonPress(controller, "CreateCamera",
+				[&]() { world.entity().set(CameraPtr{ cameraManagerPtr->ptr->CreateCamera() })
+				.set(Speed{ speed.value })
+				.set(ControllerPtr{ new Core::Controller(Core::g_FileSystem->GetConfigPath("Input_default.ini")) }); }
+			);
+
+			ProcessButtonPress(controller, "NextCamera",
+				[&]() { cameraManagerPtr->ptr->SwitchNextCamera(); }
+			);
+			ProcessButtonPress(controller, "PrevCamera",
+				[&]() { cameraManagerPtr->ptr->SwitchPrevCamera(); }
+			);
+
+			if (cameraManagerPtr->ptr->GetCamerasCount() > 1)
+			{
+				ProcessButtonPress(controller, "DeleteCamera",
+					[&]() { cameraManagerPtr->ptr->DeleteCamera(camera); e.destruct(); }
+				);
+			}
 		}
-		if (controller.ptr->IsPressed("GoRight"))
-		{
-			currentMoveDir = currentMoveDir + camera.ptr->GetRightDir();
-		}
-		if (controller.ptr->IsPressed("GoBack"))
-		{
-			currentMoveDir = currentMoveDir - camera.ptr->GetViewDir();
-		}
-		if (controller.ptr->IsPressed("GoForward"))
-		{
-			currentMoveDir = currentMoveDir + camera.ptr->GetViewDir();
-		}
-		position.x = position.x + currentMoveDir.Normalized().x * speed.value * world.delta_time();
-		position.y = position.y + currentMoveDir.Normalized().y * speed.value * world.delta_time();
-		position.z = position.z + currentMoveDir.Normalized().z * speed.value * world.delta_time();
-		camera.ptr->SetPosition(Math::Vector3f(position.x, position.y, position.z));
 	});
 
 	world.system<const Position, Velocity, const ControllerPtr, const BouncePlane, const JumpSpeed>()
@@ -55,6 +96,39 @@ void RegisterEcsControlSystems(flecs::world& world)
 			{
 				vel.y = jump.value;
 			}
+		}
+	});
+
+	world.system<SavedCameraPtr, const ControllerPtr>()
+		.each([&](flecs::entity e, SavedCameraPtr& savedCameraPtr, const ControllerPtr& controller)
+	{
+		static const CameraManagerPtr* cameraManagerPtr = world.get<CameraManagerPtr>();
+
+		ProcessButtonPress(controller, "SaveCamera",
+			[&]() { savedCameraPtr.ptr = cameraManagerPtr->ptr->GetActiveCamera(); }
+		);
+		ProcessButtonPress(controller, "LoadCamera",
+			[&]() { cameraManagerPtr->ptr->SetActiveCamera(savedCameraPtr.ptr); }
+		);
+	});
+
+	world.system<DeltaFixedCamera>()
+		.each([&](flecs::entity e, DeltaFixedCamera& delta)
+	{
+		static const CameraManagerPtr* cameraManagerPtr = world.get<CameraManagerPtr>();
+
+		if (!e.has(world.lookup("CameraPtr").id()))
+		{
+			e.set(CameraPtr{ cameraManagerPtr->ptr->CreateCamera() });
+		}
+	});
+
+	world.system<DeltaFixedCamera, CameraPtr, const Position>()
+		.each([&](DeltaFixedCamera& delta, CameraPtr& cameraPtr, const Position& pos)
+	{
+		if (cameraPtr.ptr)
+		{
+			cameraPtr.ptr->SetPosition(Math::Vector3f(pos.x + delta.dx, pos.y + delta.dy, pos.z + delta.dz));
 		}
 	});
 }

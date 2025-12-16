@@ -1,0 +1,5 @@
+<level name="fixedCamerasToObjects">
+    <entity Name="LeftCube" Position="-4.000000,0.000000,0.000000" Velocity="0.000000,0.000000,10.000000" Gravity="0.000000,-9.800000,0.000000" BouncePlane="0.0,1.0,0.0,5.0" Bounciness="1.0" FrictionAmount="0.2" GeometryPtr="Cube" DeltaFixedCamera="0.0,10.0,-15.0" ControllerPtr="Input_default.ini"/>
+    <entity Name="RightCube" Position="4.000000,0.000000,0.000000" Velocity="0.000000,0.000000,10.000000" Gravity="0.000000,-9.800000,0.000000" BouncePlane="0.0,1.0,0.0,5.0" Bounciness="1.0" FrictionAmount="0.2" GeometryPtr="Cube" DeltaFixedCamera="0.0,10.0,-15.0" ControllerPtr="Input_default.ini"/>
+    <entity Name="Cube" Position="-10.000000,0.000000,30.000000" Velocity="0.000000,0.000000,0.000000" Gravity="0.000000,-9.800000,0.000000" BouncePlane="0.0,1.0,0.0,5.0" Bounciness="1.0" FrictionAmount="0.2" GeometryPtr="Cube"/>
+</level>

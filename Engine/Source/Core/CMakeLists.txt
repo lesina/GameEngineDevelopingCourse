@@ -108,4 +108,8 @@ target_precompile_headers(Core
 		<queue>
 		<stack>
 		<tuple>
+		<list>
+		<memory>
+		<iterator>
+		<algorithm>
 )

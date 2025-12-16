@@ -22,6 +22,8 @@ namespace GameEngine
 
 		private:
 			void Save();
+			void AddDefaultObject();
+			void AddLevelEditorEntity(World::LevelObject& levelObject);
 
 		private:
 			Core::Timer m_SaveButtonMessageTimer;
@@ -29,6 +31,7 @@ namespace GameEngine
 			float m_TimeToShowSaveButtonMessage = 3.f;
 
 			std::optional<World::Level> m_Level = std::nullopt;
+			flecs::world m_World;
 		};
 	}
 }

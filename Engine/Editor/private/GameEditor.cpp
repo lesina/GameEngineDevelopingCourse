@@ -2,7 +2,7 @@
 
 #include <Debug/Console.h>
 #include <EditorECS/ecsEditor.h>
-#include <Camera.h>
+#include <CameraManager.h>
 #include <DefaultGeometry.h>
 #include <Window/IWindow.h>
 #include <GUIContext.h>
@@ -18,9 +18,7 @@ namespace GameEngine
 	) :
 		PlatformLoop(PlatformLoopFunc)
 	{
-		Core::g_MainCamera = new Core::Camera();
-		Core::g_MainCamera->SetPosition(Math::Vector3f(0.0f, 12.0f, -10.0f));
-		Core::g_MainCamera->SetViewDir(Math::Vector3f(0.0f, -6.0f, 12.0f));
+		Core::g_CameraManager = std::make_unique<Core::CameraManager>();
 
 		GUI::GUIContext::GetInstance()->PlatformInit();
 		m_renderThread = std::make_unique<Render::RenderThread>();
@@ -31,10 +29,11 @@ namespace GameEngine
 		flecs::world world; world = m_EntityManager->GetWorld().get_world();
 		// huge refactoring requires or flecs custom fix because this api redundancy is just annoying
 
+		m_EntityManager->GetWorld().set(EntitySystem::EditorECS::CameraManagerPtr{ Core::g_CameraManager.get() });
+
 		flecs::entity camera = m_EntityManager->GetWorld().entity()
-			.set(EntitySystem::EditorECS::Position{ 0.0f, 12.0f, -10.0f })
-			.set(EntitySystem::EditorECS::Speed{ 10.f })
-			.set(EntitySystem::EditorECS::CameraPtr{ Core::g_MainCamera });
+			.set(EntitySystem::EditorECS::CameraPtr{ Core::g_CameraManager->CreateCamera() })
+			.set(EntitySystem::EditorECS::Speed{ 10.f });
 
 		EntitySystem::EditorECS::RegisterEditorEcsControlSystems(m_EntityManager->GetWorld());
 

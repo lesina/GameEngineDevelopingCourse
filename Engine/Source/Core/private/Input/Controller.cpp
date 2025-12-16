@@ -45,4 +45,30 @@ namespace GameEngine::Core
 
 		return false;
 	}
+
+	bool Controller::WasPressed(const std::string& event)
+	{
+		if (m_MouseEventMap.contains(event))
+		{
+			return InputHandler::GetInstance()->WasKeyPressed(m_MouseEventMap[event]);
+		}
+		if (m_KeyboardEventMap.contains(event))
+		{
+			return InputHandler::GetInstance()->WasKeyPressed(m_KeyboardEventMap[event]);
+		}
+
+		return false;
+	}
+
+	void Controller::SetWasPressed(const std::string& event)
+	{
+		if (m_MouseEventMap.contains(event))
+		{
+			InputHandler::GetInstance()->SetWasKeyPressed(m_MouseEventMap[event]);
+		}
+		if (m_KeyboardEventMap.contains(event))
+		{
+			InputHandler::GetInstance()->SetWasKeyPressed(m_KeyboardEventMap[event]);
+		}
+	}
 }

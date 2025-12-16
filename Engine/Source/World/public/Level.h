@@ -9,7 +9,7 @@ namespace GameEngine::World
 	class WORLD_API Level final
 	{
 	public:
-		using LevelObjectList = std::vector<LevelObject>;
+		using LevelObjectList = std::list<LevelObject>;
 
 	public:
 		Level() = delete;

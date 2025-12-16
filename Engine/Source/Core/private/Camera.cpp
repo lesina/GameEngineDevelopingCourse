@@ -2,8 +2,6 @@
 
 namespace GameEngine::Core
 {
-	Camera* g_MainCamera = nullptr;
-
 	Math::Matrix4x4f Camera::GetViewMatrix()
 	{
 		return Math::ViewMatrixLH(m_Position, m_ViewDir, Math::Vector3f(0.0f, 1.0f, 0.0f));
