@@ -9,10 +9,10 @@ namespace GameEngine::Render
 		m_rhi = HAL::RHIHelper::CreateRHI("D3D12");
 		m_rhi->Init();
 
-		RenderObject::Ptr box = std::make_shared<RenderObject>();
-		m_RenderObjects.push_back(box);
-		box->m_mesh = m_rhi->CreateBoxMesh();
-		box->m_material = m_rhi->GetMaterial(box->m_mesh->GetName());
+		RenderObject::Ptr tetrahedron = std::make_shared<RenderObject>();
+		m_RenderObjects.push_back(tetrahedron);
+		tetrahedron->m_mesh = m_rhi->CreateTetrahedronMesh();
+		tetrahedron->m_material = m_rhi->GetMaterial(tetrahedron->m_mesh->GetName());
 		
 		m_rhi->ExecuteCommandLists();
 		m_rhi->Flush();

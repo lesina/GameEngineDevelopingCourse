@@ -27,7 +27,7 @@ namespace GameEngine
 		public:
 			virtual void Init() = 0;
 			virtual void Update(Mesh::Ptr mesh, Material::Ptr material) = 0;
-			virtual Mesh::Ptr CreateBoxMesh() = 0;
+			virtual Mesh::Ptr CreateTetrahedronMesh() = 0;
 			virtual Material::Ptr GetMaterial(const std::string& name) = 0;
 			virtual void ExecuteCommandLists() = 0;
 			virtual void Flush() = 0;

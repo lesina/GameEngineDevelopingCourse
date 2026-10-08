@@ -5,6 +5,8 @@
 #include <Window/IWindow.h>
 #include <Math/Vector.h>
 #include <Math/Matrix.h>
+#include <chrono>
+#include <cmath>
 
 namespace GameEngine
 {
@@ -253,7 +255,7 @@ namespace GameEngine
 			D3D12Mesh d3d12Mesh = *reinterpret_cast<D3D12Mesh*>(mesh.get());
 			D3D12Material d3d12Material = *reinterpret_cast<D3D12Material*>(material.get());
 
-			float mTheta = 1.5f * DirectX::XM_PI;
+			float mTheta = 1.25f * DirectX::XM_PI;
 			float mPhi = DirectX::XM_PIDIV4;
 			float mRadius = 5.0f;
 
@@ -271,7 +273,11 @@ namespace GameEngine
 			Math::Matrix4x4f view = Core::Math::ViewMatrixLH(pos, target, up);
 			Math::Matrix4x4f proj = Core::Math::ProjectionMatrixLH(0.25f * DirectX::XM_PI, Core::MainWindowsApplication->GetAspectRatio(), 1.0f, 1000.0f);
 
+			static const auto startTime = std::chrono::steady_clock::now();
+			const float time = std::chrono::duration<float>(std::chrono::steady_clock::now() - startTime).count();
+
 			Math::Matrix4x4f world = Math::Matrix4x4f::Identity();
+			world.SetElement(0.6f * std::sin(time), 3, 0);
 			Math::Matrix4x4f worldViewProj = world * view * proj;
 
 			ObjectConstants objConstants;
